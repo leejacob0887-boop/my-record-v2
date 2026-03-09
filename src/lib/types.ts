@@ -1,0 +1,25 @@
+export interface BaseRecord {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  imageBase64?: string;
+}
+
+export interface DiaryEntry extends BaseRecord {
+  type: 'diary';
+  date: string; // 'YYYY-MM-DD'
+  title: string;
+  content: string;
+}
+
+export interface Moment extends BaseRecord {
+  type: 'moment';
+  date: string; // 'YYYY-MM-DD'
+  text: string;
+}
+
+export interface Idea extends BaseRecord {
+  type: 'idea';
+  title: string;
+  content: string;
+}
