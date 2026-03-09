@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDiary } from '@/lib/useDiary';
 
@@ -32,6 +32,21 @@ export default function DiaryNewPage() {
   const [weatherIndex, setWeatherIndex] = useState(0);
   const [weatherOpen, setWeatherOpen] = useState(false);
   const [emotionIndex, setEmotionIndex] = useState<number | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | undefined>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      alert('사진 크기는 1.5MB 이하여야 합니다.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => setImageBase64(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   const handleSubmit = () => {
     if (!content.trim()) return;
@@ -40,7 +55,7 @@ export default function DiaryNewPage() {
       const ok = confirm(`${dateStr}에 이미 일기가 있습니다. 덮어쓸까요?`);
       if (!ok) return;
     }
-    save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim() });
+    save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
     router.push('/diary');
   };
 
@@ -118,6 +133,18 @@ export default function DiaryNewPage() {
           </div>
         </div>
 
+        {/* Image preview */}
+        {imageBase64 && (
+          <div className="relative mx-4 mt-3">
+            <img src={imageBase64} alt="" className="w-full max-h-48 object-cover rounded-xl" />
+            <button
+              onClick={() => setImageBase64(undefined)}
+              className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/70 transition-colors"
+              aria-label="사진 제거"
+            >×</button>
+          </div>
+        )}
+
         {/* Content textarea */}
         <textarea
           value={content}
@@ -148,13 +175,19 @@ export default function DiaryNewPage() {
           {/* 2. Toolbar */}
           <div className="flex items-center py-3 border-b border-gray-100">
             <div className="flex items-center gap-4">
-              <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="사진">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-1.5 text-gray-400 hover:text-[#4A90D9] transition-colors"
+                aria-label="사진 추가"
+              >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
                   <circle cx="8.5" cy="8.5" r="1.5" />
                   <polyline points="21 15 16 10 5 21" />
                 </svg>
+                <span className="text-xs font-medium">사진 추가</span>
               </button>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="태그">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />

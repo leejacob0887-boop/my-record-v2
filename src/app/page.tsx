@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -78,6 +78,7 @@ export default function Home() {
   const { moments } = useMoments();
   const { ideas } = useIdeas();
 
+  const [recentOpen, setRecentOpen] = useState(false);
   const today = new Date().toISOString().slice(0, 10);
 
   const todayCount = useMemo(() => {
@@ -89,11 +90,11 @@ export default function Home() {
 
   const recentItems = useMemo<RecentItem[]>(() => {
     const all: RecentItem[] = [
-      ...entries.map(e => ({ type: 'diary' as const, label: e.title, date: e.date, href: `/diary/${e.id}` })),
-      ...moments.map(m => ({ type: 'moment' as const, label: m.text, date: m.date, href: `/moments/${m.id}` })),
-      ...ideas.map(i => ({ type: 'idea' as const, label: i.title, date: i.createdAt.slice(0, 10), href: `/ideas/${i.id}` })),
+      ...entries.map(e => ({ type: 'diary' as const, label: e.title, date: e.date ?? '', href: `/diary/${e.id}` })),
+      ...moments.map(m => ({ type: 'moment' as const, label: m.text, date: m.date ?? m.createdAt?.slice(0, 10) ?? '', href: `/moments/${m.id}` })),
+      ...ideas.map(i => ({ type: 'idea' as const, label: i.title, date: i.createdAt?.slice(0, 10) ?? '', href: `/ideas/${i.id}` })),
     ];
-    return all.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
+    return all.sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 5);
   }, [entries, moments, ideas]);
 
   return (
@@ -163,26 +164,43 @@ export default function Home() {
           />
         </div>
 
-        {/* Recent records */}
+        {/* Recent records — collapsible */}
         {recentItems.length > 0 && (
           <div className="mb-4">
-            <h2 className="text-xs font-semibold text-gray-400 mb-3 px-1">최근 기록</h2>
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              {recentItems.map((item, idx) => (
-                <Link
-                  key={idx}
-                  href={item.href}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors"
-                >
-                  <div className="flex-shrink-0">
-                    {item.type === 'diary' && <BookIcon size={18} />}
-                    {item.type === 'moment' && <BoltIcon size={18} />}
-                    {item.type === 'idea' && <BulbIcon size={18} />}
-                  </div>
-                  <p className="flex-1 text-sm text-gray-700 truncate">{item.label}</p>
-                  <p className="text-xs text-gray-400 flex-shrink-0">{item.date}</p>
-                </Link>
-              ))}
+            <button
+              onClick={() => setRecentOpen(o => !o)}
+              className="flex items-center gap-1.5 w-full text-left px-1 mb-2 group"
+            >
+              <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-500 transition-colors">최근 기록</span>
+              <svg
+                width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                className={`transition-transform duration-300 ${recentOpen ? 'rotate-180' : ''}`}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div
+              className="overflow-hidden transition-all duration-300 ease-in-out"
+              style={{ maxHeight: recentOpen ? `${recentItems.length * 56}px` : '0px', opacity: recentOpen ? 1 : 0 }}
+            >
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                {recentItems.map((item, idx) => (
+                  <Link
+                    key={idx}
+                    href={item.href}
+                    className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex-shrink-0">
+                      {item.type === 'diary' && <BookIcon size={18} />}
+                      {item.type === 'moment' && <BoltIcon size={18} />}
+                      {item.type === 'idea' && <BulbIcon size={18} />}
+                    </div>
+                    <p className="flex-1 text-sm text-gray-700 truncate">{item.label}</p>
+                    <p className="text-xs text-gray-400 flex-shrink-0">{item.date}</p>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
         )}

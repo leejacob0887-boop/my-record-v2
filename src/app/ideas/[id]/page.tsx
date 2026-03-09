@@ -55,9 +55,9 @@ export default function IdeaDetailPage() {
             </svg>
           </button>
           <span className="text-base font-semibold text-gray-800">아이디어</span>
-          <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
+          <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
-          </button>
+          </Link>
         </div>
 
         {/* Content card */}
