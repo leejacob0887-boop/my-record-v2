@@ -45,7 +45,8 @@ export default function DiaryNewPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] flex flex-col">
+    <main className="min-h-screen bg-[#FAF8F4]">
+      <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-12 pb-3">
@@ -125,69 +126,74 @@ export default function DiaryNewPage() {
           className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
         />
 
-        {/* Emotion picker */}
-        <div className="flex items-center gap-3 px-4 py-3 border-t border-gray-100">
-          {EMOTIONS.map((emoji, i) => (
+      </div>
+
+      {/* Fixed bottom panel: 감정 + 도구바 + 저장 버튼 */}
+      <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
+        <div className="max-w-[430px] mx-auto px-4">
+
+          {/* 1. Emotion picker */}
+          <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+            {EMOTIONS.map((emoji, i) => (
+              <button
+                key={emoji}
+                onClick={() => setEmotionIndex(i === emotionIndex ? null : i)}
+                className={`text-2xl transition-all ${emotionIndex === i ? 'scale-125' : 'opacity-50 hover:opacity-80'}`}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+
+          {/* 2. Toolbar */}
+          <div className="flex items-center py-3 border-b border-gray-100">
+            <div className="flex items-center gap-4">
+              <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="사진">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <polyline points="21 15 16 10 5 21" />
+                </svg>
+              </button>
+              <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="태그">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-400 mx-auto">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>작성 시간 {timeLabel}</span>
+            </div>
+            <button className="text-gray-300 hover:text-red-400 transition-colors" aria-label="삭제">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6" />
+                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                <path d="M10 11v6M14 11v6" />
+                <path d="M9 6V4h6v2" />
+              </svg>
+            </button>
+          </div>
+
+          {/* 3. Save button */}
+          <div className="py-3">
             <button
-              key={emoji}
-              onClick={() => setEmotionIndex(i === emotionIndex ? null : i)}
-              className={`text-2xl transition-all ${emotionIndex === i ? 'scale-125' : 'opacity-50 hover:opacity-80'}`}
+              onClick={handleSubmit}
+              disabled={!content.trim()}
+              className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {emoji}
+              저장
             </button>
-          ))}
-        </div>
+          </div>
 
-        {/* Bottom toolbar */}
-        <div className="flex items-center px-4 py-3 border-t border-gray-100">
-          <div className="flex items-center gap-4">
-            {/* Photo */}
-            <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="사진">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-            </button>
-            {/* Tag */}
-            <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="태그">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-                <line x1="7" y1="7" x2="7.01" y2="7" />
-              </svg>
-            </button>
-          </div>
-          {/* Time */}
-          <div className="flex items-center gap-1 text-xs text-gray-400 mx-auto">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            <span>작성 시간 {timeLabel}</span>
-          </div>
-          {/* Delete */}
-          <button className="text-gray-300 hover:text-red-400 transition-colors" aria-label="삭제">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4h6v2" />
-            </svg>
-          </button>
         </div>
       </div>
 
-      {/* Save button */}
-      <div className="px-4 py-4">
-        <button
-          onClick={handleSubmit}
-          disabled={!content.trim()}
-          className="w-full bg-[#4A90D9] text-white rounded-2xl py-4 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          저장
-        </button>
       </div>
-
     </main>
   );
 }
