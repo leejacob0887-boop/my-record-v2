@@ -1,22 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Moment } from './types';
 import { storageGet, storageSet } from './storage';
 
 const KEY = 'moments_list';
 
+function loadAllMoments(): Moment[] {
+  const all = storageGet<Moment[]>(KEY) ?? [];
+  return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
 export function useMoments() {
-  const [moments, setMoments] = useState<Moment[]>([]);
-
-  const load = useCallback(() => {
-    const all = storageGet<Moment[]>(KEY) ?? [];
-    setMoments(all.sort((a, b) => b.createdAt.localeCompare(a.createdAt)));
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  const [moments, setMoments] = useState<Moment[]>(() => loadAllMoments());
 
   const getByDate = useCallback(
     (date: string): Moment[] => moments.filter((m) => m.date === date),
@@ -40,9 +36,9 @@ export function useMoments() {
       };
       const current = storageGet<Moment[]>(KEY) ?? [];
       storageSet(KEY, [newMoment, ...current]);
-      load();
+      setMoments(loadAllMoments());
     },
-    [load]
+    []
   );
 
   const update = useCallback(
@@ -52,18 +48,18 @@ export function useMoments() {
         m.id === id ? { ...m, ...data, updatedAt: new Date().toISOString() } : m
       );
       storageSet(KEY, updated);
-      load();
+      setMoments(loadAllMoments());
     },
-    [load]
+    []
   );
 
   const remove = useCallback(
     (id: string) => {
       const current = storageGet<Moment[]>(KEY) ?? [];
       storageSet(KEY, current.filter((m) => m.id !== id));
-      load();
+      setMoments(loadAllMoments());
     },
-    [load]
+    []
   );
 
   return { moments, getByDate, getById, add, update, remove };

@@ -1,30 +1,193 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
-import DiaryForm from '@/components/DiaryForm';
 import { useDiary } from '@/lib/useDiary';
+
+const WEATHERS = [
+  { label: '맑음', icon: '☀️' },
+  { label: '구름', icon: '🌤️' },
+  { label: '흐림', icon: '☁️' },
+  { label: '비',   icon: '🌧️' },
+  { label: '눈',   icon: '❄️' },
+];
+
+const EMOTIONS = ['😊', '😐', '😟', '😤', '⚡'];
 
 export default function DiaryNewPage() {
   const router = useRouter();
   const { save, getByDate } = useDiary();
 
-  const handleSubmit = (data: { date: string; title: string; content: string; imageBase64?: string }) => {
-    const existing = getByDate(data.date);
+  const today = new Date();
+  const dateStr = today.toISOString().slice(0, 10);
+  const dateLabel = today.toLocaleDateString('ko-KR', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+  const timeLabel = today.toLocaleTimeString('ko-KR', {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [weatherIndex, setWeatherIndex] = useState(0);
+  const [weatherOpen, setWeatherOpen] = useState(false);
+  const [emotionIndex, setEmotionIndex] = useState<number | null>(null);
+
+  const handleSubmit = () => {
+    if (!content.trim()) return;
+    const existing = getByDate(dateStr);
     if (existing) {
-      const ok = confirm(`${data.date}에 이미 일기가 있습니다. 덮어쓸까요?`);
+      const ok = confirm(`${dateStr}에 이미 일기가 있습니다. 덮어쓸까요?`);
       if (!ok) return;
     }
-    save(data);
+    save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim() });
     router.push('/diary');
   };
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <Header title="새 일기" backHref="/diary" />
-      <div className="max-w-md mx-auto px-4 py-6">
-        <DiaryForm onSubmit={handleSubmit} />
+    <main className="min-h-screen bg-[#FAF8F4] flex flex-col">
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 pt-12 pb-3">
+        <button
+          onClick={() => router.back()}
+          className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
+          aria-label="뒤로가기"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <span className="text-base font-semibold text-gray-800">일기</span>
+        <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+          </svg>
+        </button>
       </div>
+
+      {/* Date + Title */}
+      <div className="px-5 pb-4">
+        <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+          <span>{dateLabel}</span>
+          <span>📅</span>
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800">오늘의 일기</h1>
+      </div>
+
+      {/* White card area */}
+      <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
+
+        {/* Title + Weather row */}
+        <div className="flex items-center border-b border-gray-100">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="오늘 하루의 제목 (선택)"
+            className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+          />
+          {/* Weather selector */}
+          <div className="relative">
+            <button
+              onClick={() => setWeatherOpen((o) => !o)}
+              className="flex items-center gap-1 px-3 py-3 text-sm text-gray-500 hover:bg-gray-50 rounded-tr-2xl transition-colors"
+            >
+              <span>{WEATHERS[weatherIndex].icon}</span>
+              <span>{WEATHERS[weatherIndex].label}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            {weatherOpen && (
+              <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-10 overflow-hidden">
+                {WEATHERS.map((w, i) => (
+                  <button
+                    key={w.label}
+                    onClick={() => { setWeatherIndex(i); setWeatherOpen(false); }}
+                    className={`flex items-center gap-2 px-4 py-2.5 text-sm w-full text-left hover:bg-gray-50 transition-colors ${i === weatherIndex ? 'text-blue-500 font-medium' : 'text-gray-600'}`}
+                  >
+                    <span>{w.icon}</span>
+                    <span>{w.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Content textarea */}
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="오늘 하루는 어땠나요?"
+          className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
+        />
+
+        {/* Emotion picker */}
+        <div className="flex items-center gap-3 px-4 py-3 border-t border-gray-100">
+          {EMOTIONS.map((emoji, i) => (
+            <button
+              key={emoji}
+              onClick={() => setEmotionIndex(i === emotionIndex ? null : i)}
+              className={`text-2xl transition-all ${emotionIndex === i ? 'scale-125' : 'opacity-50 hover:opacity-80'}`}
+            >
+              {emoji}
+            </button>
+          ))}
+        </div>
+
+        {/* Bottom toolbar */}
+        <div className="flex items-center px-4 py-3 border-t border-gray-100">
+          <div className="flex items-center gap-4">
+            {/* Photo */}
+            <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="사진">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            </button>
+            {/* Tag */}
+            <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="태그">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+            </button>
+          </div>
+          {/* Time */}
+          <div className="flex items-center gap-1 text-xs text-gray-400 mx-auto">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+            <span>작성 시간 {timeLabel}</span>
+          </div>
+          {/* Delete */}
+          <button className="text-gray-300 hover:text-red-400 transition-colors" aria-label="삭제">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Save button */}
+      <div className="px-4 py-4">
+        <button
+          onClick={handleSubmit}
+          disabled={!content.trim()}
+          className="w-full bg-[#4A90D9] text-white rounded-2xl py-4 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          저장
+        </button>
+      </div>
+
     </main>
   );
 }

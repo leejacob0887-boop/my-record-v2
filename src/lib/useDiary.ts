@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { DiaryEntry } from './types';
 import { storageGet, storageSet, storageRemove } from './storage';
 
@@ -11,21 +11,16 @@ function getAllDiaryKeys(): string[] {
   return Object.keys(localStorage).filter((k) => k.startsWith(PREFIX));
 }
 
+function loadAllEntries(): DiaryEntry[] {
+  const keys = getAllDiaryKeys();
+  return keys
+    .map((k) => storageGet<DiaryEntry>(k))
+    .filter((e): e is DiaryEntry => e !== null)
+    .sort((a, b) => b.date.localeCompare(a.date));
+}
+
 export function useDiary() {
-  const [entries, setEntries] = useState<DiaryEntry[]>([]);
-
-  const load = useCallback(() => {
-    const keys = getAllDiaryKeys();
-    const all = keys
-      .map((k) => storageGet<DiaryEntry>(k))
-      .filter((e): e is DiaryEntry => e !== null)
-      .sort((a, b) => b.date.localeCompare(a.date));
-    setEntries(all);
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [load]);
+  const [entries, setEntries] = useState<DiaryEntry[]>(() => loadAllEntries());
 
   const getTodayEntry = useCallback((): DiaryEntry | undefined => {
     const today = new Date().toISOString().slice(0, 10);
@@ -56,9 +51,9 @@ export function useDiary() {
             ...data,
           };
       storageSet(`${PREFIX}${data.date}`, entry);
-      load();
+      setEntries(loadAllEntries());
     },
-    [load]
+    []
   );
 
   const remove = useCallback(
@@ -66,10 +61,10 @@ export function useDiary() {
       const entry = entries.find((e) => e.id === id);
       if (entry) {
         storageRemove(`${PREFIX}${entry.date}`);
-        load();
+        setEntries(loadAllEntries());
       }
     },
-    [entries, load]
+    [entries]
   );
 
   return { entries, getTodayEntry, getByDate, getById, save, remove };
