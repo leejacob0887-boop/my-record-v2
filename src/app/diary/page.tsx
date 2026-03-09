@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useDiary } from '@/lib/useDiary';
 import { DiaryEntry } from '@/lib/types';
@@ -66,6 +66,13 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
 
 export default function DiaryPage() {
   const { entries, save } = useDiary();
+  const [query, setQuery] = useState('');
+  const filtered = query.trim()
+    ? entries.filter(e =>
+        e.title.toLowerCase().includes(query.toLowerCase()) ||
+        e.content.toLowerCase().includes(query.toLowerCase())
+      )
+    : entries;
 
   useEffect(() => {
     if (localStorage.getItem('diary_samples_initialized')) return;
@@ -109,7 +116,15 @@ export default function DiaryPage() {
         {/* Search bar */}
         <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 border border-gray-100 shadow-sm mb-4">
           <SearchIcon />
-          <span className="text-sm text-gray-400">일기 검색</span>
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="일기 검색"
+            className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+          />
+          {query && (
+            <button onClick={() => setQuery('')} className="text-gray-300 hover:text-gray-400 text-base leading-none">×</button>
+          )}
         </div>
 
         {/* New diary button */}
@@ -126,9 +141,13 @@ export default function DiaryPage() {
             <p className="text-gray-400 text-sm">아직 일기가 없어요</p>
             <p className="text-gray-300 text-xs mt-1">첫 번째 일기를 써보세요</p>
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-400 text-sm">검색 결과가 없어요</p>
+          </div>
         ) : (
           <div>
-            {entries.map((entry) => (
+            {filtered.map((entry) => (
               <DiaryCard key={entry.id} entry={entry} />
             ))}
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useMoments } from '@/lib/useMoments';
 import { Moment } from '@/lib/types';
@@ -50,6 +50,10 @@ function MomentCard({ moment }: { moment: Moment }) {
 
 export default function MomentsPage() {
   const { moments, add } = useMoments();
+  const [query, setQuery] = useState('');
+  const filtered = query.trim()
+    ? moments.filter(m => m.text.toLowerCase().includes(query.toLowerCase()))
+    : moments;
 
   useEffect(() => {
     if (localStorage.getItem('moments_samples_initialized')) return;
@@ -93,7 +97,15 @@ export default function MomentsPage() {
         {/* Search bar */}
         <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 border border-gray-100 shadow-sm mb-4">
           <SearchIcon />
-          <span className="text-sm text-gray-400">순간 검색</span>
+          <input
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="순간 검색"
+            className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+          />
+          {query && (
+            <button onClick={() => setQuery('')} className="text-gray-300 hover:text-gray-400 text-base leading-none">×</button>
+          )}
         </div>
 
         {/* New button */}
@@ -110,9 +122,13 @@ export default function MomentsPage() {
             <p className="text-gray-400 text-sm">아직 기록이 없어요</p>
             <p className="text-gray-300 text-xs mt-1">지금 이 순간을 기록해보세요</p>
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-400 text-sm">검색 결과가 없어요</p>
+          </div>
         ) : (
           <div>
-            {moments.map((m) => (
+            {filtered.map((m) => (
               <MomentCard key={m.id} moment={m} />
             ))}
           </div>
