@@ -67,12 +67,14 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
 export default function DiaryPage() {
   const { entries, save } = useDiary();
   const [query, setQuery] = useState('');
-  const filtered = query.trim()
-    ? entries.filter(e =>
-        e.title.toLowerCase().includes(query.toLowerCase()) ||
-        e.content.toLowerCase().includes(query.toLowerCase())
+  const q = query.trim().toLowerCase();
+  const validEntries = entries.filter(e => e.type === 'diary' && typeof e.title === 'string');
+  const filtered = q
+    ? validEntries.filter(e =>
+        e.title.toLowerCase().includes(q) ||
+        (e.content ?? '').toLowerCase().includes(q)
       )
-    : entries;
+    : validEntries;
 
   useEffect(() => {
     if (localStorage.getItem('diary_samples_initialized')) return;
@@ -136,7 +138,7 @@ export default function DiaryPage() {
         </Link>
 
         {/* Diary list */}
-        {entries.length === 0 ? (
+        {validEntries.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">아직 일기가 없어요</p>
             <p className="text-gray-300 text-xs mt-1">첫 번째 일기를 써보세요</p>
@@ -148,7 +150,7 @@ export default function DiaryPage() {
         ) : (
           <div>
             {filtered.map((entry) => (
-              <DiaryCard key={entry.id} entry={entry} />
+              <DiaryCard key={entry.id || entry.date} entry={entry} />
             ))}
           </div>
         )}

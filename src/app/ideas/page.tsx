@@ -56,10 +56,11 @@ function IdeaCard({ idea }: { idea: Idea }) {
 export default function IdeasPage() {
   const { ideas, add } = useIdeas();
   const [query, setQuery] = useState('');
-  const filtered = query.trim()
+  const q = query.trim().toLowerCase();
+  const filtered = q
     ? ideas.filter(i =>
-        i.title.toLowerCase().includes(query.toLowerCase()) ||
-        i.content.toLowerCase().includes(query.toLowerCase())
+        i.title.toLowerCase().includes(q) ||
+        i.content.toLowerCase().includes(q)
       )
     : ideas;
 
@@ -133,7 +134,7 @@ export default function IdeasPage() {
         ) : (
           <div>
             {filtered.map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} />
+              <IdeaCard key={idea.id || idea.createdAt} idea={idea} />
             ))}
           </div>
         )}

@@ -51,8 +51,9 @@ function MomentCard({ moment }: { moment: Moment }) {
 export default function MomentsPage() {
   const { moments, add } = useMoments();
   const [query, setQuery] = useState('');
-  const filtered = query.trim()
-    ? moments.filter(m => m.text.toLowerCase().includes(query.toLowerCase()))
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? moments.filter(m => m.text.toLowerCase().includes(q))
     : moments;
 
   useEffect(() => {
@@ -129,7 +130,7 @@ export default function MomentsPage() {
         ) : (
           <div>
             {filtered.map((m) => (
-              <MomentCard key={m.id} moment={m} />
+              <MomentCard key={m.id || m.createdAt} moment={m} />
             ))}
           </div>
         )}

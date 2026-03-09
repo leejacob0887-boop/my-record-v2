@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useDiary } from '@/lib/useDiary';
@@ -9,6 +10,16 @@ export default function DiaryDetailPage() {
   const router = useRouter();
   const { getById, remove } = useDiary();
   const entry = getById(id);
+  const [entryTags, setEntryTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!entry) return;
+    try {
+      const stored = localStorage.getItem('diary_tags_' + entry.date);
+      if (stored) setEntryTags(JSON.parse(stored));
+    } catch {}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry?.date]);
 
   if (!entry) {
     return (
@@ -78,6 +89,17 @@ export default function DiaryDetailPage() {
           <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-4">
             📅 {entry.date}
           </span>
+
+          {/* Tag chips */}
+          {entryTags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {entryTags.map(tag => (
+                <span key={tag} className="text-xs text-blue-500 bg-blue-50 border border-blue-100 rounded-full px-3 py-1">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )}
 
           {/* Divider */}
           <div className="border-t border-gray-100 mb-4" />

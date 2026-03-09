@@ -34,19 +34,35 @@ export default function DiaryNewPage() {
   const [emotionIndex, setEmotionIndex] = useState<number | null>(null);
   const [imageBase64, setImageBase64] = useState<string | undefined>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [tagOpen, setTagOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > 1.5 * 1024 * 1024) {
       alert('사진 크기는 1.5MB 이하여야 합니다.');
+      e.target.value = '';
       return;
     }
     const reader = new FileReader();
-    reader.onload = (ev) => setImageBase64(ev.target?.result as string);
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setImageBase64(reader.result);
+      }
+    };
     reader.readAsDataURL(file);
     e.target.value = '';
   };
+
+  const addTag = () => {
+    const t = tagInput.trim().replace(/^#/, '');
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
+
+  const removeTag = (tag: string) => setTags(prev => prev.filter(t => t !== tag));
 
   const handleSubmit = () => {
     if (!content.trim()) return;
@@ -56,6 +72,11 @@ export default function DiaryNewPage() {
       if (!ok) return;
     }
     save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
+    if (tags.length > 0) {
+      localStorage.setItem('diary_tags_' + dateStr, JSON.stringify(tags));
+    } else {
+      localStorage.removeItem('diary_tags_' + dateStr);
+    }
     router.push('/diary');
   };
 
@@ -63,168 +84,218 @@ export default function DiaryNewPage() {
     <main className="min-h-screen bg-[#FAF8F4]">
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-12 pb-3">
-        <button
-          onClick={() => router.back()}
-          className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
-          aria-label="뒤로가기"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-        <span className="text-base font-semibold text-gray-800">일기</span>
-        <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Date + Title */}
-      <div className="px-5 pb-4">
-        <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
-          <span>{dateLabel}</span>
-          <span>📅</span>
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 pt-12 pb-3">
+          <button
+            onClick={() => router.back()}
+            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
+            aria-label="뒤로가기"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <span className="text-base font-semibold text-gray-800">일기</span>
+          <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+          </button>
         </div>
-        <h1 className="text-2xl font-bold text-gray-800">오늘의 일기</h1>
-      </div>
 
-      {/* White card area */}
-      <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
+        {/* Date + Title */}
+        <div className="px-5 pb-4">
+          <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+            <span>{dateLabel}</span>
+            <span>📅</span>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800">오늘의 일기</h1>
+        </div>
 
-        {/* Title + Weather row */}
-        <div className="flex items-center border-b border-gray-100">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="오늘 하루의 제목 (선택)"
-            className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+        {/* White card area */}
+        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
+
+          {/* Title + Weather row */}
+          <div className="flex items-center border-b border-gray-100">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="오늘 하루의 제목 (선택)"
+              className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+            />
+            <div className="relative">
+              <button
+                onClick={() => setWeatherOpen((o) => !o)}
+                className="flex items-center gap-1 px-3 py-3 text-sm text-gray-500 hover:bg-gray-50 rounded-tr-2xl transition-colors"
+              >
+                <span>{WEATHERS[weatherIndex].icon}</span>
+                <span>{WEATHERS[weatherIndex].label}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {weatherOpen && (
+                <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-10 overflow-hidden">
+                  {WEATHERS.map((w, i) => (
+                    <button
+                      key={w.label}
+                      onClick={() => { setWeatherIndex(i); setWeatherOpen(false); }}
+                      className={`flex items-center gap-2 px-4 py-2.5 text-sm w-full text-left hover:bg-gray-50 transition-colors ${i === weatherIndex ? 'text-blue-500 font-medium' : 'text-gray-600'}`}
+                    >
+                      <span>{w.icon}</span>
+                      <span>{w.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Image preview */}
+          {imageBase64 && (
+            <div className="relative mx-4 mt-3 mb-1 flex-shrink-0">
+              <img
+                src={imageBase64}
+                alt=""
+                className="w-full max-h-48 object-cover rounded-xl block"
+              />
+              <button
+                onClick={() => setImageBase64(undefined)}
+                className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/70 transition-colors"
+                aria-label="사진 제거"
+              >×</button>
+            </div>
+          )}
+
+          {/* Content textarea */}
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="오늘 하루는 어땠나요?"
+            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
           />
-          {/* Weather selector */}
-          <div className="relative">
-            <button
-              onClick={() => setWeatherOpen((o) => !o)}
-              className="flex items-center gap-1 px-3 py-3 text-sm text-gray-500 hover:bg-gray-50 rounded-tr-2xl transition-colors"
-            >
-              <span>{WEATHERS[weatherIndex].icon}</span>
-              <span>{WEATHERS[weatherIndex].label}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round">
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-            {weatherOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-white rounded-xl shadow-lg border border-gray-100 z-10 overflow-hidden">
-                {WEATHERS.map((w, i) => (
-                  <button
-                    key={w.label}
-                    onClick={() => { setWeatherIndex(i); setWeatherOpen(false); }}
-                    className={`flex items-center gap-2 px-4 py-2.5 text-sm w-full text-left hover:bg-gray-50 transition-colors ${i === weatherIndex ? 'text-blue-500 font-medium' : 'text-gray-600'}`}
+
+        </div>
+
+        {/* Fixed bottom panel */}
+        <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
+          <div className="max-w-[430px] mx-auto px-4">
+
+            {/* Tag input row */}
+            {tagOpen && (
+              <div className="flex items-center gap-2 py-2.5 border-b border-gray-100">
+                <span className="text-[#4A90D9] text-sm font-medium">#</span>
+                <input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+                    if (e.key === 'Escape') setTagOpen(false);
+                  }}
+                  placeholder="태그 입력 후 Enter"
+                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  autoFocus
+                />
+                <button
+                  onClick={addTag}
+                  className="text-[#4A90D9] text-xs font-semibold hover:text-[#3A7FC9] transition-colors"
+                >
+                  추가
+                </button>
+              </div>
+            )}
+
+            {/* Tag chips row */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 py-2.5 border-b border-gray-100">
+                {tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100"
                   >
-                    <span>{w.icon}</span>
-                    <span>{w.label}</span>
-                  </button>
+                    #{tag}
+                    <button
+                      onClick={() => removeTag(tag)}
+                      className="text-blue-400 hover:text-blue-600 leading-none ml-0.5"
+                      aria-label={`${tag} 태그 삭제`}
+                    >×</button>
+                  </span>
                 ))}
               </div>
             )}
-          </div>
-        </div>
 
-        {/* Image preview */}
-        {imageBase64 && (
-          <div className="relative mx-4 mt-3">
-            <img src={imageBase64} alt="" className="w-full max-h-48 object-cover rounded-xl" />
-            <button
-              onClick={() => setImageBase64(undefined)}
-              className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/70 transition-colors"
-              aria-label="사진 제거"
-            >×</button>
-          </div>
-        )}
+            {/* Emotion picker */}
+            <div className="flex items-center gap-3 py-3 border-b border-gray-100">
+              {EMOTIONS.map((emoji, i) => (
+                <button
+                  key={emoji}
+                  onClick={() => setEmotionIndex(i === emotionIndex ? null : i)}
+                  className={`text-2xl transition-all ${emotionIndex === i ? 'scale-125' : 'opacity-50 hover:opacity-80'}`}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
 
-        {/* Content textarea */}
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="오늘 하루는 어땠나요?"
-          className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
-        />
-
-      </div>
-
-      {/* Fixed bottom panel: 감정 + 도구바 + 저장 버튼 */}
-      <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
-        <div className="max-w-[430px] mx-auto px-4">
-
-          {/* 1. Emotion picker */}
-          <div className="flex items-center gap-3 py-3 border-b border-gray-100">
-            {EMOTIONS.map((emoji, i) => (
-              <button
-                key={emoji}
-                onClick={() => setEmotionIndex(i === emotionIndex ? null : i)}
-                className={`text-2xl transition-all ${emotionIndex === i ? 'scale-125' : 'opacity-50 hover:opacity-80'}`}
-              >
-                {emoji}
-              </button>
-            ))}
-          </div>
-
-          {/* 2. Toolbar */}
-          <div className="flex items-center py-3 border-b border-gray-100">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-1.5 text-gray-400 hover:text-[#4A90D9] transition-colors"
-                aria-label="사진 추가"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
+            {/* Toolbar */}
+            <div className="flex items-center py-3 border-b border-gray-100">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-[#4A90D9] transition-colors"
+                  aria-label="사진 추가"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  <span className="text-xs font-medium">사진 추가</span>
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                <button
+                  onClick={() => setTagOpen(o => !o)}
+                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+                  aria-label="태그"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                    <line x1="7" y1="7" x2="7.01" y2="7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-gray-400 mx-auto">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span className="text-xs font-medium">사진 추가</span>
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
-              <button className="text-gray-400 hover:text-gray-600 transition-colors" aria-label="태그">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
-                  <line x1="7" y1="7" x2="7.01" y2="7" />
+                <span>작성 시간 {timeLabel}</span>
+              </div>
+              <button className="text-gray-300 hover:text-red-400 transition-colors" aria-label="삭제">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                  <path d="M10 11v6M14 11v6" />
+                  <path d="M9 6V4h6v2" />
                 </svg>
               </button>
             </div>
-            <div className="flex items-center gap-1 text-xs text-gray-400 mx-auto">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <circle cx="12" cy="12" r="10" />
-                <polyline points="12 6 12 12 16 14" />
-              </svg>
-              <span>작성 시간 {timeLabel}</span>
+
+            {/* Save button */}
+            <div className="py-3">
+              <button
+                onClick={handleSubmit}
+                disabled={!content.trim()}
+                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                저장
+              </button>
             </div>
-            <button className="text-gray-300 hover:text-red-400 transition-colors" aria-label="삭제">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-                <path d="M10 11v6M14 11v6" />
-                <path d="M9 6V4h6v2" />
-              </svg>
-            </button>
-          </div>
 
-          {/* 3. Save button */}
-          <div className="py-3">
-            <button
-              onClick={handleSubmit}
-              disabled={!content.trim()}
-              className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              저장
-            </button>
           </div>
-
         </div>
-      </div>
 
       </div>
     </main>

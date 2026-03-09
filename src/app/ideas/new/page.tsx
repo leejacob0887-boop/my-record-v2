@@ -19,11 +19,21 @@ export default function IdeaNewPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageBase64, setImageBase64] = useState<string | undefined>();
+  const [tagOpen, setTagOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+
+  const addTag = () => {
+    const t = tagInput.trim().replace(/^#/, '');
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    add({ title: title.trim(), content: content.trim(), imageBase64 });
+    const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
+    add({ title: title.trim(), content: content.trim() + tagStr, imageBase64 });
     router.push('/ideas');
   };
 
@@ -74,6 +84,47 @@ export default function IdeaNewPage() {
               required
             />
             <p className="text-right text-xs text-gray-400 mt-1">{content.length}/500</p>
+
+            {/* Tag chips */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {tags.map(tag => (
+                  <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100">
+                    #{tag}
+                    <button type="button" onClick={() => setTags(tags.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 leading-none ml-0.5">×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Tag input */}
+            {tagOpen && (
+              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100">
+                <span className="text-gray-400 text-sm">#</span>
+                <input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+                  placeholder="태그 입력 후 Enter"
+                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  autoFocus
+                />
+                <button type="button" onClick={addTag} className="text-blue-400 text-xs font-medium hover:text-blue-600 transition-colors">추가</button>
+              </div>
+            )}
+
+            {/* Tag button */}
+            <button
+              type="button"
+              onClick={() => setTagOpen(o => !o)}
+              className={`mt-2 flex items-center gap-1 text-xs transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                <line x1="7" y1="7" x2="7.01" y2="7" />
+              </svg>
+              태그 추가
+            </button>
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">

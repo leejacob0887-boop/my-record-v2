@@ -1,31 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
-import ImagePicker from '@/components/ImagePicker';
 
 export default function MomentNewPage() {
   const router = useRouter();
   const { add } = useMoments();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const today = new Date();
+  const dateStr = today.toISOString().slice(0, 10);
+  const timeLabel = today.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
   const [text, setText] = useState('');
   const [imageBase64, setImageBase64] = useState<string | undefined>();
+  const [tagOpen, setTagOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      alert('사진 크기는 1.5MB 이하여야 합니다.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => setImageBase64(ev.target?.result as string);
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  const addTag = () => {
+    const t = tagInput.trim().replace(/^#/, '');
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
+
+  const handleSubmit = () => {
     if (!text.trim()) return;
-    const today = new Date().toISOString().slice(0, 10);
-    add({ text: text.trim(), date: today, imageBase64 });
+    const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
+    add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
     router.push('/moments');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4]">
-      <div className="max-w-[430px] mx-auto px-5 flex flex-col min-h-screen">
+      <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}
-        <div className="flex items-center justify-between pt-12 pb-4">
+        <div className="flex items-center justify-between px-4 pt-12 pb-3">
           <button
             onClick={() => router.back()}
             className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
@@ -44,35 +69,114 @@ export default function MomentNewPage() {
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-            <label className="block text-xs text-gray-500 mb-2">지금 이 순간</label>
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="지금 무슨 생각을 하고 있나요?"
-              rows={5}
-              maxLength={500}
-              className="w-full text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none"
-              required
-            />
-            <p className="text-right text-xs text-gray-400 mt-1">{text.length}/500</p>
-          </div>
+        {/* White card area */}
+        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-            <label className="block text-xs text-gray-500 mb-2">사진</label>
-            <ImagePicker value={imageBase64} onChange={setImageBase64} />
-          </div>
+          {/* Image preview */}
+          {imageBase64 && (
+            <div className="relative mx-4 mt-3">
+              <img src={imageBase64} alt="" className="w-full max-h-48 object-cover rounded-xl" />
+              <button
+                onClick={() => setImageBase64(undefined)}
+                className="absolute top-2 right-2 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white text-xs hover:bg-black/70 transition-colors"
+                aria-label="사진 제거"
+              >×</button>
+            </div>
+          )}
 
-          <button
-            type="submit"
-            disabled={!text.trim()}
-            className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            기록하기
-          </button>
-        </form>
+          {/* Textarea */}
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="지금 무슨 생각을 하고 있나요?"
+            maxLength={500}
+            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
+          />
+          <p className="px-4 pb-2 text-right text-xs text-gray-400">{text.length}/500</p>
+
+          {/* Tag chips */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 px-4 pb-3">
+              {tags.map(tag => (
+                <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100">
+                  #{tag}
+                  <button type="button" onClick={() => setTags(tags.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 leading-none ml-0.5">×</button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Tag input */}
+          {tagOpen && (
+            <div className="flex items-center gap-2 px-4 pb-3 border-t border-gray-100 pt-3">
+              <span className="text-gray-400 text-sm">#</span>
+              <input
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
+                placeholder="태그 입력 후 Enter"
+                className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                autoFocus
+              />
+              <button type="button" onClick={addTag} className="text-blue-400 text-xs font-medium hover:text-blue-600 transition-colors">추가</button>
+            </div>
+          )}
+
+        </div>
+
+        {/* Fixed bottom panel */}
+        <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
+          <div className="max-w-[430px] mx-auto px-4">
+
+            {/* Toolbar */}
+            <div className="flex items-center py-3 border-b border-gray-100">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-[#4A90D9] transition-colors"
+                  aria-label="사진 추가"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  <span className="text-xs font-medium">사진 추가</span>
+                </button>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                <button
+                  onClick={() => setTagOpen(o => !o)}
+                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+                  aria-label="태그"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />
+                    <line x1="7" y1="7" x2="7.01" y2="7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-gray-400 ml-auto">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span>작성 시간 {timeLabel}</span>
+              </div>
+            </div>
+
+            {/* Save button */}
+            <div className="py-3">
+              <button
+                onClick={handleSubmit}
+                disabled={!text.trim()}
+                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                기록하기
+              </button>
+            </div>
+
+          </div>
+        </div>
 
       </div>
     </main>
