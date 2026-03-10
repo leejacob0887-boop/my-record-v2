@@ -83,7 +83,7 @@ export default function Home() {
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-800 text-center mb-4">나의 기록</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center mb-4">나의 기록</h1>
 
         {/* Today badge */}
         <div className={`text-center mb-5 text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
@@ -179,7 +179,7 @@ export default function Home() {
               alt="기록하는 일러스트"
               width={220}
               height={220}
-              className="object-contain w-full h-auto mix-blend-multiply"
+              className="object-contain w-full h-auto mix-blend-multiply dark:brightness-[0.85] dark:mix-blend-normal"
               priority
             />
           </div>
