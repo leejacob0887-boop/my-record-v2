@@ -2,7 +2,22 @@
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Skill(bkit:pdca)",
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev -p 3001)",
+      "Bash(sleep 4 && start http://localhost:3001)",
+      "Bash(netstat -ano | findstr \":3000\" | findstr LISTENING)",
+      "Bash(taskkill /PID 16456 /F)",
+      "Bash(cmd /c \"taskkill /PID 16456 /F\")",
+      "Bash(cmd /c \"taskkill /PID 16456 /F 2>&1\")",
+      "Bash(powershell -Command \"Stop-Process -Id 16456 -Force\")",
+      "Bash(powershell -Command \"Stop-Process -Id 24804 -Force\")",
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev --no-turbopack -p 3001)",
+      "Bash(sleep 5 && start http://localhost:3001/moments)",
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev --help 2>&1 | head -30)",
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev --webpack -p 3001)",
+      "Bash(start http://localhost:3001/moments)",
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npm install @supabase/supabase-js 2>&1 | tail -5)"
     ]
   }
 }
