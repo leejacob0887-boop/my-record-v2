@@ -63,6 +63,12 @@ export default function LoginPage() {
             <p className="text-xs text-red-500 text-center">{error}</p>
           )}
 
+          <div className="text-right -mt-1">
+            <Link href="/forgot-password" className="text-xs text-gray-400 hover:text-[#4A90D9] transition-colors">
+              비밀번호를 잊으셨나요?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={loading}

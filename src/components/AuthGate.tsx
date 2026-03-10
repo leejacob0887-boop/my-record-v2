@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 
-const PUBLIC_PATHS = ['/auth/login', '/auth/signup'];
+const PUBLIC_PATHS = ['/auth/login', '/auth/signup', '/forgot-password', '/reset-password'];
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
