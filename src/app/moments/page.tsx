@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Zap } from 'lucide-react';
 import { useMoments } from '@/lib/useMoments';
 import { Moment } from '@/lib/types';
 
@@ -34,13 +35,6 @@ function SkeletonList() {
   );
 }
 
-function BoltIcon() {
-  return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
 
 function SearchIcon() {
   return (
@@ -58,7 +52,7 @@ function MomentCard({ moment }: { moment: Moment }) {
       className="flex items-center gap-3 py-4 border-b border-gray-100 hover:bg-black/[0.02] transition-colors -mx-1 px-1 rounded-xl"
     >
       <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-        <BoltIcon />
+        <Zap size={36} color="#4A90D9" strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{moment.text}</p>

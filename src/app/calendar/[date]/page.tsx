@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BookOpen, Zap, Lightbulb } from 'lucide-react';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -10,27 +11,6 @@ const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="3" />
     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-  </svg>
-);
-
-const BookIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-  </svg>
-);
-
-const BoltIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-  </svg>
-);
-
-const BulbIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="9" y1="18" x2="15" y2="18" />
-    <line x1="10" y1="22" x2="14" y2="22" />
-    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14" />
   </svg>
 );
 
@@ -94,7 +74,7 @@ export default function CalendarDayPage() {
           {diary && (
             <section>
               <div className="flex items-center gap-1.5 mb-2 px-1">
-                <BookIcon />
+                <BookOpen size={16} color="#4A90D9" strokeWidth={2} />
                 <h2 className="text-xs font-semibold text-[#4A90D9]">일기</h2>
               </div>
               <Link
@@ -118,7 +98,7 @@ export default function CalendarDayPage() {
           {moments.length > 0 && (
             <section>
               <div className="flex items-center gap-1.5 mb-2 px-1">
-                <BoltIcon />
+                <Zap size={16} color="#4A90D9" strokeWidth={2} />
                 <h2 className="text-xs font-semibold text-[#4A90D9]">메모 ({moments.length})</h2>
               </div>
               <div className="space-y-2">
@@ -149,7 +129,7 @@ export default function CalendarDayPage() {
           {dayIdeas.length > 0 && (
             <section>
               <div className="flex items-center gap-1.5 mb-2 px-1">
-                <BulbIcon />
+                <Lightbulb size={16} color="#4A90D9" strokeWidth={2} />
                 <h2 className="text-xs font-semibold text-[#4A90D9]">아이디어 ({dayIdeas.length})</h2>
               </div>
               <div className="space-y-2">

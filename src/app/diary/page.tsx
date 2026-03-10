@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { BookOpen } from 'lucide-react';
 import { useDiary } from '@/lib/useDiary';
 import { DiaryEntry } from '@/lib/types';
 
@@ -23,14 +24,6 @@ const SAMPLES = [
   },
 ];
 
-function BookIcon() {
-  return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-    </svg>
-  );
-}
 
 function formatDateTime(date: string, createdAt: string): string {
   const d = new Date(createdAt);
@@ -71,7 +64,7 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
       className="flex items-center gap-3 py-4 border-b border-gray-100 hover:bg-black/[0.02] transition-colors -mx-1 px-1 rounded-xl"
     >
       <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-        <BookIcon />
+        <BookOpen size={36} color="#4A90D9" strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{entry.title}</p>

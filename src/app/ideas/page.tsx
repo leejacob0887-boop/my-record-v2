@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { Lightbulb } from 'lucide-react';
 import { useIdeas } from '@/lib/useIdeas';
 import { Idea } from '@/lib/types';
 
@@ -34,15 +35,6 @@ function SkeletonList() {
   );
 }
 
-function BulbIcon() {
-  return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="9" y1="18" x2="15" y2="18" />
-      <line x1="10" y1="22" x2="14" y2="22" />
-      <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14" />
-    </svg>
-  );
-}
 
 function SearchIcon() {
   return (
@@ -60,7 +52,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
       className="flex items-center gap-3 py-4 border-b border-gray-100 hover:bg-black/[0.02] transition-colors -mx-1 px-1 rounded-xl"
     >
       <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-        <BulbIcon />
+        <Lightbulb size={36} color="#4A90D9" strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{idea.title}</p>
