@@ -14,16 +14,43 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
+  const createDefaultData = async (userId: string) => {
+    const now = new Date();
+    const today = now.toISOString().slice(0, 10);
+    const yesterday = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
+    const twoDaysAgo = new Date(now.getTime() - 172800000).toISOString().slice(0, 10);
+    const ts = now.toISOString();
+
+    await Promise.all([
+      supabase.from('diary_entries').insert([
+        { id: crypto.randomUUID(), user_id: userId, date: twoDaysAgo, title: '오늘 감사한 일 3가지를 써보세요 🙏', content: '감사한 일들을 기록해보세요.', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, date: yesterday, title: '오늘 하루 어땠나요? ✏️', content: '하루를 돌아보며 자유롭게 써보세요.', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, date: today, title: '내일 하고 싶은 일은? 🌟', content: '내일의 나에게 하고 싶은 말을 적어보세요.', created_at: ts, updated_at: ts },
+      ]),
+      supabase.from('moments').insert([
+        { id: crypto.randomUUID(), user_id: userId, date: today, text: '오늘 가장 기억에 남는 순간 📸', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, date: today, text: '지금 이 순간 느끼는 감정은? 💭', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, date: today, text: '오늘 만난 사람, 먹은 것, 본 것 🎯', created_at: ts, updated_at: ts },
+      ]),
+      supabase.from('ideas').insert([
+        { id: crypto.randomUUID(), user_id: userId, title: '떠오르는 아이디어를 기록해보세요 💡', content: '아이디어를 자유롭게 적어보세요.', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, title: '해보고 싶은 것들 📝', content: '언젠가 꼭 해보고 싶은 것들을 적어보세요.', created_at: ts, updated_at: ts },
+        { id: crypto.randomUUID(), user_id: userId, title: '나만의 버킷리스트 🚀', content: '인생에서 이루고 싶은 것들을 적어보세요.', created_at: ts, updated_at: ts },
+      ]),
+    ]);
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     if (password !== confirm) { setError('비밀번호가 일치하지 않습니다.'); return; }
     if (password.length < 6) { setError('비밀번호는 6자 이상이어야 합니다.'); return; }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
     } else {
+      if (data.user) await createDefaultData(data.user.id);
       setDone(true);
       setTimeout(() => router.push('/auth/login'), 3000);
     }
