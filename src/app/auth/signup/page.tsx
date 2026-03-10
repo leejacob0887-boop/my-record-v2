@@ -15,6 +15,13 @@ export default function SignupPage() {
   const [done, setDone] = useState(false);
 
   const createDefaultData = async (userId: string) => {
+    // 이미 데이터가 있으면 중복 삽입 방지
+    const { count } = await supabase
+      .from('moments')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
+    if (count && count > 0) return;
+
     const now = new Date();
     const today = now.toISOString().slice(0, 10);
     const yesterday = new Date(now.getTime() - 86400000).toISOString().slice(0, 10);
