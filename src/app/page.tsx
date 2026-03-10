@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { BookOpen, Zap, Lightbulb, Calendar } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
@@ -40,6 +41,7 @@ function RecordCard({ icon, label, description, count, href }: RecordCardProps) 
 type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: string; href: string };
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
   const { entries } = useDiary();
   const { moments } = useMoments();
   const { ideas } = useIdeas();
@@ -179,7 +181,8 @@ export default function Home() {
               alt="기록하는 일러스트"
               width={220}
               height={220}
-              className="object-contain w-full h-auto mix-blend-multiply dark:brightness-[0.7] dark:mix-blend-normal"
+              className="object-contain w-full h-auto"
+              style={{ filter: resolvedTheme === 'dark' ? 'brightness(0.7)' : 'none', mixBlendMode: resolvedTheme === 'dark' ? 'normal' : 'multiply' }}
               priority
             />
           </div>
