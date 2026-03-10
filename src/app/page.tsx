@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { BookOpen, Zap, Lightbulb, Calendar } from 'lucide-react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -20,17 +21,17 @@ function RecordCard({ icon, label, description, count, href }: RecordCardProps) 
   return (
     <Link
       href={href}
-      className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all active:scale-95 flex flex-col gap-2"
+      className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-600 transition-all active:scale-95 flex flex-col gap-2"
     >
       <div className="flex items-start justify-between">
         {icon}
-        <span className="text-xs text-gray-400 bg-gray-50 rounded-full px-2 py-0.5 border border-gray-100">
+        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 rounded-full px-2 py-0.5 border border-gray-100 dark:border-gray-600">
           {count}개
         </span>
       </div>
       <div>
-        <p className="text-sm font-bold text-gray-800 mt-1">{label}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{description}</p>
+        <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mt-1">{label}</p>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{description}</p>
       </div>
     </Link>
   );
@@ -63,18 +64,12 @@ export default function Home() {
   }, [entries, moments, ideas]);
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Top bar */}
         <div className="flex items-center justify-between pt-12 pb-4">
-          <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="메뉴">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
+          <DarkModeToggle />
           <Link
             href="/settings"
             className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
@@ -149,20 +144,20 @@ export default function Home() {
               className="overflow-hidden transition-all duration-300 ease-in-out"
               style={{ maxHeight: recentOpen ? `${recentItems.length * 56}px` : '0px', opacity: recentOpen ? 1 : 0 }}
             >
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
                 {recentItems.map((item, idx) => (
                   <Link
                     key={idx}
                     href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="flex-shrink-0">
                       {item.type === 'diary' && <BookOpen size={18} color="#4A90D9" strokeWidth={1.8} />}
                       {item.type === 'moment' && <Zap size={18} color="#4A90D9" strokeWidth={1.8} />}
                       {item.type === 'idea' && <Lightbulb size={18} color="#4A90D9" strokeWidth={1.8} />}
                     </div>
-                    <p className="flex-1 text-sm text-gray-700 truncate">{item.label}</p>
-                    <p className="text-xs text-gray-400 flex-shrink-0">{item.date}</p>
+                    <p className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{item.label}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">{item.date}</p>
                   </Link>
                 ))}
               </div>
@@ -173,9 +168,9 @@ export default function Home() {
         {/* Illustration section */}
         <div className="flex flex-row items-end pt-2">
           <div className="flex-1 pb-8">
-            <p className="text-lg font-medium text-gray-600 leading-snug">
+            <p className="text-lg font-medium text-gray-600 dark:text-gray-400 leading-snug">
               생각은 사라지지만,<br />
-              <span className="font-bold text-gray-800">기록은 남습니다.</span>
+              <span className="font-bold text-gray-800 dark:text-gray-100">기록은 남습니다.</span>
             </p>
           </div>
           <div className="w-[52%] flex-shrink-0 -mr-5">

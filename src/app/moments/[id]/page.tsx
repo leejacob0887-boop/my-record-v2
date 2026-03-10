@@ -26,7 +26,7 @@ export default function MomentDetailPage() {
 
   if (!moment) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4]">
+      <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
         <div className="max-w-[430px] mx-auto px-5 pt-12">
           <button onClick={() => router.back()} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,7 +47,7 @@ export default function MomentDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
@@ -61,14 +61,14 @@ export default function MomentDetailPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">메모</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">메모</span>
           <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
           </Link>
         </div>
 
         {/* Content card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 mb-4">
           {moment.imageBase64 && (
             <img
               src={moment.imageBase64}
@@ -76,7 +76,7 @@ export default function MomentDetailPage() {
               className="w-full max-h-60 object-cover rounded-xl mb-4"
             />
           )}
-          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-7">{moment.text}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-7">{moment.text}</p>
           <div className="mt-4 pt-4 border-t border-gray-100">
             <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1">
               📅 {formatDateTime(moment.date, moment.createdAt)}

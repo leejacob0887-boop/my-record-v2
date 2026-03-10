@@ -30,7 +30,7 @@ export default function DiaryDetailPage() {
 
   if (!entry) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4] flex flex-col w-full">
+      <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900 flex flex-col w-full">
         <div className="flex items-center justify-between px-4 pt-12 pb-3">
           <button
             onClick={() => router.back()}
@@ -54,7 +54,7 @@ export default function DiaryDetailPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] flex flex-col w-full">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900 flex flex-col w-full">
 
       {/* Header */}
       <div className="max-w-[430px] mx-auto w-full flex items-center justify-between px-4 pt-12 pb-3">
@@ -78,7 +78,7 @@ export default function DiaryDetailPage() {
 
       {/* Content card */}
       <div className="flex-1 max-w-[430px] mx-auto w-full px-4 pb-28">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
 
           {/* Image */}
           {entry.imageBase64 && (
@@ -90,7 +90,7 @@ export default function DiaryDetailPage() {
           )}
 
           {/* Title */}
-          <h1 className="text-xl font-bold text-gray-800 mb-2">{entry.title}</h1>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">{entry.title}</h1>
 
           {/* Date badge */}
           <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-4">
@@ -112,12 +112,12 @@ export default function DiaryDetailPage() {
           <div className="border-t border-gray-100 mb-4" />
 
           {/* Content */}
-          <p className="text-sm text-gray-600 whitespace-pre-wrap leading-7">{entry.content}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-wrap leading-7">{entry.content}</p>
         </div>
       </div>
 
       {/* Action buttons - fixed bottom */}
-      <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 px-4 py-3">
+      <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700 px-4 py-3">
         <div className="max-w-[430px] mx-auto flex gap-3">
           <Link
             href={`/diary/${id}/edit`}

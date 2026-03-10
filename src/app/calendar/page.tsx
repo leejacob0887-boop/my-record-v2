@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpen, Zap, Lightbulb, CalendarDays } from 'lucide-react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -66,19 +67,13 @@ export default function CalendarPage() {
   while (cells.length % 7 !== 0) cells.push(null);
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">
-          <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="메뉴">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
-          <span className="text-base font-semibold text-gray-800">캘린더</span>
+          <DarkModeToggle />
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">캘린더</span>
           <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -99,7 +94,7 @@ export default function CalendarPage() {
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
-            <span className="text-base font-bold text-gray-800">{monthLabel}</span>
+            <span className="text-base font-bold text-gray-800 dark:text-gray-100">{monthLabel}</span>
             <button
               onClick={nextMonth}
               className="w-8 h-8 flex items-center justify-center rounded-xl text-gray-500 hover:bg-black/5 transition-colors"
@@ -122,9 +117,9 @@ export default function CalendarPage() {
         </div>
 
         {/* Calendar card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-4">
           {/* Day-of-week headers */}
-          <div className="grid grid-cols-7 border-b border-gray-50">
+          <div className="grid grid-cols-7 border-b border-gray-50 dark:border-gray-700">
             {DAYS.map((d, i) => (
               <div
                 key={d}
@@ -154,10 +149,10 @@ export default function CalendarPage() {
                   key={dateStr}
                   onClick={() => setSelectedDate(dateStr)}
                   className={`aspect-square flex flex-col items-center justify-center gap-0.5 transition-colors rounded-xl
-                    ${isToday ? 'bg-[#4A90D9] text-white' : 'hover:bg-gray-50'}
+                    ${isToday ? 'bg-[#4A90D9] text-white' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}
                     ${!isToday && col === 0 ? 'text-red-400' : ''}
                     ${!isToday && col === 6 ? 'text-blue-400' : ''}
-                    ${!isToday && col > 0 && col < 6 ? 'text-gray-700' : ''}
+                    ${!isToday && col > 0 && col < 6 ? 'text-gray-700 dark:text-gray-200' : ''}
                   `}
                 >
                   <span className="text-sm font-medium leading-none">{day}</span>
@@ -192,9 +187,9 @@ export default function CalendarPage() {
             onClick={() => setSelectedDate(null)}
           />
           <div className="fixed bottom-16 left-0 right-0 z-50 flex justify-center px-4">
-            <div className="w-full max-w-[430px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-              <div className="px-5 pt-4 pb-3 border-b border-gray-50">
-                <p className="text-sm font-semibold text-gray-800">
+            <div className="w-full max-w-[430px] bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="px-5 pt-4 pb-3 border-b border-gray-50 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
                 </p>
                 <p className="text-xs text-gray-400 mt-0.5">어떤 기록을 남길까요?</p>
@@ -202,37 +197,37 @@ export default function CalendarPage() {
               <div className="p-3 space-y-1">
                 <button
                   onClick={() => router.push(`/diary/new?date=${selectedDate}`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
                   <BookOpen size={20} color="#4A90D9" strokeWidth={1.8} />
                   <div>
-                    <p className="text-sm font-medium text-gray-800">일기 쓰기</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">일기 쓰기</p>
                     <p className="text-xs text-gray-400">하루를 기록해요</p>
                   </div>
                 </button>
                 <button
                   onClick={() => router.push(`/moments/new?date=${selectedDate}`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
                   <Zap size={20} color="#4A90D9" strokeWidth={1.8} />
                   <div>
-                    <p className="text-sm font-medium text-gray-800">메모 쓰기</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">메모 쓰기</p>
                     <p className="text-xs text-gray-400">짧은 메모를 남겨요</p>
                   </div>
                 </button>
                 <button
                   onClick={() => router.push(`/ideas/new?date=${selectedDate}`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
                   <Lightbulb size={20} color="#4A90D9" strokeWidth={1.8} />
                   <div>
-                    <p className="text-sm font-medium text-gray-800">아이디어 쓰기</p>
+                    <p className="text-sm font-medium text-gray-800 dark:text-gray-100">아이디어 쓰기</p>
                     <p className="text-xs text-gray-400">번뜩이는 생각을 기록해요</p>
                   </div>
                 </button>
                 <button
                   onClick={() => router.push(`/calendar/${selectedDate}`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
                   <CalendarDays size={20} color="#9CA3AF" strokeWidth={1.8} />
                   <div>

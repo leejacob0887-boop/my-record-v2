@@ -78,7 +78,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
@@ -92,12 +92,12 @@ export default function SettingsPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">설정</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">설정</span>
           <div className="w-9 h-9" />
         </div>
 
         {/* PIN section */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 mb-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -106,7 +106,7 @@ export default function SettingsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-800">앱 잠금</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">앱 잠금</p>
               <p className="text-xs text-gray-400 mt-0.5">PIN 4자리로 앱을 보호하세요</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Backup section */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 mb-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -141,7 +141,7 @@ export default function SettingsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-800">데이터 백업</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">데이터 백업</p>
               <p className="text-xs text-gray-400 mt-0.5">기록을 JSON 파일로 내보내고 가져옵니다</p>
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Account section */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-5 mb-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -181,7 +181,7 @@ export default function SettingsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-sm font-semibold text-gray-800">계정</p>
+              <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">계정</p>
               <p className="text-xs text-gray-400 mt-0.5">
                 {user ? user.email : '로그인하면 클라우드에 저장됩니다'}
               </p>

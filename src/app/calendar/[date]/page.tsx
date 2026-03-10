@@ -35,7 +35,7 @@ export default function CalendarDayPage() {
   const hasAny = diary || moments.length > 0 || dayIdeas.length > 0;
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
@@ -49,7 +49,7 @@ export default function CalendarDayPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">{displayDate}</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">{displayDate}</span>
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
           </button>
@@ -79,7 +79,7 @@ export default function CalendarDayPage() {
               </div>
               <Link
                 href={`/diary/${diary.id}`}
-                className="block bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+                className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 hover:shadow-md transition-shadow"
               >
                 {diary.imageBase64 && (
                   <img
@@ -88,7 +88,7 @@ export default function CalendarDayPage() {
                     className="w-full h-32 object-cover rounded-xl mb-3"
                   />
                 )}
-                <p className="text-sm font-semibold text-gray-800">{diary.title}</p>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{diary.title}</p>
                 <p className="text-xs text-gray-400 mt-1 line-clamp-2">{diary.content}</p>
               </Link>
             </section>
@@ -106,7 +106,7 @@ export default function CalendarDayPage() {
                   <Link
                     key={m.id}
                     href={`/moments/${m.id}`}
-                    className="block bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+                    className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 hover:shadow-md transition-shadow"
                   >
                     {m.imageBase64 && (
                       <img
@@ -115,7 +115,7 @@ export default function CalendarDayPage() {
                         className="w-full h-24 object-cover rounded-xl mb-2"
                       />
                     )}
-                    <p className="text-sm text-gray-700 line-clamp-2">{m.text}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">{m.text}</p>
                     <p className="text-xs text-gray-400 mt-1">
                       {new Date(m.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
                     </p>
@@ -137,9 +137,9 @@ export default function CalendarDayPage() {
                   <Link
                     key={i.id}
                     href={`/ideas/${i.id}`}
-                    className="block bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow"
+                    className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-4 hover:shadow-md transition-shadow"
                   >
-                    <p className="text-sm font-semibold text-gray-800">{i.title}</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{i.title}</p>
                     <p className="text-xs text-gray-400 mt-1 line-clamp-2">{i.content}</p>
                   </Link>
                 ))}

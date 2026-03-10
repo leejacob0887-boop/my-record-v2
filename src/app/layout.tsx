@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "next-themes";
 import BottomTabBar from "@/components/BottomTabBar";
 import PinGate from "@/components/PinGate";
 import AuthGate from "@/components/AuthGate";
@@ -16,24 +17,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
         />
       </head>
-      <body className="antialiased bg-[#FAF8F4]">
-        <AuthProvider>
-          <AuthGate>
-            <PinGate>
-              <div className="pb-16">
-                {children}
-              </div>
-              <BottomTabBar />
-            </PinGate>
-          </AuthGate>
-        </AuthProvider>
+      <body className="antialiased bg-[#FAF8F4] dark:bg-gray-900">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <AuthProvider>
+            <AuthGate>
+              <PinGate>
+                <div className="pb-16">
+                  {children}
+                </div>
+                <BottomTabBar />
+              </PinGate>
+            </AuthGate>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

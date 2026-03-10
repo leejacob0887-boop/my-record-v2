@@ -80,7 +80,7 @@ export default function DiaryNewPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}
@@ -94,7 +94,7 @@ export default function DiaryNewPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">일기</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">일기</span>
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -115,11 +115,11 @@ export default function DiaryNewPage() {
             />
             <span>📅</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">오늘의 일기</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">오늘의 일기</h1>
         </div>
 
         {/* White card area */}
-        <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
+        <div className="mx-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col flex-1">
 
           {/* Title + Weather row */}
           <div className="flex items-center border-b border-gray-100">
@@ -185,7 +185,7 @@ export default function DiaryNewPage() {
         </div>
 
         {/* Fixed bottom panel */}
-        <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
+        <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-10">
           <div className="max-w-[430px] mx-auto px-4">
 
             {/* Tag input row */}

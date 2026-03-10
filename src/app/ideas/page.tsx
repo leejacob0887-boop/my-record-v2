@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Lightbulb } from 'lucide-react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 import { useIdeas } from '@/lib/useIdeas';
 import { Idea } from '@/lib/types';
 
@@ -55,7 +56,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
         <Lightbulb size={36} color="#4A90D9" strokeWidth={1.5} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-800 truncate">{idea.title}</p>
+        <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{idea.title}</p>
         <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(idea.date ?? idea.createdAt.slice(0, 10), idea.createdAt)}</p>
         {idea.content && (
           <p className="text-xs text-gray-400 mt-0.5 truncate">{idea.content}</p>
@@ -104,18 +105,12 @@ export default function IdeasPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">
-          <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="메뉴">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="21" y2="6" />
-              <line x1="3" y1="12" x2="21" y2="12" />
-              <line x1="3" y1="18" x2="21" y2="18" />
-            </svg>
-          </button>
+          <DarkModeToggle />
           <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
@@ -126,7 +121,7 @@ export default function IdeasPage() {
 
         {/* Title */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">아이디어</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">아이디어</h1>
           <p className="text-sm text-gray-400 mt-1">떠오르는 생각들</p>
         </div>
 

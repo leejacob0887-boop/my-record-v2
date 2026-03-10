@@ -19,7 +19,7 @@ export default function DiaryEditPage() {
 
   if (!entry) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4]">
+      <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
         <div className="max-w-[430px] mx-auto px-5 pt-12">
           <button onClick={() => router.back()} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +48,7 @@ export default function DiaryEditPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
@@ -62,14 +62,14 @@ export default function DiaryEditPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">일기 수정</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">일기 수정</span>
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
           </button>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
           <DiaryForm initial={entry} initialTags={existingTags} onSubmit={handleSubmit} />
         </div>
 

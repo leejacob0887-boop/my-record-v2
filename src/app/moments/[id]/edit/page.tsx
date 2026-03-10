@@ -31,7 +31,7 @@ function MomentEditForm({ initial, onSubmit }: {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <label className="block text-xs text-gray-500 mb-2">날짜</label>
         <input
           type="date"
@@ -41,7 +41,7 @@ function MomentEditForm({ initial, onSubmit }: {
           className="text-sm text-gray-700 bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-200 focus:border-[#4A90D9] transition-colors"
         />
       </div>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <label className="block text-xs text-gray-500 mb-2">메모</label>
         <textarea
           value={text}
@@ -54,7 +54,7 @@ function MomentEditForm({ initial, onSubmit }: {
         />
         <p className="text-right text-xs text-gray-400 mt-1">{text.length}/500</p>
       </div>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
         <label className="block text-xs text-gray-500 mb-2">사진</label>
         <ImagePicker value={imageBase64} onChange={setImageBase64} />
       </div>
@@ -85,7 +85,7 @@ export default function MomentEditPage() {
 
   if (!moment) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4]">
+      <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
         <div className="max-w-[430px] mx-auto px-5 pt-12">
           <button onClick={() => router.back()} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -104,7 +104,7 @@ export default function MomentEditPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4]">
+    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-5">
 
         {/* Header */}
@@ -118,7 +118,7 @@ export default function MomentEditPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">순간 수정</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100">순간 수정</span>
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
           </button>
