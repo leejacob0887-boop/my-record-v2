@@ -179,7 +179,7 @@ export default function Home() {
               alt="기록하는 일러스트"
               width={220}
               height={220}
-              className="object-contain w-full h-auto mix-blend-multiply dark:brightness-[0.85] dark:mix-blend-normal"
+              className="object-contain w-full h-auto mix-blend-multiply dark:brightness-[0.7] dark:mix-blend-normal"
               priority
             />
           </div>
