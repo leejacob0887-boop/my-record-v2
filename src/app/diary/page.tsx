@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useDiary } from '@/lib/useDiary';
 import { DiaryEntry } from '@/lib/types';
@@ -32,6 +32,29 @@ function BookIcon() {
   );
 }
 
+function formatDateTime(date: string, createdAt: string): string {
+  const d = new Date(createdAt);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${date} ${hh}:${mm}`;
+}
+
+function SkeletonList() {
+  return (
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex items-center gap-3 py-4 border-b border-gray-100">
+          <div className="w-10 h-10 bg-gray-200 rounded-xl flex-shrink-0" />
+          <div className="flex-1">
+            <div className="h-3.5 bg-gray-200 rounded-full w-2/3 mb-2" />
+            <div className="h-2.5 bg-gray-100 rounded-full w-1/3" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -52,7 +75,7 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{entry.title}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{entry.date}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(entry.date, entry.createdAt)}</p>
         {entry.content && (
           <p className="text-xs text-gray-400 mt-0.5 truncate">{entry.content}</p>
         )}
@@ -65,16 +88,41 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
 }
 
 export default function DiaryPage() {
-  const { entries, save } = useDiary();
+  const { entries, save, isLoading } = useDiary();
   const [query, setQuery] = useState('');
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const q = query.trim().toLowerCase();
   const validEntries = entries.filter(e => e.type === 'diary' && typeof e.title === 'string');
-  const filtered = q
-    ? validEntries.filter(e =>
-        e.title.toLowerCase().includes(q) ||
-        (e.content ?? '').toLowerCase().includes(q)
-      )
-    : validEntries;
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    validEntries.forEach(e => {
+      try {
+        const stored = localStorage.getItem('diary_tags_' + e.date);
+        if (stored) (JSON.parse(stored) as string[]).forEach(t => tagSet.add(t));
+      } catch {}
+    });
+    return Array.from(tagSet);
+  }, [validEntries]);
+
+  const filtered = useMemo(() => {
+    let result = q
+      ? validEntries.filter(e =>
+          e.title.toLowerCase().includes(q) ||
+          (e.content ?? '').toLowerCase().includes(q)
+        )
+      : validEntries;
+    if (tagFilter) {
+      result = result.filter(e => {
+        try {
+          const stored = localStorage.getItem('diary_tags_' + e.date);
+          if (stored) return (JSON.parse(stored) as string[]).includes(tagFilter);
+        } catch {}
+        return false;
+      });
+    }
+    return result;
+  }, [validEntries, q, tagFilter]);
 
   useEffect(() => {
     if (localStorage.getItem('diary_samples_initialized')) return;
@@ -129,6 +177,27 @@ export default function DiaryPage() {
           )}
         </div>
 
+        {/* Tag filter */}
+        {allTags.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 mb-4" style={{ scrollbarWidth: 'none' }}>
+            <button
+              onClick={() => setTagFilter(null)}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === null ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+            >
+              전체
+            </button>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === tag ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* New diary button */}
         <Link
           href="/diary/new"
@@ -138,7 +207,9 @@ export default function DiaryPage() {
         </Link>
 
         {/* Diary list */}
-        {validEntries.length === 0 ? (
+        {isLoading ? (
+          <SkeletonList />
+        ) : validEntries.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">아직 일기가 없어요</p>
             <p className="text-gray-300 text-xs mt-1">첫 번째 일기를 써보세요</p>

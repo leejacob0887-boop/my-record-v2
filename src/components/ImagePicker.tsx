@@ -17,8 +17,8 @@ export default function ImagePicker({ value, onChange }: ImagePickerProps) {
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('사진 크기가 너무 큽니다. 5MB 이하 사진을 선택해주세요.');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('사진 크기가 너무 큽니다. 20MB 이하 사진을 선택해주세요.');
       e.target.value = '';
       return;
     }

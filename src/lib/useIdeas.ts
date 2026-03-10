@@ -18,6 +18,7 @@ function mapFromDB(row: Record<string, unknown>): Idea {
   return {
     id: row.id as string,
     type: 'idea',
+    date: (row.date as string) ?? (row.created_at as string).slice(0, 10),
     title: row.title as string,
     content: row.content as string,
     imageBase64: (row.image_base64 as string) ?? undefined,
@@ -29,12 +30,14 @@ function mapFromDB(row: Record<string, unknown>): Idea {
 export function useIdeas() {
   const { user, loading } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (loading) return;
     if (!user) {
       storageSet(KEY, []);
       setIdeas([]);
+      setIsLoading(false);
       return;
     }
     supabase
@@ -48,7 +51,8 @@ export function useIdeas() {
           setIdeas(mapped);
           storageSet(KEY, mapped);
         }
-      });
+        setIsLoading(false);
+      }, () => setIsLoading(false));
   }, [user, loading]);
 
   const getById = useCallback(
@@ -57,11 +61,12 @@ export function useIdeas() {
   );
 
   const add = useCallback(
-    async (data: { title: string; content: string; imageBase64?: string }) => {
+    async (data: { title: string; content: string; date?: string; imageBase64?: string }) => {
       const now = new Date().toISOString();
       const newIdea: Idea = {
         id: crypto.randomUUID(),
         type: 'idea',
+        date: data.date ?? now.slice(0, 10),
         createdAt: now,
         updatedAt: now,
         ...data,
@@ -77,6 +82,7 @@ export function useIdeas() {
         await supabase.from('ideas').insert({
           id: newIdea.id,
           user_id: user.id,
+          date: newIdea.date,
           title: newIdea.title,
           content: newIdea.content,
           image_base64: newIdea.imageBase64 ?? null,
@@ -89,7 +95,7 @@ export function useIdeas() {
   );
 
   const update = useCallback(
-    async (id: string, data: Partial<Pick<Idea, 'title' | 'content' | 'imageBase64'>>) => {
+    async (id: string, data: Partial<Pick<Idea, 'title' | 'content' | 'date' | 'imageBase64'>>) => {
       const now = new Date().toISOString();
       const current = storageGet<Idea[]>(KEY) ?? [];
       const updated = current.map((i) =>
@@ -102,6 +108,7 @@ export function useIdeas() {
         await supabase.from('ideas').update({
           title: data.title,
           content: data.content,
+          date: data.date,
           image_base64: data.imageBase64 ?? null,
           updated_at: now,
         }).eq('id', id).eq('user_id', user.id);
@@ -127,5 +134,5 @@ export function useIdeas() {
     [user]
   );
 
-  return { ideas, getById, add, update, remove };
+  return { ideas, getById, add, update, remove, isLoading };
 }

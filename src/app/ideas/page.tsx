@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useIdeas } from '@/lib/useIdeas';
 import { Idea } from '@/lib/types';
@@ -10,6 +10,29 @@ const SAMPLES = [
   { title: '오늘 떠오른 생각 ✨', content: '작은 아이디어도 기록해두면 나중에 큰 가치가 된다.' },
   { title: '버킷리스트 🎯',       content: '언젠가 꼭 해보고 싶은 것들을 적어보자.' },
 ];
+
+function formatDateTime(date: string, createdAt: string): string {
+  const d = new Date(createdAt);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${date} ${hh}:${mm}`;
+}
+
+function SkeletonList() {
+  return (
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex items-center gap-3 py-4 border-b border-gray-100">
+          <div className="w-10 h-10 bg-gray-200 rounded-xl flex-shrink-0" />
+          <div className="flex-1">
+            <div className="h-3.5 bg-gray-200 rounded-full w-2/3 mb-2" />
+            <div className="h-2.5 bg-gray-100 rounded-full w-1/3" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function BulbIcon() {
   return (
@@ -41,7 +64,7 @@ function IdeaCard({ idea }: { idea: Idea }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{idea.title}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{idea.createdAt.slice(0, 10)}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(idea.date ?? idea.createdAt.slice(0, 10), idea.createdAt)}</p>
         {idea.content && (
           <p className="text-xs text-gray-400 mt-0.5 truncate">{idea.content}</p>
         )}
@@ -53,16 +76,32 @@ function IdeaCard({ idea }: { idea: Idea }) {
   );
 }
 
+function extractTags(text: string): string[] {
+  return (text.match(/#([^\s#]+)/g) ?? []).map(t => t.slice(1));
+}
+
 export default function IdeasPage() {
-  const { ideas, add } = useIdeas();
+  const { ideas, add, isLoading } = useIdeas();
   const [query, setQuery] = useState('');
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const q = query.trim().toLowerCase();
-  const filtered = q
-    ? ideas.filter(i =>
-        i.title.toLowerCase().includes(q) ||
-        i.content.toLowerCase().includes(q)
-      )
-    : ideas;
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    ideas.forEach(i => extractTags(i.content).forEach(t => tagSet.add(t)));
+    return Array.from(tagSet);
+  }, [ideas]);
+
+  const filtered = useMemo(() => {
+    let result = q
+      ? ideas.filter(i =>
+          i.title.toLowerCase().includes(q) ||
+          i.content.toLowerCase().includes(q)
+        )
+      : ideas;
+    if (tagFilter) result = result.filter(i => extractTags(i.content).includes(tagFilter));
+    return result;
+  }, [ideas, q, tagFilter]);
 
   useEffect(() => {
     if (localStorage.getItem('ideas_samples_initialized')) return;
@@ -113,6 +152,27 @@ export default function IdeasPage() {
           )}
         </div>
 
+        {/* Tag filter */}
+        {allTags.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 mb-4" style={{ scrollbarWidth: 'none' }}>
+            <button
+              onClick={() => setTagFilter(null)}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === null ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+            >
+              전체
+            </button>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === tag ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* New button */}
         <Link
           href="/ideas/new"
@@ -122,7 +182,9 @@ export default function IdeasPage() {
         </Link>
 
         {/* List */}
-        {ideas.length === 0 ? (
+        {isLoading ? (
+          <SkeletonList />
+        ) : ideas.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">아직 아이디어가 없어요</p>
             <p className="text-gray-300 text-xs mt-1">첫 번째 아이디어를 기록해보세요</p>

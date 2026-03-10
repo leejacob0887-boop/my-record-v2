@@ -11,6 +11,13 @@ const SettingsIcon = () => (
   </svg>
 );
 
+function formatDateTime(date: string, createdAt: string): string {
+  const d = new Date(createdAt);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${date} ${hh}:${mm}`;
+}
+
 export default function MomentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -72,7 +79,7 @@ export default function MomentDetailPage() {
           <p className="text-sm text-gray-700 whitespace-pre-wrap leading-7">{moment.text}</p>
           <div className="mt-4 pt-4 border-t border-gray-100">
             <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1">
-              📅 {moment.date}
+              📅 {formatDateTime(moment.date, moment.createdAt)}
             </span>
           </div>
         </div>

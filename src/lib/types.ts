@@ -20,6 +20,7 @@ export interface Moment extends BaseRecord {
 
 export interface Idea extends BaseRecord {
   type: 'idea';
+  date: string; // 'YYYY-MM-DD'
   title: string;
   content: string;
 }

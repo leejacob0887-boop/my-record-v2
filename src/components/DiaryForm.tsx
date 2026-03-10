@@ -15,11 +15,13 @@ export default function DiaryForm({ initial, onSubmit }: DiaryFormProps) {
   const [title, setTitle] = useState(initial?.title ?? '');
   const [content, setContent] = useState(initial?.content ?? '');
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial?.imageBase64);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
-    onSubmit({ date, title: title.trim(), content: content.trim(), imageBase64 });
+    if (!title.trim() || !content.trim() || saving) return;
+    setSaving(true);
+    await onSubmit({ date, title: title.trim(), content: content.trim(), imageBase64 });
   };
 
   return (
@@ -61,9 +63,18 @@ export default function DiaryForm({ initial, onSubmit }: DiaryFormProps) {
       </div>
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white rounded-xl py-3 text-sm font-medium hover:bg-blue-600 transition-colors"
+        disabled={saving}
+        className="w-full bg-blue-500 text-white rounded-xl py-3 text-sm font-medium hover:bg-blue-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        저장
+        {saving ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            저장 중...
+          </>
+        ) : '저장'}
       </button>
     </form>
   );

@@ -39,6 +39,7 @@ function mapFromDB(row: Record<string, unknown>): DiaryEntry {
 export function useDiary() {
   const { user, loading } = useAuth();
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (loading) return;
@@ -46,6 +47,7 @@ export function useDiary() {
       // 로그아웃 시 LocalStorage 초기화 후 빈 배열
       getAllDiaryKeys().forEach(k => storageRemove(k));
       setEntries([]);
+      setIsLoading(false);
       return;
     }
     supabase
@@ -60,7 +62,8 @@ export function useDiary() {
           setEntries(mapped);
           mapped.forEach(e => storageSet(`${PREFIX}${e.date}`, e));
         }
-      });
+        setIsLoading(false);
+      }, () => setIsLoading(false));
   }, [user, loading]);
 
   const getTodayEntry = useCallback((): DiaryEntry | undefined => {
@@ -130,5 +133,5 @@ export function useDiary() {
     [entries, user]
   );
 
-  return { entries, getTodayEntry, getByDate, getById, save, remove };
+  return { entries, getTodayEntry, getByDate, getById, save, remove, isLoading };
 }

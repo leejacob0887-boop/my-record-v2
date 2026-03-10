@@ -13,20 +13,34 @@ const SettingsIcon = () => (
 );
 
 function MomentEditForm({ initial, onSubmit }: {
-  initial: { text: string; imageBase64?: string };
-  onSubmit: (data: { text: string; imageBase64?: string }) => void | Promise<void>;
+  initial: { text: string; date: string; imageBase64?: string };
+  onSubmit: (data: { text: string; date: string; imageBase64?: string }) => void | Promise<void>;
 }) {
+  const todayStr = new Date().toISOString().slice(0, 10);
   const [text, setText] = useState(initial.text);
+  const [date, setDate] = useState(initial.date);
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial.imageBase64);
+  const [saving, setSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text.trim()) return;
-    onSubmit({ text: text.trim(), imageBase64 });
+    if (!text.trim() || saving) return;
+    setSaving(true);
+    await onSubmit({ text: text.trim(), date, imageBase64 });
   };
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+        <label className="block text-xs text-gray-500 mb-2">날짜</label>
+        <input
+          type="date"
+          value={date}
+          max={todayStr}
+          onChange={e => setDate(e.target.value)}
+          className="text-sm text-gray-700 bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-200 focus:border-[#4A90D9] transition-colors"
+        />
+      </div>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <label className="block text-xs text-gray-500 mb-2">지금 이 순간</label>
         <textarea
@@ -46,10 +60,18 @@ function MomentEditForm({ initial, onSubmit }: {
       </div>
       <button
         type="submit"
-        disabled={!text.trim()}
-        className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        disabled={!text.trim() || saving}
+        className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        저장
+        {saving ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            저장 중...
+          </>
+        ) : '저장'}
       </button>
     </form>
   );
@@ -76,7 +98,7 @@ export default function MomentEditPage() {
     );
   }
 
-  const handleSubmit = async (data: { text: string; imageBase64?: string }) => {
+  const handleSubmit = async (data: { text: string; date: string; imageBase64?: string }) => {
     await update(id, data);
     router.push(`/moments/${id}`);
   };
@@ -103,7 +125,7 @@ export default function MomentEditPage() {
         </div>
 
         {/* Form */}
-        <MomentEditForm initial={moment} onSubmit={handleSubmit} />
+        <MomentEditForm initial={{ text: moment.text, date: moment.date, imageBase64: moment.imageBase64 }} onSubmit={handleSubmit} />
 
       </div>
     </main>

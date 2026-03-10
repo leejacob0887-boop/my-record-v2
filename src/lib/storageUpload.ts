@@ -10,7 +10,10 @@ export async function uploadImage(file: File, userId: string): Promise<string> {
     cacheControl: '3600',
     upsert: false,
   });
-  if (error) throw error;
+  if (error) {
+    console.error('[uploadImage] Supabase Storage error:', error);
+    throw error;
+  }
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }

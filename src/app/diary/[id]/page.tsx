@@ -5,6 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useDiary } from '@/lib/useDiary';
 
+function formatDateTime(date: string, createdAt: string): string {
+  const d = new Date(createdAt);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${date} ${hh}:${mm}`;
+}
+
 export default function DiaryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -59,7 +66,7 @@ export default function DiaryDetailPage() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          <span className="text-sm text-gray-600">{entry.date}</span>
+          <span className="text-sm text-gray-600">{formatDateTime(entry.date, entry.createdAt)}</span>
         </button>
         <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -87,7 +94,7 @@ export default function DiaryDetailPage() {
 
           {/* Date badge */}
           <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-4">
-            📅 {entry.date}
+            📅 {formatDateTime(entry.date, entry.createdAt)}
           </span>
 
           {/* Tag chips */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useMoments } from '@/lib/useMoments';
 import { Moment } from '@/lib/types';
@@ -10,6 +10,29 @@ const SAMPLES = [
   { daysAgo: 1, text: '커피 한 잔의 여유 ☕' },
   { daysAgo: 0, text: '오늘 배운 것 하나 😊' },
 ];
+
+function formatDateTime(date: string, createdAt: string): string {
+  const d = new Date(createdAt);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${date} ${hh}:${mm}`;
+}
+
+function SkeletonList() {
+  return (
+    <div className="animate-pulse">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex items-center gap-3 py-4 border-b border-gray-100">
+          <div className="w-10 h-10 bg-gray-200 rounded-xl flex-shrink-0" />
+          <div className="flex-1">
+            <div className="h-3.5 bg-gray-200 rounded-full w-2/3 mb-2" />
+            <div className="h-2.5 bg-gray-100 rounded-full w-1/3" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function BoltIcon() {
   return (
@@ -39,7 +62,7 @@ function MomentCard({ moment }: { moment: Moment }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 truncate">{moment.text}</p>
-        <p className="text-xs text-gray-400 mt-0.5">{moment.date}</p>
+        <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(moment.date, moment.createdAt)}</p>
       </div>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
         <polyline points="9 18 15 12 9 6" />
@@ -48,13 +71,27 @@ function MomentCard({ moment }: { moment: Moment }) {
   );
 }
 
+function extractTags(text: string): string[] {
+  return (text.match(/#([^\s#]+)/g) ?? []).map(t => t.slice(1));
+}
+
 export default function MomentsPage() {
-  const { moments, add } = useMoments();
+  const { moments, add, isLoading } = useMoments();
   const [query, setQuery] = useState('');
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const q = query.trim().toLowerCase();
-  const filtered = q
-    ? moments.filter(m => m.text.toLowerCase().includes(q))
-    : moments;
+
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    moments.forEach(m => extractTags(m.text).forEach(t => tagSet.add(t)));
+    return Array.from(tagSet);
+  }, [moments]);
+
+  const filtered = useMemo(() => {
+    let result = q ? moments.filter(m => m.text.toLowerCase().includes(q)) : moments;
+    if (tagFilter) result = result.filter(m => extractTags(m.text).includes(tagFilter));
+    return result;
+  }, [moments, q, tagFilter]);
 
   useEffect(() => {
     if (localStorage.getItem('moments_samples_initialized')) return;
@@ -109,6 +146,27 @@ export default function MomentsPage() {
           )}
         </div>
 
+        {/* Tag filter */}
+        {allTags.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 mb-4" style={{ scrollbarWidth: 'none' }}>
+            <button
+              onClick={() => setTagFilter(null)}
+              className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === null ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+            >
+              전체
+            </button>
+            {allTags.map(tag => (
+              <button
+                key={tag}
+                onClick={() => setTagFilter(tagFilter === tag ? null : tag)}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${tagFilter === tag ? 'bg-[#4A90D9] text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'}`}
+              >
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* New button */}
         <Link
           href="/moments/new"
@@ -118,7 +176,9 @@ export default function MomentsPage() {
         </Link>
 
         {/* List */}
-        {moments.length === 0 ? (
+        {isLoading ? (
+          <SkeletonList />
+        ) : moments.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">아직 기록이 없어요</p>
             <p className="text-gray-300 text-xs mt-1">지금 이 순간을 기록해보세요</p>

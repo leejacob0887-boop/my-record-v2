@@ -10,9 +10,11 @@ export default function MomentNewPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const today = new Date();
-  const dateStr = today.toISOString().slice(0, 10);
+  const todayStr = today.toISOString().slice(0, 10);
   const timeLabel = today.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+  const [dateStr, setDateStr] = useState(todayStr);
 
+  const [saving, setSaving] = useState(false);
   const [text, setText] = useState('');
   const [imageBase64, setImageBase64] = useState<string | undefined>();
   const [tagOpen, setTagOpen] = useState(false);
@@ -39,7 +41,8 @@ export default function MomentNewPage() {
   };
 
   const handleSubmit = async () => {
-    if (!text.trim()) return;
+    if (!text.trim() || saving) return;
+    setSaving(true);
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
     await add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
     router.push('/moments');
@@ -69,6 +72,18 @@ export default function MomentNewPage() {
           </button>
         </div>
 
+        {/* Date picker */}
+        <div className="px-5 pb-3 flex items-center gap-1.5">
+          <input
+            type="date"
+            value={dateStr}
+            max={todayStr}
+            onChange={e => setDateStr(e.target.value)}
+            className="text-sm text-gray-500 bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-300 focus:border-[#4A90D9] transition-colors"
+          />
+          <span>📅</span>
+        </div>
+
         {/* White card area */}
         <div className="mx-4 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1">
 
@@ -94,39 +109,54 @@ export default function MomentNewPage() {
           />
           <p className="px-4 pb-2 text-right text-xs text-gray-400">{text.length}/500</p>
 
-          {/* Tag chips */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 px-4 pb-3">
-              {tags.map(tag => (
-                <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100">
-                  #{tag}
-                  <button type="button" onClick={() => setTags(tags.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 leading-none ml-0.5">×</button>
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Tag input */}
-          {tagOpen && (
-            <div className="flex items-center gap-2 px-4 pb-3 border-t border-gray-100 pt-3">
-              <span className="text-gray-400 text-sm">#</span>
-              <input
-                value={tagInput}
-                onChange={e => setTagInput(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
-                placeholder="태그 입력 후 Enter"
-                className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
-                autoFocus
-              />
-              <button type="button" onClick={addTag} className="text-blue-400 text-xs font-medium hover:text-blue-600 transition-colors">추가</button>
-            </div>
-          )}
-
         </div>
 
         {/* Fixed bottom panel */}
         <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] border-t border-gray-100 z-10">
           <div className="max-w-[430px] mx-auto px-4">
+
+            {/* Tag input row */}
+            {tagOpen && (
+              <div className="flex items-center gap-2 py-2.5 border-b border-gray-100">
+                <span className="text-[#4A90D9] text-sm font-medium">#</span>
+                <input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+                    if (e.key === 'Escape') setTagOpen(false);
+                  }}
+                  placeholder="태그 입력 후 Enter"
+                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  autoFocus
+                />
+                <button
+                  onClick={addTag}
+                  className="text-[#4A90D9] text-xs font-semibold hover:text-[#3A7FC9] transition-colors"
+                >
+                  추가
+                </button>
+              </div>
+            )}
+
+            {/* Tag chips row */}
+            {tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 py-2.5 border-b border-gray-100">
+                {tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100"
+                  >
+                    #{tag}
+                    <button
+                      onClick={() => setTags(tags.filter(t => t !== tag))}
+                      className="text-blue-400 hover:text-blue-600 leading-none ml-0.5"
+                      aria-label={`${tag} 태그 삭제`}
+                    >×</button>
+                  </span>
+                ))}
+              </div>
+            )}
 
             {/* Toolbar */}
             <div className="flex items-center py-3 border-b border-gray-100">
@@ -168,10 +198,18 @@ export default function MomentNewPage() {
             <div className="py-3">
               <button
                 onClick={handleSubmit}
-                disabled={!text.trim()}
-                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={!text.trim() || saving}
+                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                기록하기
+                {saving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    저장 중...
+                  </>
+                ) : '기록하기'}
               </button>
             </div>
 

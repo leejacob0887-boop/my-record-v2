@@ -22,14 +22,13 @@ export default function DiaryNewPage() {
   const { save, getByDate } = useDiary();
 
   const today = new Date();
-  const dateStr = today.toISOString().slice(0, 10);
-  const dateLabel = today.toLocaleDateString('ko-KR', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
+  const todayStr = today.toISOString().slice(0, 10);
   const timeLabel = today.toLocaleTimeString('ko-KR', {
     hour: '2-digit', minute: '2-digit',
   });
+  const [dateStr, setDateStr] = useState(todayStr);
 
+  const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [weatherIndex, setWeatherIndex] = useState(0);
@@ -44,8 +43,8 @@ export default function DiaryNewPage() {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert('사진 크기는 5MB 이하여야 합니다.');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('사진 크기는 20MB 이하여야 합니다.');
       e.target.value = '';
       return;
     }
@@ -68,12 +67,13 @@ export default function DiaryNewPage() {
   const removeTag = (tag: string) => setTags(prev => prev.filter(t => t !== tag));
 
   const handleSubmit = async () => {
-    if (!content.trim()) return;
+    if (!content.trim() || saving) return;
     const existing = getByDate(dateStr);
     if (existing) {
       const ok = confirm(`${dateStr}에 이미 일기가 있습니다. 덮어쓸까요?`);
       if (!ok) return;
     }
+    setSaving(true);
     await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
     if (tags.length > 0) {
       localStorage.setItem('diary_tags_' + dateStr, JSON.stringify(tags));
@@ -109,8 +109,14 @@ export default function DiaryNewPage() {
 
         {/* Date + Title */}
         <div className="px-5 pb-4">
-          <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
-            <span>{dateLabel}</span>
+          <div className="flex items-center gap-1.5 mb-1">
+            <input
+              type="date"
+              value={dateStr}
+              max={todayStr}
+              onChange={e => setDateStr(e.target.value)}
+              className="text-sm text-gray-500 bg-transparent outline-none cursor-pointer border-b border-dashed border-gray-300 focus:border-[#4A90D9] transition-colors"
+            />
             <span>📅</span>
           </div>
           <h1 className="text-2xl font-bold text-gray-800">오늘의 일기</h1>
@@ -290,10 +296,18 @@ export default function DiaryNewPage() {
             <div className="py-3">
               <button
                 onClick={handleSubmit}
-                disabled={!content.trim()}
-                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled={!content.trim() || saving}
+                className="w-full bg-[#4A90D9] text-white rounded-2xl py-3.5 text-base font-semibold hover:bg-[#3A7FC9] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                저장
+                {saving ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    저장 중...
+                  </>
+                ) : '저장'}
               </button>
             </div>
 

@@ -29,12 +29,14 @@ function mapFromDB(row: Record<string, unknown>): Moment {
 export function useMoments() {
   const { user, loading } = useAuth();
   const [moments, setMoments] = useState<Moment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (loading) return;
     if (!user) {
       storageSet(KEY, []);
       setMoments([]);
+      setIsLoading(false);
       return;
     }
     supabase
@@ -48,7 +50,8 @@ export function useMoments() {
           setMoments(mapped);
           storageSet(KEY, mapped);
         }
-      });
+        setIsLoading(false);
+      }, () => setIsLoading(false));
   }, [user, loading]);
 
   const getByDate = useCallback(
@@ -94,7 +97,7 @@ export function useMoments() {
   );
 
   const update = useCallback(
-    async (id: string, data: Partial<Pick<Moment, 'text' | 'imageBase64'>>) => {
+    async (id: string, data: Partial<Pick<Moment, 'text' | 'imageBase64' | 'date'>>) => {
       const now = new Date().toISOString();
       const current = storageGet<Moment[]>(KEY) ?? [];
       const updated = current.map((m) =>
@@ -106,6 +109,7 @@ export function useMoments() {
       if (user) {
         await supabase.from('moments').update({
           text: data.text,
+          date: data.date,
           image_base64: data.imageBase64 ?? null,
           updated_at: now,
         }).eq('id', id).eq('user_id', user.id);
@@ -131,5 +135,5 @@ export function useMoments() {
     [user]
   );
 
-  return { moments, getByDate, getById, add, update, remove };
+  return { moments, getByDate, getById, add, update, remove, isLoading };
 }
