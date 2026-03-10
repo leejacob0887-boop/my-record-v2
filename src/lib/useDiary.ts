@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { DiaryEntry } from './types';
 import { storageGet, storageSet, storageRemove } from './storage';
 import { supabase } from './supabase';
+import { deleteImage } from './storageUpload';
 import { useAuth } from '@/context/AuthContext';
 
 const PREFIX = 'diary_';
@@ -119,7 +120,10 @@ export function useDiary() {
         storageRemove(`${PREFIX}${entry.date}`);
         setEntries(loadAllEntries());
         if (user) {
-          await supabase.from('diary_entries').delete().eq('id', id).eq('user_id', user.id);
+          await Promise.all([
+            supabase.from('diary_entries').delete().eq('id', id).eq('user_id', user.id),
+            deleteImage(entry.imageBase64),
+          ]);
         }
       }
     },

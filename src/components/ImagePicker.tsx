@@ -1,27 +1,41 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { uploadImage } from '@/lib/storageUpload';
 
 interface ImagePickerProps {
   value?: string;
-  onChange: (base64: string | undefined) => void;
+  onChange: (url: string | undefined) => void;
 }
 
 export default function ImagePicker({ value, onChange }: ImagePickerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (file.size > 1.5 * 1024 * 1024) {
-      alert('사진 크기가 너무 큽니다. 1.5MB 이하 사진을 선택해주세요.');
+    if (file.size > 5 * 1024 * 1024) {
+      alert('사진 크기가 너무 큽니다. 5MB 이하 사진을 선택해주세요.');
+      e.target.value = '';
       return;
     }
-
-    const reader = new FileReader();
-    reader.onload = () => onChange(reader.result as string);
-    reader.readAsDataURL(file);
+    if (!user) {
+      alert('로그인 후 사진을 업로드할 수 있습니다.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const url = await uploadImage(file, user.id);
+      onChange(url);
+    } catch {
+      alert('사진 업로드에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   return (
@@ -30,11 +44,12 @@ export default function ImagePicker({ value, onChange }: ImagePickerProps) {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="text-sm text-blue-500 hover:text-blue-700 border border-blue-200 rounded-lg px-3 py-1.5"
+          disabled={uploading}
+          className="text-sm text-blue-500 hover:text-blue-700 border border-blue-200 rounded-lg px-3 py-1.5 disabled:opacity-50"
         >
-          📷 사진 선택
+          {uploading ? '업로드 중...' : '📷 사진 선택'}
         </button>
-        {value && (
+        {value && !uploading && (
           <button
             type="button"
             onClick={() => onChange(undefined)}

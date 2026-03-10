@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Moment } from './types';
 import { storageGet, storageSet } from './storage';
 import { supabase } from './supabase';
+import { deleteImage } from './storageUpload';
 import { useAuth } from '@/context/AuthContext';
 
 const KEY = 'moments_list';
@@ -116,11 +117,15 @@ export function useMoments() {
   const remove = useCallback(
     async (id: string) => {
       const current = storageGet<Moment[]>(KEY) ?? [];
+      const target = current.find((m) => m.id === id);
       storageSet(KEY, current.filter((m) => m.id !== id));
       setMoments(loadAllMoments());
 
       if (user) {
-        await supabase.from('moments').delete().eq('id', id).eq('user_id', user.id);
+        await Promise.all([
+          supabase.from('moments').delete().eq('id', id).eq('user_id', user.id),
+          deleteImage(target?.imageBase64),
+        ]);
       }
     },
     [user]

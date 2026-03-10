@@ -3,6 +3,8 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDiary } from '@/lib/useDiary';
+import { useAuth } from '@/context/AuthContext';
+import { uploadImage } from '@/lib/storageUpload';
 
 const WEATHERS = [
   { label: '맑음', icon: '☀️' },
@@ -16,6 +18,7 @@ const EMOTIONS = ['😊', '😐', '😟', '😤', '⚡'];
 
 export default function DiaryNewPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { save, getByDate } = useDiary();
 
   const today = new Date();
@@ -38,21 +41,21 @@ export default function DiaryNewPage() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1.5 * 1024 * 1024) {
-      alert('사진 크기는 1.5MB 이하여야 합니다.');
+    if (file.size > 5 * 1024 * 1024) {
+      alert('사진 크기는 5MB 이하여야 합니다.');
       e.target.value = '';
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        setImageBase64(reader.result);
-      }
-    };
-    reader.readAsDataURL(file);
+    if (!user) { e.target.value = ''; return; }
+    try {
+      const url = await uploadImage(file, user.id);
+      setImageBase64(url);
+    } catch {
+      alert('사진 업로드에 실패했습니다.');
+    }
     e.target.value = '';
   };
 
