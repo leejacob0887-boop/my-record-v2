@@ -45,7 +45,7 @@ export default function ImagePicker({ value, onChange }: ImagePickerProps) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="text-sm text-blue-500 hover:text-blue-700 border border-blue-200 rounded-lg px-3 py-1.5 disabled:opacity-50"
+          className="text-sm text-blue-500 dark:text-blue-400 hover:text-blue-700 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-1.5 disabled:opacity-50"
         >
           {uploading ? '업로드 중...' : '📷 사진 선택'}
         </button>
@@ -63,7 +63,7 @@ export default function ImagePicker({ value, onChange }: ImagePickerProps) {
         <img
           src={value}
           alt="선택한 사진"
-          className="w-full max-h-48 object-cover rounded-lg border border-gray-100"
+          className="w-full max-h-48 object-cover rounded-lg border border-gray-100 dark:border-gray-700"
         />
       )}
       <input
