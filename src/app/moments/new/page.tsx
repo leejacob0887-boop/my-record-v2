@@ -25,8 +25,8 @@ export default function MomentNewPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 1.5 * 1024 * 1024) {
-      alert('사진 크기는 1.5MB 이하여야 합니다.');
+    if (file.size > 20 * 1024 * 1024) {
+      alert('사진 크기는 20MB 이하여야 합니다.');
       return;
     }
     const reader = new FileReader();
