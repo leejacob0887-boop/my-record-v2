@@ -26,10 +26,11 @@ function mapFromDB(row: Record<string, unknown>): Moment {
 }
 
 export function useMoments() {
-  const { user } = useAuth();
-  const [moments, setMoments] = useState<Moment[]>(() => user ? [] : loadAllMoments());
+  const { user, loading } = useAuth();
+  const [moments, setMoments] = useState<Moment[]>([]);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       setMoments(loadAllMoments());
       return;
@@ -46,7 +47,7 @@ export function useMoments() {
           storageSet(KEY, mapped);
         }
       });
-  }, [user]);
+  }, [user, loading]);
 
   const getByDate = useCallback(
     (date: string): Moment[] => moments.filter((m) => m.date === date),

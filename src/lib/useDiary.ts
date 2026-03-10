@@ -36,11 +36,11 @@ function mapFromDB(row: Record<string, unknown>): DiaryEntry {
 }
 
 export function useDiary() {
-  const { user } = useAuth();
-  // 로그인 상태면 빈 배열로 시작 (LocalStorage와 섞임 방지)
-  const [entries, setEntries] = useState<DiaryEntry[]>(() => user ? [] : loadAllEntries());
+  const { user, loading } = useAuth();
+  const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
   useEffect(() => {
+    if (loading) return; // auth 확인 전까지 대기
     if (!user) {
       setEntries(loadAllEntries());
       return;
@@ -52,14 +52,13 @@ export function useDiary() {
       .order('date', { ascending: false })
       .then(({ data }) => {
         if (data) {
-          // 기존 LocalStorage diary 키 전체 삭제 후 Supabase 데이터로 교체
           getAllDiaryKeys().forEach(k => storageRemove(k));
           const mapped = data.map(mapFromDB);
           setEntries(mapped);
           mapped.forEach(e => storageSet(`${PREFIX}${e.date}`, e));
         }
       });
-  }, [user]);
+  }, [user, loading]);
 
   const getTodayEntry = useCallback((): DiaryEntry | undefined => {
     const today = new Date().toISOString().slice(0, 10);

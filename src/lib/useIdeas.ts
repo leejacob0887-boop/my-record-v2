@@ -26,10 +26,11 @@ function mapFromDB(row: Record<string, unknown>): Idea {
 }
 
 export function useIdeas() {
-  const { user } = useAuth();
-  const [ideas, setIdeas] = useState<Idea[]>(() => user ? [] : loadAllIdeas());
+  const { user, loading } = useAuth();
+  const [ideas, setIdeas] = useState<Idea[]>([]);
 
   useEffect(() => {
+    if (loading) return;
     if (!user) {
       setIdeas(loadAllIdeas());
       return;
@@ -46,7 +47,7 @@ export function useIdeas() {
           storageSet(KEY, mapped);
         }
       });
-  }, [user]);
+  }, [user, loading]);
 
   const getById = useCallback(
     (id: string): Idea | undefined => ideas.find((i) => i.id === id),
