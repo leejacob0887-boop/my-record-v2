@@ -1,18 +1,19 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
 
 export default function MomentNewPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { add } = useMoments();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
   const timeLabel = today.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
-  const [dateStr, setDateStr] = useState(todayStr);
+  const [dateStr, setDateStr] = useState(searchParams.get('date') ?? todayStr);
 
   const [saving, setSaving] = useState(false);
   const [text, setText] = useState('');
@@ -63,7 +64,7 @@ export default function MomentNewPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">지금 이 순간</span>
+          <span className="text-base font-semibold text-gray-800">메모</span>
           <button className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />

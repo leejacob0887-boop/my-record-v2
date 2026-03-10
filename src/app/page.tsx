@@ -3,45 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
+import { BookOpen, Zap, Lightbulb, Calendar } from 'lucide-react';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
-
-// SVG icons (outline style)
-function BookIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-    </svg>
-  );
-}
-function BoltIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-    </svg>
-  );
-}
-function BulbIcon({ size = 28 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="9" y1="18" x2="15" y2="18" />
-      <line x1="10" y1="22" x2="14" y2="22" />
-      <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0018 8 6 6 0 006 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 018.91 14" />
-    </svg>
-  );
-}
-function CalendarIcon() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-      <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8" y1="2" x2="8" y2="6" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-    </svg>
-  );
-}
 
 interface RecordCardProps {
   icon: React.ReactNode;
@@ -135,28 +100,28 @@ export default function Home() {
         {/* Record cards grid */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <RecordCard
-            icon={<BookIcon />}
+            icon={<BookOpen size={28} color="#4A90D9" strokeWidth={1.8} />}
             label="일기"
             description="하루 하나씩 깊은 기록"
             count={entries.length}
             href="/diary"
           />
           <RecordCard
-            icon={<BoltIcon />}
-            label="지금 이 순간"
-            description="짧은 순간의 기억"
+            icon={<Zap size={28} color="#4A90D9" strokeWidth={1.8} />}
+            label="메모"
+            description="짧은 메모 기록"
             count={moments.length}
             href="/moments"
           />
           <RecordCard
-            icon={<BulbIcon />}
+            icon={<Lightbulb size={28} color="#4A90D9" strokeWidth={1.8} />}
             label="아이디어"
             description="떠오르는 생각들"
             count={ideas.length}
             href="/ideas"
           />
           <RecordCard
-            icon={<CalendarIcon />}
+            icon={<Calendar size={28} color="#4A90D9" strokeWidth={1.8} />}
             label="캘린더"
             description="날짜별로 돌아보기"
             count={0}
@@ -192,9 +157,9 @@ export default function Home() {
                     className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 last:border-none hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex-shrink-0">
-                      {item.type === 'diary' && <BookIcon size={18} />}
-                      {item.type === 'moment' && <BoltIcon size={18} />}
-                      {item.type === 'idea' && <BulbIcon size={18} />}
+                      {item.type === 'diary' && <BookOpen size={18} color="#4A90D9" strokeWidth={1.8} />}
+                      {item.type === 'moment' && <Zap size={18} color="#4A90D9" strokeWidth={1.8} />}
+                      {item.type === 'idea' && <Lightbulb size={18} color="#4A90D9" strokeWidth={1.8} />}
                     </div>
                     <p className="flex-1 text-sm text-gray-700 truncate">{item.label}</p>
                     <p className="text-xs text-gray-400 flex-shrink-0">{item.date}</p>

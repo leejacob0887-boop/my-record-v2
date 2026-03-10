@@ -22,7 +22,7 @@ export default function MomentForm({ initial, onSubmit }: MomentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-500 mb-1">지금 이 순간</label>
+        <label className="block text-xs text-gray-500 mb-1">메모</label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

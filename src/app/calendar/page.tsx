@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { BookOpen, Zap, Lightbulb, CalendarDays } from 'lucide-react';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -18,6 +19,7 @@ export default function CalendarPage() {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth()); // 0-indexed
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const { entries: diaryEntries } = useDiary();
   const { moments } = useMoments();
@@ -150,7 +152,7 @@ export default function CalendarPage() {
               return (
                 <button
                   key={dateStr}
-                  onClick={() => router.push(`/calendar/${dateStr}`)}
+                  onClick={() => setSelectedDate(dateStr)}
                   className={`aspect-square flex flex-col items-center justify-center gap-0.5 transition-colors rounded-xl
                     ${isToday ? 'bg-[#4A90D9] text-white' : 'hover:bg-gray-50'}
                     ${!isToday && col === 0 ? 'text-red-400' : ''}
@@ -181,6 +183,68 @@ export default function CalendarPage() {
         </div>
 
       </div>
+
+      {/* Bottom sheet overlay */}
+      {selectedDate && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/30 z-40"
+            onClick={() => setSelectedDate(null)}
+          />
+          <div className="fixed bottom-16 left-0 right-0 z-50 flex justify-center px-4">
+            <div className="w-full max-w-[430px] bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+              <div className="px-5 pt-4 pb-3 border-b border-gray-50">
+                <p className="text-sm font-semibold text-gray-800">
+                  {new Date(selectedDate + 'T00:00:00').toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5">어떤 기록을 남길까요?</p>
+              </div>
+              <div className="p-3 space-y-1">
+                <button
+                  onClick={() => router.push(`/diary/new?date=${selectedDate}`)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                >
+                  <BookOpen size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">일기 쓰기</p>
+                    <p className="text-xs text-gray-400">하루를 기록해요</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => router.push(`/moments/new?date=${selectedDate}`)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                >
+                  <Zap size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">메모 쓰기</p>
+                    <p className="text-xs text-gray-400">짧은 메모를 남겨요</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => router.push(`/ideas/new?date=${selectedDate}`)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                >
+                  <Lightbulb size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">아이디어 쓰기</p>
+                    <p className="text-xs text-gray-400">번뜩이는 생각을 기록해요</p>
+                  </div>
+                </button>
+                <button
+                  onClick={() => router.push(`/calendar/${selectedDate}`)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                >
+                  <CalendarDays size={20} color="#9CA3AF" strokeWidth={1.8} />
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">날짜 기록 보기</p>
+                    <p className="text-xs text-gray-400">이 날의 기록을 확인해요</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }

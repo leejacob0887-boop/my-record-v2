@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
 import ImagePicker from '@/components/ImagePicker';
 
@@ -14,11 +14,12 @@ const SettingsIcon = () => (
 
 export default function IdeaNewPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { add } = useIdeas();
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const [saving, setSaving] = useState(false);
-  const [date, setDate] = useState(todayStr);
+  const [date, setDate] = useState(searchParams.get('date') ?? todayStr);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [imageBase64, setImageBase64] = useState<string | undefined>();

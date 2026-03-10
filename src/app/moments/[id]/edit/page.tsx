@@ -42,7 +42,7 @@ function MomentEditForm({ initial, onSubmit }: {
         />
       </div>
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-        <label className="block text-xs text-gray-500 mb-2">지금 이 순간</label>
+        <label className="block text-xs text-gray-500 mb-2">메모</label>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}

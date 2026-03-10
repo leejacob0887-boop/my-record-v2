@@ -61,7 +61,7 @@ export default function MomentDetailPage() {
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <span className="text-base font-semibold text-gray-800">지금 이 순간</span>
+          <span className="text-base font-semibold text-gray-800">메모</span>
           <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
             <SettingsIcon />
           </Link>

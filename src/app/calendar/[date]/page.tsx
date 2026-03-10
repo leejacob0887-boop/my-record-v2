@@ -119,7 +119,7 @@ export default function CalendarDayPage() {
             <section>
               <div className="flex items-center gap-1.5 mb-2 px-1">
                 <BoltIcon />
-                <h2 className="text-xs font-semibold text-[#4A90D9]">지금 이 순간 ({moments.length})</h2>
+                <h2 className="text-xs font-semibold text-[#4A90D9]">메모 ({moments.length})</h2>
               </div>
               <div className="space-y-2">
                 {moments.map((m) => (

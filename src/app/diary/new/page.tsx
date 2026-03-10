@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useDiary } from '@/lib/useDiary';
 import { useAuth } from '@/context/AuthContext';
 import { uploadImage } from '@/lib/storageUpload';
@@ -18,6 +18,7 @@ const EMOTIONS = ['😊', '😐', '😟', '😤', '⚡'];
 
 export default function DiaryNewPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useAuth();
   const { save, getByDate } = useDiary();
 
@@ -26,7 +27,7 @@ export default function DiaryNewPage() {
   const timeLabel = today.toLocaleTimeString('ko-KR', {
     hour: '2-digit', minute: '2-digit',
   });
-  const [dateStr, setDateStr] = useState(todayStr);
+  const [dateStr, setDateStr] = useState(searchParams.get('date') ?? todayStr);
 
   const [saving, setSaving] = useState(false);
   const [title, setTitle] = useState('');

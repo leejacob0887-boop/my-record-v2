@@ -128,7 +128,7 @@ export default function MomentsPage() {
 
         {/* Title */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">지금 이 순간</h1>
+          <h1 className="text-3xl font-bold text-gray-800">메모</h1>
           <p className="text-sm text-gray-400 mt-1">짧은 순간의 기억</p>
         </div>
 
@@ -172,7 +172,7 @@ export default function MomentsPage() {
           href="/moments/new"
           className="block w-full text-center bg-[#4A90D9] text-white rounded-2xl py-3.5 text-sm font-semibold hover:bg-[#3A7FC9] transition-colors mb-6"
         >
-          + 지금 이 순간 기록
+          + 메모 기록
         </Link>
 
         {/* List */}
@@ -181,7 +181,7 @@ export default function MomentsPage() {
         ) : moments.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-400 text-sm">아직 기록이 없어요</p>
-            <p className="text-gray-300 text-xs mt-1">지금 이 순간을 기록해보세요</p>
+            <p className="text-gray-300 text-xs mt-1">메모를 기록해보세요</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-16">
