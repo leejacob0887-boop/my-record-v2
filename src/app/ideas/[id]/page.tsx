@@ -32,9 +32,9 @@ export default function IdeaDetailPage() {
     );
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (confirm('이 아이디어를 삭제할까요?')) {
-      remove(id);
+      await remove(id);
       router.push('/ideas');
     }
   };

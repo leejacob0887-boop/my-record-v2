@@ -29,11 +29,11 @@ export default function IdeaNewPage() {
     setTagInput('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
-    add({ title: title.trim(), content: content.trim() + tagStr, imageBase64 });
+    await add({ title: title.trim(), content: content.trim() + tagStr, imageBase64 });
     router.push('/ideas');
   };
 

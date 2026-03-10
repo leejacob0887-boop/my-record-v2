@@ -38,10 +38,10 @@ export default function MomentNewPage() {
     setTagInput('');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!text.trim()) return;
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
-    add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
+    await add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
     router.push('/moments');
   };
 

@@ -37,10 +37,10 @@ export default function IdeaEditPage() {
     );
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    update(id, { title: title.trim(), content: content.trim(), imageBase64 });
+    await update(id, { title: title.trim(), content: content.trim(), imageBase64 });
     router.push(`/ideas/${id}`);
   };
 

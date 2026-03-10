@@ -3,21 +3,18 @@
 import { useEffect, useState } from 'react';
 import PinLock from './PinLock';
 
-function getInitialLocked(): boolean {
-  if (typeof window === 'undefined') return false;
-  return !!(localStorage.getItem('app_pin') && !sessionStorage.getItem('pin_authed'));
-}
-
 export default function PinGate({ children }: { children: React.ReactNode }) {
-  const [locked, setLocked] = useState(getInitialLocked);
+  const [locked, setLocked] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // 클라이언트에서만 실행 — SSR 하이드레이션 문제 방지
+    const isLocked = !!(localStorage.getItem('app_pin') && !sessionStorage.getItem('pin_authed'));
+    setLocked(isLocked);
     setMounted(true);
   }, []);
 
-  // Prevent hydration mismatch — show blank bg while mounting
+  // 마운트 전 빈 화면 (hydration mismatch 방지)
   if (!mounted) return <div className="min-h-screen bg-[#FAF8F4]" />;
 
   if (locked) {

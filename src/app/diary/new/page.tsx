@@ -64,14 +64,14 @@ export default function DiaryNewPage() {
 
   const removeTag = (tag: string) => setTags(prev => prev.filter(t => t !== tag));
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!content.trim()) return;
     const existing = getByDate(dateStr);
     if (existing) {
       const ok = confirm(`${dateStr}에 이미 일기가 있습니다. 덮어쓸까요?`);
       if (!ok) return;
     }
-    save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
+    await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
     if (tags.length > 0) {
       localStorage.setItem('diary_tags_' + dateStr, JSON.stringify(tags));
     } else {

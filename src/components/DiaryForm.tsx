@@ -6,7 +6,7 @@ import ImagePicker from './ImagePicker';
 
 interface DiaryFormProps {
   initial?: Partial<DiaryEntry>;
-  onSubmit: (data: { date: string; title: string; content: string; imageBase64?: string }) => void;
+  onSubmit: (data: { date: string; title: string; content: string; imageBase64?: string }) => void | Promise<void>;
 }
 
 export default function DiaryForm({ initial, onSubmit }: DiaryFormProps) {

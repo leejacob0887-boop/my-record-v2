@@ -32,9 +32,9 @@ export default function MomentDetailPage() {
     );
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (confirm('이 기록을 삭제할까요?')) {
-      remove(id);
+      await remove(id);
       router.push('/moments');
     }
   };

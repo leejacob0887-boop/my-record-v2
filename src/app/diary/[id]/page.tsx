@@ -39,9 +39,9 @@ export default function DiaryDetailPage() {
     );
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (confirm('이 일기를 삭제할까요?')) {
-      remove(id);
+      await remove(id);
       router.push('/diary');
     }
   };

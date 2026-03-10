@@ -32,8 +32,8 @@ export default function DiaryEditPage() {
     );
   }
 
-  const handleSubmit = (data: { date: string; title: string; content: string; imageBase64?: string }) => {
-    save(data);
+  const handleSubmit = async (data: { date: string; title: string; content: string; imageBase64?: string }) => {
+    await save(data);
     router.push(`/diary/${id}`);
   };
 

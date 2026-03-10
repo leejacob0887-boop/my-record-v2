@@ -2,11 +2,14 @@
 
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import PinLock from '@/components/PinLock';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SettingsPage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, signOut } = useAuth();
 
   const [hasPin, setHasPin] = useState(() =>
     typeof window !== 'undefined' ? !!localStorage.getItem('app_pin') : false
@@ -166,6 +169,47 @@ export default function SettingsPage() {
             className="hidden"
             onChange={handleImport}
           />
+        </div>
+
+        {/* Account section */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-800">계정</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {user ? user.email : '로그인하면 클라우드에 저장됩니다'}
+              </p>
+            </div>
+          </div>
+          {user ? (
+            <button
+              onClick={async () => { await signOut(); router.push('/'); }}
+              className="w-full text-center bg-red-50 border border-red-100 text-red-400 rounded-2xl py-3 text-sm font-semibold hover:bg-red-100 transition-colors"
+            >
+              로그아웃
+            </button>
+          ) : (
+            <div className="flex gap-3">
+              <Link
+                href="/auth/login"
+                className="flex-1 text-center bg-[#4A90D9] text-white rounded-2xl py-3 text-sm font-semibold hover:bg-[#3A7FC9] transition-colors"
+              >
+                로그인
+              </Link>
+              <Link
+                href="/auth/signup"
+                className="flex-1 text-center bg-gray-50 border border-gray-100 text-gray-600 rounded-2xl py-3 text-sm font-semibold hover:bg-gray-100 transition-colors"
+              >
+                회원가입
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* App info */}

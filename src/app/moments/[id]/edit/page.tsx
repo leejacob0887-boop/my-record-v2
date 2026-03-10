@@ -14,7 +14,7 @@ const SettingsIcon = () => (
 
 function MomentEditForm({ initial, onSubmit }: {
   initial: { text: string; imageBase64?: string };
-  onSubmit: (data: { text: string; imageBase64?: string }) => void;
+  onSubmit: (data: { text: string; imageBase64?: string }) => void | Promise<void>;
 }) {
   const [text, setText] = useState(initial.text);
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial.imageBase64);
@@ -76,8 +76,8 @@ export default function MomentEditPage() {
     );
   }
 
-  const handleSubmit = (data: { text: string; imageBase64?: string }) => {
-    update(id, data);
+  const handleSubmit = async (data: { text: string; imageBase64?: string }) => {
+    await update(id, data);
     router.push(`/moments/${id}`);
   };
 
