@@ -32,7 +32,17 @@ export default function DiaryEditPage() {
     );
   }
 
-  const handleSubmit = async (data: { date: string; title: string; content: string; imageBase64?: string }) => {
+  // 기존 태그 로드: entry.tags (Supabase 동기화) 또는 localStorage fallback
+  const existingTags: string[] = entry.tags && entry.tags.length > 0
+    ? entry.tags
+    : (() => {
+        try {
+          const stored = localStorage.getItem('diary_tags_' + entry.date);
+          return stored ? (JSON.parse(stored) as string[]) : [];
+        } catch { return []; }
+      })();
+
+  const handleSubmit = async (data: { date: string; title: string; content: string; imageBase64?: string; tags?: string[] }) => {
     await save(data);
     router.push(`/diary/${id}`);
   };
@@ -60,7 +70,7 @@ export default function DiaryEditPage() {
 
         {/* Form */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-          <DiaryForm initial={entry} onSubmit={handleSubmit} />
+          <DiaryForm initial={entry} initialTags={existingTags} onSubmit={handleSubmit} />
         </div>
 
       </div>

@@ -74,12 +74,7 @@ export default function DiaryNewPage() {
       if (!ok) return;
     }
     setSaving(true);
-    await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64 });
-    if (tags.length > 0) {
-      localStorage.setItem('diary_tags_' + dateStr, JSON.stringify(tags));
-    } else {
-      localStorage.removeItem('diary_tags_' + dateStr);
-    }
+    await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64, tags });
     router.push('/diary');
   };
 

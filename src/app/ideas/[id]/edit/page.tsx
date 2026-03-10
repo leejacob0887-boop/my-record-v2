@@ -5,6 +5,18 @@ import { useParams, useRouter } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
 import ImagePicker from '@/components/ImagePicker';
 
+function splitContentAndTags(full: string): { body: string; tags: string[] } {
+  const parts = full.split('\n\n');
+  const last = parts[parts.length - 1];
+  if (parts.length > 1 && last.trim().length > 0 && last.trim().split(' ').every(w => w.startsWith('#'))) {
+    return {
+      body: parts.slice(0, -1).join('\n\n'),
+      tags: last.trim().split(' ').map(t => t.slice(1)),
+    };
+  }
+  return { body: full, tags: [] };
+}
+
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="12" cy="12" r="3" />
@@ -22,8 +34,18 @@ export default function IdeaEditPage() {
   const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(idea?.date ?? todayStr);
   const [title, setTitle] = useState(idea?.title ?? '');
-  const [content, setContent] = useState(idea?.content ?? '');
+  const { body: initialBody, tags: initialTags } = splitContentAndTags(idea?.content ?? '');
+  const [content, setContent] = useState(initialBody);
   const [imageBase64, setImageBase64] = useState<string | undefined>(idea?.imageBase64);
+  const [tagOpen, setTagOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>(initialTags);
+
+  const addTag = () => {
+    const t = tagInput.trim().replace(/^#/, '');
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
 
   if (!idea) {
     return (
@@ -44,7 +66,8 @@ export default function IdeaEditPage() {
     e.preventDefault();
     if (!title.trim() || !content.trim() || saving) return;
     setSaving(true);
-    await update(id, { title: title.trim(), content: content.trim(), date, imageBase64 });
+    const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
+    await update(id, { title: title.trim(), content: content.trim() + tagStr, date, imageBase64 });
     router.push(`/ideas/${id}`);
   };
 
@@ -110,6 +133,49 @@ export default function IdeaEditPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
             <label className="block text-xs text-gray-500 mb-2">사진</label>
             <ImagePicker value={imageBase64} onChange={setImageBase64} />
+          </div>
+
+          {/* 태그 */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-gray-500">태그</label>
+              <button
+                type="button"
+                onClick={() => setTagOpen(o => !o)}
+                className={`text-xs font-medium transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+              >
+                + 태그 추가
+              </button>
+            </div>
+            {tagOpen && (
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[#4A90D9] text-sm font-medium">#</span>
+                <input
+                  value={tagInput}
+                  onChange={e => setTagInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+                    if (e.key === 'Escape') setTagOpen(false);
+                  }}
+                  placeholder="태그 입력 후 Enter"
+                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none border-b border-dashed border-gray-200 focus:border-[#4A90D9]"
+                  autoFocus
+                />
+                <button type="button" onClick={addTag} className="text-[#4A90D9] text-xs font-semibold">추가</button>
+              </div>
+            )}
+            {tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {tags.map(tag => (
+                  <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100">
+                    #{tag}
+                    <button type="button" onClick={() => setTags(tags.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 leading-none ml-0.5">×</button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-300">태그 없음</p>
+            )}
           </div>
 
           <button

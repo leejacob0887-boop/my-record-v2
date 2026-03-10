@@ -6,22 +6,32 @@ import ImagePicker from './ImagePicker';
 
 interface DiaryFormProps {
   initial?: Partial<DiaryEntry>;
-  onSubmit: (data: { date: string; title: string; content: string; imageBase64?: string }) => void | Promise<void>;
+  initialTags?: string[];
+  onSubmit: (data: { date: string; title: string; content: string; imageBase64?: string; tags?: string[] }) => void | Promise<void>;
 }
 
-export default function DiaryForm({ initial, onSubmit }: DiaryFormProps) {
+export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormProps) {
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(initial?.date ?? today);
   const [title, setTitle] = useState(initial?.title ?? '');
   const [content, setContent] = useState(initial?.content ?? '');
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial?.imageBase64);
   const [saving, setSaving] = useState(false);
+  const [tagOpen, setTagOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [tags, setTags] = useState<string[]>(initialTags ?? initial?.tags ?? []);
+
+  const addTag = () => {
+    const t = tagInput.trim().replace(/^#/, '');
+    if (t && !tags.includes(t)) setTags(prev => [...prev, t]);
+    setTagInput('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim() || saving) return;
     setSaving(true);
-    await onSubmit({ date, title: title.trim(), content: content.trim(), imageBase64 });
+    await onSubmit({ date, title: title.trim(), content: content.trim(), imageBase64, tags });
   };
 
   return (
@@ -60,6 +70,45 @@ export default function DiaryForm({ initial, onSubmit }: DiaryFormProps) {
       <div>
         <label className="block text-xs text-gray-500 mb-1">사진</label>
         <ImagePicker value={imageBase64} onChange={setImageBase64} />
+      </div>
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-gray-500">태그</label>
+          <button
+            type="button"
+            onClick={() => setTagOpen(o => !o)}
+            className={`text-xs font-medium transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+          >
+            + 태그 추가
+          </button>
+        </div>
+        {tagOpen && (
+          <div className="flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-2 mb-2">
+            <span className="text-[#4A90D9] text-sm font-medium">#</span>
+            <input
+              value={tagInput}
+              onChange={e => setTagInput(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') { e.preventDefault(); addTag(); }
+                if (e.key === 'Escape') setTagOpen(false);
+              }}
+              placeholder="태그 입력 후 Enter"
+              className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+              autoFocus
+            />
+            <button type="button" onClick={addTag} className="text-[#4A90D9] text-xs font-semibold">추가</button>
+          </div>
+        )}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {tags.map(tag => (
+              <span key={tag} className="flex items-center gap-1 bg-blue-50 text-blue-500 text-xs rounded-full px-3 py-1 border border-blue-100">
+                #{tag}
+                <button type="button" onClick={() => setTags(tags.filter(t => t !== tag))} className="text-blue-400 hover:text-blue-600 leading-none ml-0.5">×</button>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
       <button
         type="submit"

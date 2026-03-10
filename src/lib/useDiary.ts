@@ -24,6 +24,7 @@ function loadAllEntries(): DiaryEntry[] {
 }
 
 function mapFromDB(row: Record<string, unknown>): DiaryEntry {
+  const tags = (row.tags as string[] | null) ?? [];
   return {
     id: row.id as string,
     type: 'diary',
@@ -31,6 +32,7 @@ function mapFromDB(row: Record<string, unknown>): DiaryEntry {
     title: row.title as string,
     content: row.content as string,
     imageBase64: (row.image_base64 as string) ?? undefined,
+    tags,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -60,7 +62,15 @@ export function useDiary() {
           getAllDiaryKeys().forEach(k => storageRemove(k));
           const mapped = data.map(mapFromDB);
           setEntries(mapped);
-          mapped.forEach(e => storageSet(`${PREFIX}${e.date}`, e));
+          mapped.forEach(e => {
+            storageSet(`${PREFIX}${e.date}`, e);
+            // tags를 localStorage에도 동기화 (목록 페이지 하위 호환)
+            if (e.tags && e.tags.length > 0) {
+              localStorage.setItem('diary_tags_' + e.date, JSON.stringify(e.tags));
+            } else {
+              localStorage.removeItem('diary_tags_' + e.date);
+            }
+          });
         }
         setIsLoading(false);
       }, () => setIsLoading(false));
@@ -82,7 +92,7 @@ export function useDiary() {
   );
 
   const save = useCallback(
-    async (data: { date: string; title: string; content: string; imageBase64?: string }) => {
+    async (data: { date: string; title: string; content: string; imageBase64?: string; tags?: string[] }) => {
       const existing = storageGet<DiaryEntry>(`${PREFIX}${data.date}`);
       const now = new Date().toISOString();
       const entry: DiaryEntry = existing
@@ -97,6 +107,11 @@ export function useDiary() {
 
       // LocalStorage 저장 (동기)
       storageSet(`${PREFIX}${data.date}`, entry);
+      if (data.tags && data.tags.length > 0) {
+        localStorage.setItem('diary_tags_' + data.date, JSON.stringify(data.tags));
+      } else {
+        localStorage.removeItem('diary_tags_' + data.date);
+      }
       setEntries(loadAllEntries());
 
       // Supabase 저장 (await, 로그인 시) - 완료 후 navigate해야 useEffect 덮어쓰기 방지
@@ -108,6 +123,7 @@ export function useDiary() {
           title: entry.title,
           content: entry.content,
           image_base64: entry.imageBase64 ?? null,
+          tags: data.tags ?? [],
           created_at: entry.createdAt,
           updated_at: now,
         }, { onConflict: 'user_id,date' });
