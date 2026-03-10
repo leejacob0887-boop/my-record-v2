@@ -68,7 +68,7 @@ export default function CalendarPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-[430px] mx-auto px-5">
+      <div className="max-w-[430px] mx-auto px-4">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">
@@ -117,7 +117,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Calendar card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden mb-6">
           {/* Day-of-week headers */}
           <div className="grid grid-cols-7 border-b border-gray-50 dark:border-gray-700">
             {DAYS.map((d, i) => (
@@ -188,7 +188,7 @@ export default function CalendarPage() {
           />
           <div className="fixed bottom-16 left-0 right-0 z-50 flex justify-center px-4">
             <div className="w-full max-w-[430px] bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-              <div className="px-5 pt-4 pb-3 border-b border-gray-50 dark:border-gray-700">
+              <div className="px-4 pt-4 pb-3 border-b border-gray-50 dark:border-gray-700">
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
                 </p>

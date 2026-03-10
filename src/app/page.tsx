@@ -67,7 +67,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-[430px] mx-auto px-5">
+      <div className="max-w-[430px] mx-auto px-4">
 
         {/* Top bar */}
         <div className="flex items-center justify-between pt-12 pb-4">
@@ -88,14 +88,14 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center mb-4">나의 기록</h1>
 
         {/* Today badge */}
-        <div className={`text-center mb-5 text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
+        <div className={`text-center mb-6 text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
           {todayCount > 0
             ? `오늘 ${todayCount}개의 기록을 남겼어요 ✨`
             : '오늘 첫 기록을 남겨볼까요?'}
         </div>
 
         {/* Record cards grid */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-6">
           <RecordCard
             icon={<BookOpen size={28} color="#4A90D9" strokeWidth={1.8} />}
             label="일기"

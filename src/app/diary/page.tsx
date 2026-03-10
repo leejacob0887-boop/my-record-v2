@@ -132,7 +132,7 @@ export default function DiaryPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-md mx-auto px-5">
+      <div className="max-w-md mx-auto px-4">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">

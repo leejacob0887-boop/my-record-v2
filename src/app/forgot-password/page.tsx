@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
 
   if (done) {
     return (
-      <main className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-5">
+      <main className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-3xl mb-3">📬</p>
           <p className="text-base font-semibold text-gray-800">이메일을 확인하세요</p>
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-5">
+    <main className="min-h-screen bg-[#FAF8F4] flex items-center justify-center px-4">
       <div className="w-full max-w-[380px]">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800">비밀번호 찾기</h1>

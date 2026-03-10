@@ -27,7 +27,7 @@ export default function IdeaDetailPage() {
   if (!idea) {
     return (
       <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-        <div className="max-w-[430px] mx-auto px-5 pt-12">
+        <div className="max-w-[430px] mx-auto px-4 pt-12">
           <button onClick={() => router.back()} className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -48,7 +48,7 @@ export default function IdeaDetailPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-[430px] mx-auto px-5">
+      <div className="max-w-[430px] mx-auto px-4">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">

@@ -104,7 +104,7 @@ export default function DiaryNewPage() {
         </div>
 
         {/* Date + Title */}
-        <div className="px-5 pb-4">
+        <div className="px-4 pb-4">
           <div className="flex items-center gap-1.5 mb-1">
             <input
               type="date"

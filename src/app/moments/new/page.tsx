@@ -74,7 +74,7 @@ export default function MomentNewPage() {
         </div>
 
         {/* Date picker */}
-        <div className="px-5 pb-3 flex items-center gap-1.5">
+        <div className="px-4 pb-3 flex items-center gap-1.5">
           <input
             type="date"
             value={dateStr}
