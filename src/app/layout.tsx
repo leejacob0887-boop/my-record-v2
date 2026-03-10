@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import BottomTabBar from "@/components/BottomTabBar";
 import PinGate from "@/components/PinGate";
+import AuthGate from "@/components/AuthGate";
 import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
@@ -31,12 +32,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#FAF8F4]`}
       >
         <AuthProvider>
-          <PinGate>
-            <div className="pb-16">
-              {children}
-            </div>
-            <BottomTabBar />
-          </PinGate>
+          <AuthGate>
+            <PinGate>
+              <div className="pb-16">
+                {children}
+              </div>
+              <BottomTabBar />
+            </PinGate>
+          </AuthGate>
         </AuthProvider>
       </body>
     </html>
