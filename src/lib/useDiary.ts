@@ -40,9 +40,11 @@ export function useDiary() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
   useEffect(() => {
-    if (loading) return; // auth 확인 전까지 대기
+    if (loading) return;
     if (!user) {
-      setEntries(loadAllEntries());
+      // 로그아웃 시 LocalStorage 초기화 후 빈 배열
+      getAllDiaryKeys().forEach(k => storageRemove(k));
+      setEntries([]);
       return;
     }
     supabase

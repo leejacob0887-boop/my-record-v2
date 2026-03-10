@@ -32,7 +32,8 @@ export function useMoments() {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      setMoments(loadAllMoments());
+      storageSet(KEY, []);
+      setMoments([]);
       return;
     }
     supabase

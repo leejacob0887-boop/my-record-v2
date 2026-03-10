@@ -32,7 +32,8 @@ export function useIdeas() {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      setIdeas(loadAllIdeas());
+      storageSet(KEY, []);
+      setIdeas([]);
       return;
     }
     supabase
