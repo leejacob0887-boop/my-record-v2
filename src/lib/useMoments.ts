@@ -27,9 +27,8 @@ function mapFromDB(row: Record<string, unknown>): Moment {
 
 export function useMoments() {
   const { user } = useAuth();
-  const [moments, setMoments] = useState<Moment[]>(() => loadAllMoments());
+  const [moments, setMoments] = useState<Moment[]>(() => user ? [] : loadAllMoments());
 
-  // Supabase에서 데이터 로드 (로그인 시)
   useEffect(() => {
     if (!user) {
       setMoments(loadAllMoments());

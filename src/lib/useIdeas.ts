@@ -27,9 +27,8 @@ function mapFromDB(row: Record<string, unknown>): Idea {
 
 export function useIdeas() {
   const { user } = useAuth();
-  const [ideas, setIdeas] = useState<Idea[]>(() => loadAllIdeas());
+  const [ideas, setIdeas] = useState<Idea[]>(() => user ? [] : loadAllIdeas());
 
-  // Supabase에서 데이터 로드 (로그인 시)
   useEffect(() => {
     if (!user) {
       setIdeas(loadAllIdeas());

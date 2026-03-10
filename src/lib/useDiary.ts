@@ -37,9 +37,9 @@ function mapFromDB(row: Record<string, unknown>): DiaryEntry {
 
 export function useDiary() {
   const { user } = useAuth();
-  const [entries, setEntries] = useState<DiaryEntry[]>(() => loadAllEntries());
+  // 로그인 상태면 빈 배열로 시작 (LocalStorage와 섞임 방지)
+  const [entries, setEntries] = useState<DiaryEntry[]>(() => user ? [] : loadAllEntries());
 
-  // Supabase에서 데이터 로드 (로그인 시)
   useEffect(() => {
     if (!user) {
       setEntries(loadAllEntries());
@@ -52,6 +52,8 @@ export function useDiary() {
       .order('date', { ascending: false })
       .then(({ data }) => {
         if (data) {
+          // 기존 LocalStorage diary 키 전체 삭제 후 Supabase 데이터로 교체
+          getAllDiaryKeys().forEach(k => storageRemove(k));
           const mapped = data.map(mapFromDB);
           setEntries(mapped);
           mapped.forEach(e => storageSet(`${PREFIX}${e.date}`, e));
