@@ -177,12 +177,12 @@ export default function Home() {
           </div>
           <div className="w-[52%] flex-shrink-0 -mr-5">
             <Image
-              src="/illustration.png"
+              src={resolvedTheme === 'dark' ? '/illustration-dark.png' : '/illustration.png'}
               alt="기록하는 일러스트"
               width={220}
               height={220}
               className="object-contain w-full h-auto"
-              style={{ filter: resolvedTheme === 'dark' ? 'brightness(0.7)' : 'none', mixBlendMode: resolvedTheme === 'dark' ? 'normal' : 'multiply' }}
+              style={{ mixBlendMode: resolvedTheme === 'dark' ? 'normal' : 'multiply' }}
               priority
             />
           </div>
