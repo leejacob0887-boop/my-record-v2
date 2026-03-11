@@ -17,7 +17,8 @@
       "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev --help 2>&1 | head -30)",
       "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npx next dev --webpack -p 3001)",
       "Bash(start http://localhost:3001/moments)",
-      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npm install @supabase/supabase-js 2>&1 | tail -5)"
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npm install @supabase/supabase-js 2>&1 | tail -5)",
+      "Bash(vercel --version 2>&1)"
     ]
   }
 }

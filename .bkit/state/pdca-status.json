@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-10T15:06:17.592Z",
+  "lastUpdated": "2026-03-11T06:07:19.893Z",
   "dark-mode": {
     "phase": "archived",
     "matchRate": 95,
@@ -24,7 +24,8 @@
     "login",
     "signup",
     "forgot-password",
-    "reset-password"
+    "reset-password",
+    "offline"
   ],
   "primaryFeature": "my-record-v2",
   "matchRate": 94,
@@ -39,11 +40,11 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:56:18.479Z",
-        "lastUpdated": "2026-03-10T14:41:28.744Z",
+        "lastUpdated": "2026-03-11T06:07:19.893Z",
         "archivedAt": "2026-03-10T00:00:00.000Z"
       },
       "archivedTo": "docs/archive/2026-03/my-record-v2/",
-      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\page.tsx"
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\sw.ts"
     },
     "diary": {
       "phase": "do",
@@ -226,6 +227,19 @@
         "lastUpdated": "2026-03-10T05:16:27.429Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\reset-password\\page.tsx"
+    },
+    "offline": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-11T06:02:45.691Z",
+        "lastUpdated": "2026-03-11T06:02:45.691Z"
+      },
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\offline\\page.tsx"
     }
   },
   "pipeline": {
@@ -236,7 +250,7 @@
   "session": {
     "startedAt": "2026-03-09T07:45:59.575Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-10T15:06:17.592Z"
+    "lastActivity": "2026-03-11T06:07:19.893Z"
   },
   "history": [
     {
@@ -2822,6 +2836,54 @@
     {
       "timestamp": "2026-03-10T15:06:17.592Z",
       "feature": "calendar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:01:57.730Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:02:01.763Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:02:06.437Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:02:14.755Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:02:45.691Z",
+      "feature": "offline",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:06:34.673Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:06:54.057Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-11T06:07:19.893Z",
+      "feature": "my-record-v2",
       "phase": "do",
       "action": "updated"
     }
