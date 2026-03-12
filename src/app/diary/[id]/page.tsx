@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 import { useDiary } from '@/lib/useDiary';
+import { shareCard } from '@/lib/shareCard';
 
 function formatDateTime(date: string, createdAt: string): string {
   const d = new Date(createdAt);
@@ -15,9 +17,11 @@ function formatDateTime(date: string, createdAt: string): string {
 export default function DiaryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const { getById, remove } = useDiary();
   const entry = getById(id);
   const [entryTags, setEntryTags] = useState<string[]>([]);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     if (!entry) return;
@@ -53,6 +57,26 @@ export default function DiaryDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    if (!entry) return;
+    setSharing(true);
+    try {
+      await shareCard({
+        type: 'diary',
+        title: entry.title,
+        content: (entry.content ?? '').slice(0, 120),
+        date: entry.date,
+        isDark: resolvedTheme === 'dark',
+      });
+    } catch (e) {
+      if (e instanceof Error && e.name !== 'AbortError') {
+        alert('공유 중 오류가 발생했어요.');
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900 flex flex-col w-full">
 
@@ -68,12 +92,32 @@ export default function DiaryDetailPage() {
           </svg>
           <span className="text-sm text-gray-600">{formatDateTime(entry.date, entry.createdAt)}</span>
         </button>
-        <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-          </svg>
-        </Link>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleShare}
+            disabled={sharing}
+            className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+            aria-label="공유하기"
+          >
+            {sharing ? (
+              <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round">
+                <path d="M21 12a9 9 0 11-6.219-8.56" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+            )}
+          </button>
+          <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+          </Link>
+        </div>
       </div>
 
       {/* Content card */}

@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useTheme } from 'next-themes';
 import { useMoments } from '@/lib/useMoments';
+import { shareCard } from '@/lib/shareCard';
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,8 +24,10 @@ function formatDateTime(date: string, createdAt: string): string {
 export default function MomentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const { getById, remove } = useMoments();
   const moment = getById(id);
+  const [sharing, setSharing] = useState(false);
 
   if (!moment) {
     return (
@@ -46,6 +51,26 @@ export default function MomentDetailPage() {
     }
   };
 
+  const handleShare = async () => {
+    if (!moment) return;
+    setSharing(true);
+    try {
+      await shareCard({
+        type: 'moment',
+        title: moment.text.split('\n')[0].slice(0, 50),
+        content: moment.text.slice(0, 120),
+        date: moment.date,
+        isDark: resolvedTheme === 'dark',
+      });
+    } catch (e) {
+      if (e instanceof Error && e.name !== 'AbortError') {
+        alert('공유 중 오류가 발생했어요.');
+      }
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       <div className="max-w-[430px] mx-auto px-4">
@@ -62,9 +87,29 @@ export default function MomentDetailPage() {
             </svg>
           </button>
           <span className="text-base font-semibold text-gray-800 dark:text-gray-100">메모</span>
-          <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
-            <SettingsIcon />
-          </Link>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleShare}
+              disabled={sharing}
+              className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors disabled:opacity-50"
+              aria-label="공유하기"
+            >
+              {sharing ? (
+                <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 12a9 9 0 11-6.219-8.56" />
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                  <polyline points="16 6 12 2 8 6" />
+                  <line x1="12" y1="2" x2="12" y2="15" />
+                </svg>
+              )}
+            </button>
+            <Link href="/settings" className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors" aria-label="설정">
+              <SettingsIcon />
+            </Link>
+          </div>
         </div>
 
         {/* Content card */}
