@@ -12,6 +12,34 @@ import { useSpeechInput } from '@/lib/useSpeechInput';
 type MessageRole = 'user' | 'assistant' | 'info';
 type Message = { id: string; role: MessageRole; content: string };
 
+const CHAT_STORAGE_KEY = 'chat:history';
+const INITIAL_MESSAGE: Message = {
+  id: '0',
+  role: 'assistant',
+  content: '안녕하세요! 오늘 어떤 이야기를 나눠볼까요? 😊\n대화하다가 "저장해줘"라고 하면 제가 기록으로 남겨드릴게요.',
+};
+
+function loadMessages(): Message[] {
+  try {
+    const raw = localStorage.getItem(CHAT_STORAGE_KEY);
+    if (!raw) return [INITIAL_MESSAGE];
+    const parsed = JSON.parse(raw) as Message[];
+    return parsed.length > 0 ? parsed : [INITIAL_MESSAGE];
+  } catch {
+    return [INITIAL_MESSAGE];
+  }
+}
+
+function saveMessages(msgs: Message[]) {
+  try {
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(msgs));
+  } catch {}
+}
+
+function clearMessages() {
+  localStorage.removeItem(CHAT_STORAGE_KEY);
+}
+
 const SAVE_TRIGGERS = ['저장해줘', '저장해', '저장할게', '기록해줘', '기록해'];
 
 const isSaveRequest = (text: string) =>
@@ -23,13 +51,7 @@ export default function ChatPage() {
   const { add: addMoment } = useMoments();
   const { add: addIdea } = useIdeas();
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0',
-      role: 'assistant',
-      content: '안녕하세요! 오늘 어떤 이야기를 나눠볼까요? 😊\n대화하다가 "저장해줘"라고 하면 제가 기록으로 남겨드릴게요.',
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [streamingContent, setStreamingContent] = useState('');
@@ -39,6 +61,16 @@ export default function ChatPage() {
   const handleSendRef = useRef<() => void>(() => {});
 
   const isTTSSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+  // 마운트 시 이전 대화 복원
+  useEffect(() => {
+    setMessages(loadMessages());
+  }, []); // eslint-disable-line
+
+  // messages 변경 시 localStorage 저장
+  useEffect(() => {
+    saveMessages(messages);
+  }, [messages]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -143,10 +175,16 @@ export default function ChatPage() {
         await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
       }
 
+      // 저장 성공 → 1.5초 후 대화 초기화
+      const confirmMsg = data.confirmMessage ?? '✅ 저장했어요!';
       setMessages((prev) => [
         ...prev.filter((m) => !(m.role === 'info' && m.content === '대화 내용을 분석 중이에요...')),
-        { id: newId(), role: 'info', content: data.confirmMessage ?? '✅ 저장했어요!' },
+        { id: newId(), role: 'info', content: confirmMsg },
       ]);
+      setTimeout(() => {
+        clearMessages();
+        setMessages([INITIAL_MESSAGE]);
+      }, 1500);
     } catch (e) {
       const msg = e instanceof Error ? e.message : '저장 중 오류가 발생했어요.';
       setMessages((prev) => [
