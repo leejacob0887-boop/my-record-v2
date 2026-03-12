@@ -250,6 +250,22 @@ export default function ChatPage() {
           <h1 className="text-base font-bold text-gray-800 dark:text-gray-100">AI와 대화</h1>
           <p className="text-xs text-gray-400 dark:text-gray-500">"저장해줘"라고 하면 기록으로 남겨드려요</p>
         </div>
+        <button
+          onClick={() => {
+            if (!confirm('대화 내용을 전체 삭제할까요?')) return;
+            clearMessages();
+            setMessages([INITIAL_MESSAGE]);
+          }}
+          className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          aria-label="대화 초기화"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4h6v2" />
+          </svg>
+        </button>
         {isTTSSupported && (
           <button
             onClick={() => {
