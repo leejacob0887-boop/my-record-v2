@@ -162,7 +162,7 @@ export default function MomentNewPage() {
             onChange={(e) => setText(e.target.value)}
             placeholder="지금 무슨 생각을 하고 있나요?"
             maxLength={500}
-            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
+            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none min-h-[200px]"
           />
           <p className="px-4 pb-2 text-right text-xs text-gray-400">{text.length}/500</p>
 
@@ -184,7 +184,7 @@ export default function MomentNewPage() {
                     if (e.key === 'Escape') setTagOpen(false);
                   }}
                   placeholder="태그 입력 후 Enter"
-                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  className="flex-1 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none"
                   autoFocus
                 />
                 <button

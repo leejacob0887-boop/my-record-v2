@@ -141,7 +141,7 @@ export default function IdeaNewPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="아이디어 제목"
-              className="w-full text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+              className="w-full text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none"
               required
             />
           </div>
@@ -157,7 +157,7 @@ export default function IdeaNewPage() {
               placeholder="아이디어를 자유롭게 적어보세요"
               rows={6}
               maxLength={500}
-              className="w-full text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none"
+              className="w-full text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none"
               required
             />
             <p className="text-right text-xs text-gray-400 mt-1">{content.length}/500</p>
@@ -183,7 +183,7 @@ export default function IdeaNewPage() {
                   onChange={e => setTagInput(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
                   placeholder="태그 입력 후 Enter"
-                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  className="flex-1 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none"
                   autoFocus
                 />
                 <button type="button" onClick={addTag} className="text-blue-400 text-xs font-medium hover:text-blue-600 transition-colors">추가</button>

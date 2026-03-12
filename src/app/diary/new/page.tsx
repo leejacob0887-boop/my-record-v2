@@ -196,7 +196,7 @@ export default function DiaryNewPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="오늘 하루의 제목 (선택)"
-              className="flex-1 px-4 py-3 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+              className="flex-1 px-4 py-3 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none"
             />
             <div className="relative">
               <button
@@ -247,7 +247,7 @@ export default function DiaryNewPage() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="오늘 하루는 어땠나요?"
-            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none resize-none min-h-[200px]"
+            className="flex-1 w-full px-4 py-4 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none min-h-[200px]"
           />
 
         </div>
@@ -268,7 +268,7 @@ export default function DiaryNewPage() {
                     if (e.key === 'Escape') setTagOpen(false);
                   }}
                   placeholder="태그 입력 후 Enter"
-                  className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+                  className="flex-1 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none"
                   autoFocus
                 />
                 <button
