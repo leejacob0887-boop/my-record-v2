@@ -298,7 +298,7 @@ export default function IdeasPage() {
 
       {/* Edit mode bottom bar */}
       {editMode && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between z-40">
+        <div className="fixed bottom-16 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between z-[60]">
           <span className="text-sm text-gray-400 dark:text-gray-500">
             {selected.size > 0 ? `${selected.size}개 선택됨` : '항목을 선택하세요'}
           </span>
