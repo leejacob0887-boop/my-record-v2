@@ -53,7 +53,7 @@ export default function SavePreviewCard({ type, title, content, savedAt, onDismi
       >
         {/* 타이머 바 — 상단 */}
         <div className="h-[3px] bg-gray-100 dark:bg-gray-700">
-          <div className="h-full bg-gradient-to-r from-green-400 to-emerald-300 dark:from-green-500 dark:to-emerald-400 animate-timer-drain" />
+          <div className="h-full animate-timer-drain" style={{ background: '#C084FC' }} />
         </div>
 
         <div className="px-5 py-4">
