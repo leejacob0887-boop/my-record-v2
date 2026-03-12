@@ -1,15 +1,20 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
 import { useSpeechInput } from '@/lib/useSpeechInput';
+import { useDraft } from '@/hooks/useDraft';
+import DraftToast from '@/components/DraftToast';
+
+type MomentDraft = { text: string; tags: string[] };
 
 export default function MomentNewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { add } = useMoments();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { load, save, clear } = useDraft<MomentDraft>('draft:moment');
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -22,6 +27,32 @@ export default function MomentNewPage() {
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showDraft, setShowDraft] = useState(false);
+
+  useEffect(() => {
+    const draft = load();
+    if (draft && draft.text.trim()) setShowDraft(true);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (!text.trim()) return;
+    const id = setTimeout(() => save({ text, tags }), 500);
+    return () => clearTimeout(id);
+  }, [text, tags]); // eslint-disable-line
+
+  const handleResume = () => {
+    const draft = load();
+    if (!draft) return;
+    setText(draft.text);
+    setTags(draft.tags);
+    clear();
+    setShowDraft(false);
+  };
+
+  const handleDiscard = () => {
+    clear();
+    setShowDraft(false);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -52,11 +83,13 @@ export default function MomentNewPage() {
     setSaving(true);
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
     await add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
+    clear();
     router.push('/moments');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
+      {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}

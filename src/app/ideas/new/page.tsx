@@ -1,11 +1,15 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
 import ImagePicker from '@/components/ImagePicker';
 import MicButton from '@/components/MicButton';
 import { useSpeechInput } from '@/lib/useSpeechInput';
+import { useDraft } from '@/hooks/useDraft';
+import DraftToast from '@/components/DraftToast';
+
+type IdeaDraft = { title: string; content: string; tags: string[] };
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -18,6 +22,7 @@ export default function IdeaNewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { add } = useIdeas();
+  const { load, save, clear } = useDraft<IdeaDraft>('draft:idea');
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const [saving, setSaving] = useState(false);
@@ -28,6 +33,33 @@ export default function IdeaNewPage() {
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showDraft, setShowDraft] = useState(false);
+
+  useEffect(() => {
+    const draft = load();
+    if (draft && (draft.title.trim() || draft.content.trim())) setShowDraft(true);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (!title.trim() && !content.trim()) return;
+    const id = setTimeout(() => save({ title, content, tags }), 500);
+    return () => clearTimeout(id);
+  }, [title, content, tags]); // eslint-disable-line
+
+  const handleResume = () => {
+    const draft = load();
+    if (!draft) return;
+    setTitle(draft.title);
+    setContent(draft.content);
+    setTags(draft.tags);
+    clear();
+    setShowDraft(false);
+  };
+
+  const handleDiscard = () => {
+    clear();
+    setShowDraft(false);
+  };
 
   const handleVoiceResult = useCallback((text: string) => {
     setContent(prev => prev ? prev + ' ' + text : text);
@@ -46,11 +78,13 @@ export default function IdeaNewPage() {
     setSaving(true);
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
     await add({ title: title.trim(), content: content.trim() + tagStr, date, imageBase64 });
+    clear();
     router.push('/ideas');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
+      {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
       <div className="max-w-[430px] mx-auto px-4">
 
         {/* Header */}

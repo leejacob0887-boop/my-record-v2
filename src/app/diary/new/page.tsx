@@ -1,11 +1,22 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDiary } from '@/lib/useDiary';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { useAuth } from '@/context/AuthContext';
 import { uploadImage } from '@/lib/storageUpload';
+import { useDraft } from '@/hooks/useDraft';
+import DraftToast from '@/components/DraftToast';
+
+type DiaryDraft = {
+  title: string;
+  content: string;
+  weatherIndex: number;
+  emotionIndex: number | null;
+  tags: string[];
+  dateStr: string;
+};
 
 const WEATHERS = [
   { label: '맑음', icon: '☀️' },
@@ -22,6 +33,7 @@ export default function DiaryNewPage() {
   const searchParams = useSearchParams();
   const { user } = useAuth();
   const { save, getByDate } = useDiary();
+  const { load, save: saveDraft, clear } = useDraft<DiaryDraft>('draft:diary');
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -41,6 +53,36 @@ export default function DiaryNewPage() {
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [showDraft, setShowDraft] = useState(false);
+
+  useEffect(() => {
+    const draft = load();
+    if (draft && (draft.title.trim() || draft.content.trim())) setShowDraft(true);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (!title.trim() && !content.trim()) return;
+    const id = setTimeout(() => saveDraft({ title, content, weatherIndex, emotionIndex, tags, dateStr }), 500);
+    return () => clearTimeout(id);
+  }, [title, content, weatherIndex, emotionIndex, tags, dateStr]); // eslint-disable-line
+
+  const handleResume = () => {
+    const draft = load();
+    if (!draft) return;
+    setTitle(draft.title);
+    setContent(draft.content);
+    setWeatherIndex(draft.weatherIndex);
+    setEmotionIndex(draft.emotionIndex);
+    setTags(draft.tags);
+    setDateStr(draft.dateStr);
+    clear();
+    setShowDraft(false);
+  };
+
+  const handleDiscard = () => {
+    clear();
+    setShowDraft(false);
+  };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -82,11 +124,13 @@ export default function DiaryNewPage() {
     }
     setSaving(true);
     await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64, tags });
+    clear();
     router.push('/diary');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
+      {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}
