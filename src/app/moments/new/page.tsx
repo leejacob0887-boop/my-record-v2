@@ -6,8 +6,10 @@ import { useMoments } from '@/lib/useMoments';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
+import SavePreviewCard from '@/components/SavePreviewCard';
 
 type MomentDraft = { text: string; tags: string[] };
+type PreviewData = { content: string; savedAt: string };
 
 export default function MomentNewPage() {
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function MomentNewPage() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [showDraft, setShowDraft] = useState(false);
+  const [preview, setPreview] = useState<PreviewData | null>(null);
 
   useEffect(() => {
     const draft = load();
@@ -84,12 +87,26 @@ export default function MomentNewPage() {
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
     await add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
     clear();
+    const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    setPreview({ content: text.trim(), savedAt });
+  };
+
+  const handleDismiss = () => {
+    setPreview(null);
     router.push('/moments');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
+      {preview && (
+        <SavePreviewCard
+          type="moment"
+          content={preview.content}
+          savedAt={preview.savedAt}
+          onDismiss={handleDismiss}
+        />
+      )}
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}

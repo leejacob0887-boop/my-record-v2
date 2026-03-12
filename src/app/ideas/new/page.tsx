@@ -8,8 +8,10 @@ import MicButton from '@/components/MicButton';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
+import SavePreviewCard from '@/components/SavePreviewCard';
 
 type IdeaDraft = { title: string; content: string; tags: string[] };
+type PreviewData = { title: string; content: string; savedAt: string };
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -34,6 +36,7 @@ export default function IdeaNewPage() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [showDraft, setShowDraft] = useState(false);
+  const [preview, setPreview] = useState<PreviewData | null>(null);
 
   useEffect(() => {
     const draft = load();
@@ -79,12 +82,27 @@ export default function IdeaNewPage() {
     const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
     await add({ title: title.trim(), content: content.trim() + tagStr, date, imageBase64 });
     clear();
+    const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    setPreview({ title: title.trim(), content: content.trim(), savedAt });
+  };
+
+  const handleDismiss = () => {
+    setPreview(null);
     router.push('/ideas');
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
+      {preview && (
+        <SavePreviewCard
+          type="idea"
+          title={preview.title}
+          content={preview.content}
+          savedAt={preview.savedAt}
+          onDismiss={handleDismiss}
+        />
+      )}
       <div className="max-w-[430px] mx-auto px-4">
 
         {/* Header */}

@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { uploadImage } from '@/lib/storageUpload';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
+import SavePreviewCard from '@/components/SavePreviewCard';
 
 type DiaryDraft = {
   title: string;
@@ -17,6 +18,7 @@ type DiaryDraft = {
   tags: string[];
   dateStr: string;
 };
+type PreviewData = { title: string; content: string; savedAt: string };
 
 const WEATHERS = [
   { label: '맑음', icon: '☀️' },
@@ -54,6 +56,7 @@ export default function DiaryNewPage() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [showDraft, setShowDraft] = useState(false);
+  const [preview, setPreview] = useState<PreviewData | null>(null);
 
   useEffect(() => {
     const draft = load();
@@ -82,6 +85,11 @@ export default function DiaryNewPage() {
   const handleDiscard = () => {
     clear();
     setShowDraft(false);
+  };
+
+  const handleDismiss = () => {
+    setPreview(null);
+    router.push('/diary');
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,12 +133,22 @@ export default function DiaryNewPage() {
     setSaving(true);
     await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64, tags });
     clear();
-    router.push('/diary');
+    const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    setPreview({ title: title.trim() || '제목 없음', content: content.trim(), savedAt });
   };
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
       {showDraft && <DraftToast onResume={handleResume} onDiscard={handleDiscard} />}
+      {preview && (
+        <SavePreviewCard
+          type="diary"
+          title={preview.title}
+          content={preview.content}
+          savedAt={preview.savedAt}
+          onDismiss={handleDismiss}
+        />
+      )}
       <div className="max-w-[430px] mx-auto flex flex-col min-h-screen">
 
         {/* Header */}
