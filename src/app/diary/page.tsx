@@ -58,15 +58,32 @@ function SearchIcon() {
   );
 }
 
-function DiaryCard({ entry }: { entry: DiaryEntry }) {
-  return (
-    <Link
-      href={`/diary/${entry.id}`}
-      className="flex items-center gap-3 py-4 border-b border-gray-100 hover:bg-black/[0.02] transition-colors -mx-1 px-1 rounded-xl"
-    >
-      <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
-        <BookOpen size={36} color="#4A90D9" strokeWidth={1.5} />
-      </div>
+function DiaryCard({
+  entry,
+  editMode,
+  isSelected,
+  onToggle,
+}: {
+  entry: DiaryEntry;
+  editMode: boolean;
+  isSelected: boolean;
+  onToggle: (id: string) => void;
+}) {
+  const body = (
+    <>
+      {editMode ? (
+        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'bg-[#4A90D9] border-[#4A90D9]' : 'border-gray-300 dark:border-gray-600'}`}>
+          {isSelected && (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )}
+        </div>
+      ) : (
+        <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+          <BookOpen size={36} color="#4A90D9" strokeWidth={1.5} />
+        </div>
+      )}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{entry.title}</p>
         <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(entry.date, entry.createdAt)}</p>
@@ -74,17 +91,43 @@ function DiaryCard({ entry }: { entry: DiaryEntry }) {
           <p className="text-xs text-gray-400 mt-0.5 truncate">{entry.content}</p>
         )}
       </div>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+      {!editMode && (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      )}
+    </>
+  );
+
+  if (editMode) {
+    return (
+      <div
+        onClick={() => entry.id && onToggle(entry.id)}
+        className={`flex items-center gap-3 py-4 border-b border-gray-100 dark:border-gray-700 cursor-pointer -mx-1 px-1 rounded-xl transition-colors ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : 'active:bg-black/[0.02]'}`}
+      >
+        {body}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={`/diary/${entry.id}`}
+      className="flex items-center gap-3 py-4 border-b border-gray-100 hover:bg-black/[0.02] transition-colors -mx-1 px-1 rounded-xl"
+    >
+      {body}
     </Link>
   );
 }
 
 export default function DiaryPage() {
-  const { entries, save, isLoading } = useDiary();
+  const { entries, save, remove, isLoading } = useDiary();
   const [query, setQuery] = useState('');
   const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleteTarget, setDeleteTarget] = useState<'selected' | 'all' | null>(null);
+
   const q = query.trim().toLowerCase();
   const validEntries = entries.filter(e => e.type === 'diary' && typeof e.title === 'string');
 
@@ -130,9 +173,31 @@ export default function DiaryPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const exitEditMode = () => {
+    setEditMode(false);
+    setSelected(new Set());
+  };
+
+  const handleDeleteConfirm = () => {
+    const idsToDelete = deleteTarget === 'all'
+      ? filtered.map(e => e.id).filter((id): id is string => Boolean(id))
+      : Array.from(selected);
+    idsToDelete.forEach(id => remove(id));
+    setDeleteTarget(null);
+    exitEditMode();
+  };
+
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-md mx-auto px-4">
+      <div className={`max-w-md mx-auto px-4 ${editMode ? 'pb-28' : ''}`}>
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">
@@ -146,27 +211,39 @@ export default function DiaryPage() {
         </div>
 
         {/* Title */}
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">일기</h1>
-          <p className="text-sm text-gray-400 mt-1">하루 하나씩 깊은 기록</p>
-        </div>
-
-        {/* Search bar */}
-        <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 border border-gray-100 shadow-sm mb-4">
-          <SearchIcon />
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="일기 검색"
-            className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
-          />
-          {query && (
-            <button onClick={() => setQuery('')} className="text-gray-300 hover:text-gray-400 text-base leading-none">×</button>
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">일기</h1>
+            <p className="text-sm text-gray-400 mt-1">하루 하나씩 깊은 기록</p>
+          </div>
+          {validEntries.length > 0 && (
+            <button
+              onClick={editMode ? exitEditMode : () => setEditMode(true)}
+              className="absolute right-0 text-sm font-medium text-[#4A90D9] py-1 px-2"
+            >
+              {editMode ? '취소' : '편집'}
+            </button>
           )}
         </div>
 
+        {/* Search bar */}
+        {!editMode && (
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2.5 border border-gray-100 shadow-sm mb-4">
+            <SearchIcon />
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="일기 검색"
+              className="flex-1 text-sm text-gray-700 placeholder-gray-300 bg-transparent outline-none"
+            />
+            {query && (
+              <button onClick={() => setQuery('')} className="text-gray-300 hover:text-gray-400 text-base leading-none">×</button>
+            )}
+          </div>
+        )}
+
         {/* Tag filter */}
-        {allTags.length > 0 && (
+        {!editMode && allTags.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1 mb-4" style={{ scrollbarWidth: 'none' }}>
             <button
               onClick={() => setTagFilter(null)}
@@ -187,12 +264,14 @@ export default function DiaryPage() {
         )}
 
         {/* New diary button */}
-        <Link
-          href="/diary/new"
-          className="block w-full text-center bg-[#4A90D9] text-white rounded-2xl py-3.5 text-sm font-semibold hover:bg-[#3A7FC9] transition-colors mb-6"
-        >
-          + 새 일기 쓰기
-        </Link>
+        {!editMode && (
+          <Link
+            href="/diary/new"
+            className="block w-full text-center bg-[#4A90D9] text-white rounded-2xl py-3.5 text-sm font-semibold hover:bg-[#3A7FC9] transition-colors mb-6"
+          >
+            + 새 일기 쓰기
+          </Link>
+        )}
 
         {/* Diary list */}
         {isLoading ? (
@@ -209,12 +288,74 @@ export default function DiaryPage() {
         ) : (
           <div>
             {filtered.map((entry) => (
-              <DiaryCard key={entry.id || entry.date} entry={entry} />
+              <DiaryCard
+                key={entry.id || entry.date}
+                entry={entry}
+                editMode={editMode}
+                isSelected={Boolean(entry.id && selected.has(entry.id))}
+                onToggle={toggleSelect}
+              />
             ))}
           </div>
         )}
 
       </div>
+
+      {/* Edit mode bottom bar */}
+      {editMode && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex gap-3 z-40">
+          <button
+            onClick={() => selected.size > 0 && setDeleteTarget('selected')}
+            disabled={selected.size === 0}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-red-500 border border-red-200 dark:border-red-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-[0.98]"
+          >
+            선택 삭제{selected.size > 0 ? ` (${selected.size})` : ''}
+          </button>
+          <button
+            onClick={() => filtered.length > 0 && setDeleteTarget('all')}
+            disabled={filtered.length === 0}
+            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
+          >
+            전체 삭제
+          </button>
+        </div>
+      )}
+
+      {/* Delete confirm dialog */}
+      {deleteTarget && (
+        <>
+          <div className="fixed inset-0 bg-black/40 z-50" onClick={() => setDeleteTarget(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div className="w-full max-w-[360px] bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+              <div className="px-6 py-5">
+                <p className="text-base font-bold text-gray-800 dark:text-gray-100 mb-1.5">
+                  {deleteTarget === 'all' ? '전체 삭제' : `${selected.size}개 삭제`}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  {deleteTarget === 'all'
+                    ? `${filtered.length}개의 일기를 모두 삭제할까요?`
+                    : `선택한 ${selected.size}개의 일기를 삭제할까요?`}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">삭제된 기록은 복구할 수 없어요.</p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setDeleteTarget(null)}
+                    className="flex-1 py-3 rounded-xl text-sm font-semibold text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={handleDeleteConfirm}
+                    className="flex-[1.5] py-3 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors"
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </main>
   );
 }
