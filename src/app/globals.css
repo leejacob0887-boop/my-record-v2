@@ -95,10 +95,10 @@ input {
   80% { transform: translateX(6px); }
 }
 
-@keyframes slide-down {
-  from { transform: translateY(-100%); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+@keyframes slide-up-toast {
+  from { transform: translateY(120%) scale(0.95); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
-.animate-slide-down {
-  animation: slide-down 0.25s ease-out forwards;
+.animate-slide-up-toast {
+  animation: slide-up-toast 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
