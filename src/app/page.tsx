@@ -89,10 +89,8 @@ export default function Home() {
 
         {/* Today badge */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <span className={`text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
-            {todayCount > 0
-              ? `오늘 ${todayCount}개의 기록을 남겼어요 ✨`
-              : '오늘 첫 기록을 남겨볼까요?'}
+          <span className="text-base font-medium text-gray-500 dark:text-gray-400">
+            ✍️ AI와 대화하며 기록해보세요
           </span>
           <Link
             href="/chat"
