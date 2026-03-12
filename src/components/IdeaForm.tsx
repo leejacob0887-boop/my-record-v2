@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Idea } from '@/lib/types';
 import ImagePicker from './ImagePicker';
+import MicButton from './MicButton';
+import { useSpeechInput } from '@/lib/useSpeechInput';
 
 interface IdeaFormProps {
   initial?: Partial<Idea>;
@@ -13,6 +15,11 @@ export default function IdeaForm({ initial, onSubmit }: IdeaFormProps) {
   const [title, setTitle] = useState(initial?.title ?? '');
   const [content, setContent] = useState(initial?.content ?? '');
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial?.imageBase64);
+
+  const handleVoiceResult = useCallback((text: string) => {
+    setContent(prev => prev ? prev + ' ' + text : text);
+  }, []);
+  const { isRecording, isSupported, error: voiceError, toggle } = useSpeechInput(handleVoiceResult);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +41,10 @@ export default function IdeaForm({ initial, onSubmit }: IdeaFormProps) {
         />
       </div>
       <div>
-        <label className="block text-xs text-gray-500 mb-1">내용</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-gray-500">내용</label>
+          {isSupported && <MicButton isRecording={isRecording} onClick={toggle} />}
+        </div>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -43,6 +53,7 @@ export default function IdeaForm({ initial, onSubmit }: IdeaFormProps) {
           className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-200"
           required
         />
+        {voiceError && <p className="text-xs text-red-400 mt-1">{voiceError}</p>}
       </div>
       <div>
         <label className="block text-xs text-gray-500 mb-1">사진</label>

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { DiaryEntry } from '@/lib/types';
 import ImagePicker from './ImagePicker';
+import MicButton from './MicButton';
+import { useSpeechInput } from '@/lib/useSpeechInput';
 
 interface DiaryFormProps {
   initial?: Partial<DiaryEntry>;
@@ -20,6 +22,11 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(initialTags ?? initial?.tags ?? []);
+
+  const handleVoiceResult = useCallback((text: string) => {
+    setContent(prev => prev ? prev + ' ' + text : text);
+  }, []);
+  const { isRecording, isSupported, error: voiceError, toggle } = useSpeechInput(handleVoiceResult);
 
   const addTag = () => {
     const t = tagInput.trim().replace(/^#/, '');
@@ -57,7 +64,10 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
         />
       </div>
       <div>
-        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">내용</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-gray-500 dark:text-gray-400">내용</label>
+          {isSupported && <MicButton isRecording={isRecording} onClick={toggle} />}
+        </div>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -66,6 +76,7 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
           className="w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600 bg-transparent resize-none focus:outline-none focus:ring-2 focus:ring-blue-200"
           required
         />
+        {voiceError && <p className="text-xs text-red-400 mt-1">{voiceError}</p>}
       </div>
       <div>
         <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">사진</label>

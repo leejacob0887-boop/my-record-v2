@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Moment } from '@/lib/types';
 import ImagePicker from './ImagePicker';
+import MicButton from './MicButton';
+import { useSpeechInput } from '@/lib/useSpeechInput';
 
 interface MomentFormProps {
   initial?: Partial<Moment>;
@@ -13,6 +15,11 @@ export default function MomentForm({ initial, onSubmit }: MomentFormProps) {
   const [text, setText] = useState(initial?.text ?? '');
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial?.imageBase64);
 
+  const handleVoiceResult = useCallback((text: string) => {
+    setText(prev => prev ? prev + ' ' + text : text);
+  }, []);
+  const { isRecording, isSupported, error: voiceError, toggle } = useSpeechInput(handleVoiceResult);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
@@ -22,7 +29,10 @@ export default function MomentForm({ initial, onSubmit }: MomentFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-500 mb-1">메모</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-gray-500">메모</label>
+          {isSupported && <MicButton isRecording={isRecording} onClick={toggle} />}
+        </div>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -33,6 +43,7 @@ export default function MomentForm({ initial, onSubmit }: MomentFormProps) {
           required
         />
         <p className="text-right text-xs text-gray-400 mt-1">{text.length}/500</p>
+        {voiceError && <p className="text-xs text-red-400 mt-1">{voiceError}</p>}
       </div>
       <div>
         <label className="block text-xs text-gray-500 mb-1">사진</label>
