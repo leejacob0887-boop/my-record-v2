@@ -165,17 +165,59 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="flex items-center gap-5 px-1">
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span className="w-2 h-2 rounded-full bg-[#4A90D9] inline-block" />
-            기록 있음
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-400">
-            <span className="w-5 h-5 rounded-xl border-2 border-[#4A90D9] inline-block" />
-            오늘
-          </div>
-        </div>
+        {/* Today's Summary */}
+        {(() => {
+          const diaryCount = diaryEntries.filter(e => e.date === today).length;
+          const momentCount = moments.filter(m => m.date === today).length;
+          const ideaCount = ideas.filter(i => i.createdAt.slice(0, 10) === today).length;
+          const total = diaryCount + momentCount + ideaCount;
+
+          return (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm px-5 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">오늘의 기록</p>
+                <p className="text-xs text-gray-300 dark:text-gray-600">
+                  {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+              {total === 0 ? (
+                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-1">
+                  오늘 아직 기록이 없어요 🌱
+                </p>
+              ) : (
+                <div className="flex items-center gap-3 flex-wrap">
+                  {diaryCount > 0 && (
+                    <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-3 py-2">
+                      <span className="text-base leading-none">📖</span>
+                      <div>
+                        <p className="text-xs font-semibold text-amber-700 dark:text-amber-400 leading-none">{diaryCount}개</p>
+                        <p className="text-[10px] text-amber-500/70 dark:text-amber-600 mt-0.5">일기</p>
+                      </div>
+                    </div>
+                  )}
+                  {momentCount > 0 && (
+                    <div className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl px-3 py-2">
+                      <span className="text-base leading-none">⚡</span>
+                      <div>
+                        <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 leading-none">{momentCount}개</p>
+                        <p className="text-[10px] text-blue-500/70 dark:text-blue-600 mt-0.5">메모</p>
+                      </div>
+                    </div>
+                  )}
+                  {ideaCount > 0 && (
+                    <div className="flex items-center gap-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl px-3 py-2">
+                      <span className="text-base leading-none">💡</span>
+                      <div>
+                        <p className="text-xs font-semibold text-yellow-700 dark:text-yellow-400 leading-none">{ideaCount}개</p>
+                        <p className="text-[10px] text-yellow-500/70 dark:text-yellow-600 mt-0.5">아이디어</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
       </div>
 
