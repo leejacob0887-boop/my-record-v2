@@ -126,7 +126,7 @@ export default function DiaryPage() {
   const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [deleteTarget, setDeleteTarget] = useState<'selected' | 'all' | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   const q = query.trim().toLowerCase();
   const validEntries = entries.filter(e => e.type === 'diary' && typeof e.title === 'string');
@@ -173,6 +173,8 @@ export default function DiaryPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const allSelected = filtered.length > 0 && filtered.every(e => e.id && selected.has(e.id));
+
   const toggleSelect = (id: string) => {
     setSelected(prev => {
       const next = new Set(prev);
@@ -181,17 +183,22 @@ export default function DiaryPage() {
     });
   };
 
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelected(new Set());
+    } else {
+      setSelected(new Set(filtered.map(e => e.id).filter((id): id is string => Boolean(id))));
+    }
+  };
+
   const exitEditMode = () => {
     setEditMode(false);
     setSelected(new Set());
   };
 
   const handleDeleteConfirm = () => {
-    const idsToDelete = deleteTarget === 'all'
-      ? filtered.map(e => e.id).filter((id): id is string => Boolean(id))
-      : Array.from(selected);
-    idsToDelete.forEach(id => remove(id));
-    setDeleteTarget(null);
+    Array.from(selected).forEach(id => remove(id));
+    setConfirmDelete(false);
     exitEditMode();
   };
 
@@ -212,6 +219,21 @@ export default function DiaryPage() {
 
         {/* Title */}
         <div className="relative flex items-center justify-center mb-6">
+          {editMode && (
+            <button
+              onClick={toggleSelectAll}
+              className="absolute left-0 flex items-center gap-1.5 py-1 px-1"
+            >
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${allSelected ? 'bg-[#4A90D9] border-[#4A90D9]' : 'border-gray-300 dark:border-gray-500'}`}>
+                {allSelected && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </div>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">전체 선택</span>
+            </button>
+          )}
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">일기</h1>
             <p className="text-sm text-gray-400 mt-1">하루 하나씩 깊은 기록</p>
@@ -303,43 +325,39 @@ export default function DiaryPage() {
 
       {/* Edit mode bottom bar */}
       {editMode && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex gap-3 z-40">
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between z-40">
+          <span className="text-sm text-gray-400 dark:text-gray-500">
+            {selected.size > 0 ? `${selected.size}개 선택됨` : '항목을 선택하세요'}
+          </span>
           <button
-            onClick={() => selected.size > 0 && setDeleteTarget('selected')}
+            onClick={() => selected.size > 0 && setConfirmDelete(true)}
             disabled={selected.size === 0}
-            className="flex-1 py-3 rounded-xl text-sm font-semibold text-red-500 border border-red-200 dark:border-red-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-[0.98]"
+            className="w-11 h-11 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-[0.95]"
+            aria-label="선택 삭제"
           >
-            선택 삭제{selected.size > 0 ? ` (${selected.size})` : ''}
-          </button>
-          <button
-            onClick={() => filtered.length > 0 && setDeleteTarget('all')}
-            disabled={filtered.length === 0}
-            className="flex-1 py-3 rounded-xl text-sm font-semibold text-white bg-red-500 hover:bg-red-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors active:scale-[0.98]"
-          >
-            전체 삭제
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+              <path d="M10 11v6M14 11v6" />
+              <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+            </svg>
           </button>
         </div>
       )}
 
       {/* Delete confirm dialog */}
-      {deleteTarget && (
+      {confirmDelete && (
         <>
-          <div className="fixed inset-0 bg-black/40 z-50" onClick={() => setDeleteTarget(null)} />
+          <div className="fixed inset-0 bg-black/40 z-50" onClick={() => setConfirmDelete(false)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
             <div className="w-full max-w-[360px] bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
               <div className="px-6 py-5">
-                <p className="text-base font-bold text-gray-800 dark:text-gray-100 mb-1.5">
-                  {deleteTarget === 'all' ? '전체 삭제' : `${selected.size}개 삭제`}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                  {deleteTarget === 'all'
-                    ? `${filtered.length}개의 일기를 모두 삭제할까요?`
-                    : `선택한 ${selected.size}개의 일기를 삭제할까요?`}
-                </p>
+                <p className="text-base font-bold text-gray-800 dark:text-gray-100 mb-1.5">{selected.size}개 삭제</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">선택한 {selected.size}개의 일기를 삭제할까요?</p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mb-5">삭제된 기록은 복구할 수 없어요.</p>
                 <div className="flex gap-3">
                   <button
-                    onClick={() => setDeleteTarget(null)}
+                    onClick={() => setConfirmDelete(false)}
                     className="flex-1 py-3 rounded-xl text-sm font-semibold text-gray-500 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     취소
