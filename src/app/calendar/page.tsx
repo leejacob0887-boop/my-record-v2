@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpen, Zap, Lightbulb, CalendarDays } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
+import SavePreviewCard from '@/components/SavePreviewCard';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
@@ -23,8 +24,49 @@ export default function CalendarPage() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const { entries: diaryEntries } = useDiary();
-  const { moments } = useMoments();
+  const { moments, add: addMoment } = useMoments();
   const { ideas } = useIdeas();
+
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryText, setSummaryText] = useState<string | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [savedPreview, setSavedPreview] = useState<{ content: string; savedAt: string } | null>(null);
+
+  const handleSummary = async () => {
+    setSummaryLoading(true);
+    setSummaryText(null);
+    setSummaryError(null);
+    try {
+      const res = await fetch('/api/daily-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: today,
+          diary: diaryEntries.filter(e => e.date === today).map(e => ({ title: e.title, content: e.content })),
+          moments: moments.filter(m => m.date === today).map(m => ({ text: m.text })),
+          ideas: ideas.filter(i => i.createdAt.slice(0, 10) === today).map(i => ({ title: i.title, content: i.content })),
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setSummaryText(data.summary);
+    } catch (e) {
+      setSummaryError(e instanceof Error ? e.message : '요약 중 오류가 발생했어요.');
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
+  const handleSaveSummary = async () => {
+    if (!summaryText) return;
+    const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    await addMoment({ text: `✨ 오늘의 요약\n\n${summaryText}`, date: today });
+    setSummaryText(null);
+    setSummaryError(null);
+    setSavedPreview({ content: summaryText, savedAt });
+  };
+
+  const closeSummary = () => { setSummaryText(null); setSummaryError(null); };
 
   // Build a Set of dates that have at least one record
   const activeDates = useMemo(() => {
@@ -215,6 +257,26 @@ export default function CalendarPage() {
                   )}
                 </div>
               )}
+
+              {/* 요약하기 버튼 */}
+              <button
+                onClick={handleSummary}
+                disabled={total === 0 || summaryLoading}
+                className="mt-3 w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 text-white transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: 'linear-gradient(135deg, #8B5CF6, #A855F7)' }}
+              >
+                {summaryLoading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 text-white flex-shrink-0" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    AI가 오늘을 돌아보고 있어요...
+                  </>
+                ) : (
+                  <>✨ 오늘 하루 요약하기</>
+                )}
+              </button>
             </div>
           );
         })()}
@@ -281,6 +343,83 @@ export default function CalendarPage() {
             </div>
           </div>
         </>
+      )}
+      {/* 요약 모달 */}
+      {(summaryText || summaryError) && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-50"
+            onClick={closeSummary}
+          />
+          <div className="fixed bottom-20 left-0 right-0 z-[60] flex justify-center px-4 pointer-events-none">
+            <div className="pointer-events-auto w-full max-w-[400px] bg-white dark:bg-gray-800 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden animate-slide-up-toast">
+              {/* 상단 보라 그라데이션 바 */}
+              <div className="h-1" style={{ background: 'linear-gradient(90deg, #8B5CF6, #A855F7)' }} />
+
+              <div className="px-6 py-5">
+                {/* 헤더 */}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-base font-bold text-gray-800 dark:text-gray-100">✨ 오늘의 요약</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                      {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })} · AI가 당신의 하루를 읽었어요
+                    </p>
+                  </div>
+                  <button
+                    onClick={closeSummary}
+                    className="w-7 h-7 flex items-center justify-center rounded-full text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0 ml-3"
+                    aria-label="닫기"
+                  >
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="h-px bg-gray-100 dark:bg-gray-700 mb-4" />
+
+                {/* 요약 텍스트 또는 에러 */}
+                {summaryText && (
+                  <p className="text-sm text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+                    {summaryText}
+                  </p>
+                )}
+                {summaryError && (
+                  <p className="text-sm text-red-500 dark:text-red-400">{summaryError}</p>
+                )}
+
+                {/* 버튼 행 */}
+                {summaryText && (
+                  <div className="flex gap-2 mt-5">
+                    <button
+                      onClick={closeSummary}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-medium text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      닫기
+                    </button>
+                    <button
+                      onClick={handleSaveSummary}
+                      className="flex-[1.5] py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.98]"
+                      style={{ background: 'linear-gradient(135deg, #8B5CF6, #A855F7)' }}
+                    >
+                      메모로 저장 ✨
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 저장 완료 피드백 */}
+      {savedPreview && (
+        <SavePreviewCard
+          type="moment"
+          content={savedPreview.content}
+          savedAt={savedPreview.savedAt}
+          onDismiss={() => setSavedPreview(null)}
+        />
       )}
     </main>
   );
