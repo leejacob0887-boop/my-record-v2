@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { BookOpen, Zap, Lightbulb, Calendar } from 'lucide-react';
+import { BookOpen, Zap, Lightbulb, Calendar, Sparkles } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
@@ -88,10 +88,19 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center mb-4">나의 기록</h1>
 
         {/* Today badge */}
-        <div className={`text-center mb-6 text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
-          {todayCount > 0
-            ? `오늘 ${todayCount}개의 기록을 남겼어요 ✨`
-            : '오늘 첫 기록을 남겨볼까요?'}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <span className={`text-sm font-medium ${todayCount > 0 ? 'text-[#4A90D9]' : 'text-gray-400'}`}>
+            {todayCount > 0
+              ? `오늘 ${todayCount}개의 기록을 남겼어요 ✨`
+              : '오늘 첫 기록을 남겨볼까요?'}
+          </span>
+          <Link
+            href="/chat"
+            className="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+            aria-label="AI와 대화하기"
+          >
+            <Sparkles size={14} color="#6366F1" />
+          </Link>
         </div>
 
         {/* Record cards grid */}
