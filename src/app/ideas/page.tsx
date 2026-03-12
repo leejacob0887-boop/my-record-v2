@@ -177,7 +177,7 @@ export default function IdeasPage() {
 
   return (
     <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className={`max-w-[430px] mx-auto px-4 ${editMode ? 'pb-28' : ''}`}>
+      <div className="max-w-[430px] mx-auto px-4">
 
         {/* Header */}
         <div className="flex items-center justify-between pt-12 pb-4">
@@ -212,12 +212,29 @@ export default function IdeasPage() {
             <p className="text-sm text-gray-400 mt-1">떠오르는 생각들</p>
           </div>
           {ideas.length > 0 && (
-            <button
-              onClick={editMode ? exitEditMode : () => setEditMode(true)}
-              className="absolute right-0 text-sm font-medium text-[#4A90D9] py-1 px-2"
-            >
-              {editMode ? '취소' : '편집'}
-            </button>
+            <div className="absolute right-0 flex items-center gap-1">
+              {editMode && (
+                <button
+                  onClick={() => selected.size > 0 && setConfirmDelete(true)}
+                  disabled={selected.size === 0}
+                  className="w-8 h-8 flex items-center justify-center rounded-xl disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-red-50 active:scale-[0.95]"
+                  aria-label="선택 삭제"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+                    <path d="M10 11v6M14 11v6" />
+                    <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
+                  </svg>
+                </button>
+              )}
+              <button
+                onClick={editMode ? exitEditMode : () => setEditMode(true)}
+                className="text-sm font-medium text-[#4A90D9] py-1 px-2"
+              >
+                {editMode ? '취소' : '편집'}
+              </button>
+            </div>
           )}
         </div>
 
@@ -296,27 +313,6 @@ export default function IdeasPage() {
 
       </div>
 
-      {/* Edit mode bottom bar */}
-      {editMode && (
-        <div className="fixed bottom-16 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 px-4 py-4 flex items-center justify-between z-[60]">
-          <span className="text-sm text-gray-400 dark:text-gray-500">
-            {selected.size > 0 ? `${selected.size}개 선택됨` : '항목을 선택하세요'}
-          </span>
-          <button
-            onClick={() => selected.size > 0 && setConfirmDelete(true)}
-            disabled={selected.size === 0}
-            className="w-11 h-11 flex items-center justify-center rounded-xl bg-red-50 dark:bg-red-900/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-[0.95]"
-            aria-label="선택 삭제"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="3 6 5 6 21 6" />
-              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
-              <path d="M10 11v6M14 11v6" />
-              <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
-            </svg>
-          </button>
-        </div>
-      )}
 
       {/* Delete confirm dialog */}
       {confirmDelete && (
