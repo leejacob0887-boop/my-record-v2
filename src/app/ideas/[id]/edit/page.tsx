@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
 import ImagePicker from '@/components/ImagePicker';
@@ -27,19 +27,31 @@ const SettingsIcon = () => (
 export default function IdeaEditPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { getById, update } = useIdeas();
+  const { getById, update, isLoading } = useIdeas();
   const idea = getById(id);
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const [saving, setSaving] = useState(false);
-  const [date, setDate] = useState(idea?.date ?? todayStr);
-  const [title, setTitle] = useState(idea?.title ?? '');
-  const { body: initialBody, tags: initialTags } = splitContentAndTags(idea?.content ?? '');
-  const [content, setContent] = useState(initialBody);
-  const [imageBase64, setImageBase64] = useState<string | undefined>(idea?.imageBase64);
+  const [initialized, setInitialized] = useState(false);
+  const [date, setDate] = useState(todayStr);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [imageBase64, setImageBase64] = useState<string | undefined>(undefined);
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState<string[]>(initialTags);
+  const [tags, setTags] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (idea && !initialized) {
+      const { body, tags: parsedTags } = splitContentAndTags(idea.content ?? '');
+      setDate(idea.date ?? todayStr);
+      setTitle(idea.title ?? '');
+      setContent(body);
+      setImageBase64(idea.imageBase64);
+      setTags(parsedTags);
+      setInitialized(true);
+    }
+  }, [idea, initialized, todayStr]);
 
   const addTag = () => {
     const t = tagInput.trim().replace(/^#/, '');
@@ -47,7 +59,20 @@ export default function IdeaEditPage() {
     setTagInput('');
   };
 
-  if (!idea) {
+  if (isLoading && !idea) {
+    return (
+      <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
+        <div className="max-w-[430px] mx-auto px-4 pt-12 flex justify-center">
+          <svg className="animate-spin h-6 w-6 text-gray-400" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+        </div>
+      </main>
+    );
+  }
+
+  if (!isLoading && !idea) {
     return (
       <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
         <div className="max-w-[430px] mx-auto px-4 pt-12">
