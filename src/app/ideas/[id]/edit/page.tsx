@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
 import ImagePicker from '@/components/ImagePicker';
+import MicButton from '@/components/MicButton';
+import { useSpeechInput } from '@/lib/useSpeechInput';
 
 function splitContentAndTags(full: string): { body: string; tags: string[] } {
   const parts = full.split('\n\n');
@@ -52,6 +54,11 @@ export default function IdeaEditPage() {
       setInitialized(true);
     }
   }, [idea, initialized, todayStr]);
+
+  const handleVoiceResult = useCallback((text: string) => {
+    setContent(prev => prev ? prev + ' ' + text : text);
+  }, []);
+  const { isRecording, isSupported, toggle } = useSpeechInput(handleVoiceResult);
 
   const addTag = () => {
     const t = tagInput.trim().replace(/^#/, '');
@@ -142,7 +149,10 @@ export default function IdeaEditPage() {
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-            <label className="block text-xs text-gray-500 mb-2">내용</label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs text-gray-500">내용</label>
+              {isSupported && <MicButton isRecording={isRecording} onClick={toggle} />}
+            </div>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}

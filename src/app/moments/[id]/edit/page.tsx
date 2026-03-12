@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
 import ImagePicker from '@/components/ImagePicker';
+import MicButton from '@/components/MicButton';
+import { useSpeechInput } from '@/lib/useSpeechInput';
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -21,6 +23,11 @@ function MomentEditForm({ initial, onSubmit }: {
   const [date, setDate] = useState(initial.date);
   const [imageBase64, setImageBase64] = useState<string | undefined>(initial.imageBase64);
   const [saving, setSaving] = useState(false);
+
+  const handleVoiceResult = useCallback((t: string) => {
+    setText(prev => prev ? prev + ' ' + t : t);
+  }, []);
+  const { isRecording, isSupported, toggle } = useSpeechInput(handleVoiceResult);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +49,10 @@ function MomentEditForm({ initial, onSubmit }: {
         />
       </div>
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
-        <label className="block text-xs text-gray-500 mb-2">메모</label>
+        <div className="flex items-center justify-between mb-2">
+          <label className="text-xs text-gray-500">메모</label>
+          {isSupported && <MicButton isRecording={isRecording} onClick={toggle} />}
+        </div>
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
