@@ -62,7 +62,7 @@ function DiaryCard({
   isSelected: boolean;
   onToggle: (id: string) => void;
 }) {
-  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-violet-300 dark:border-violet-800 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-violet-500' : ''}`;
+  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-violet-500' : ''}`;
 
   const body = (
     <>
@@ -75,7 +75,7 @@ function DiaryCard({
           )}
         </div>
       ) : (
-        <div className="w-11 h-11 bg-[#C4B5FD] dark:bg-purple-900/60 rounded-xl flex items-center justify-center flex-shrink-0">
+        <div className="w-11 h-11 bg-white dark:bg-gray-800 border border-violet-300 dark:border-violet-700 rounded-xl flex items-center justify-center flex-shrink-0">
           <BookOpen size={20} color="#7C3AED" strokeWidth={2} />
         </div>
       )}
@@ -217,7 +217,7 @@ export default function DiaryPage() {
             </button>
           )}
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: "'Dancing Script', cursive" }}>Diary</h1>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Diary</h1>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">하루 하나씩 깊은 기록</p>
           </div>
           {validEntries.length > 0 && (

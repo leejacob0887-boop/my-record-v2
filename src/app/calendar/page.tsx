@@ -302,7 +302,9 @@ export default function CalendarPage() {
                   onClick={() => router.push(`/diary/new?date=${selectedDate}`)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
-                  <BookOpen size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div className="w-10 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <BookOpen size={18} color="#7C3AED" strokeWidth={2} />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100">일기 쓰기</p>
                     <p className="text-xs text-gray-400">하루를 기록해요</p>
@@ -312,7 +314,9 @@ export default function CalendarPage() {
                   onClick={() => router.push(`/moments/new?date=${selectedDate}`)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
-                  <Zap size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div className="w-10 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Zap size={18} color="#EA580C" strokeWidth={2} />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100">메모 쓰기</p>
                     <p className="text-xs text-gray-400">짧은 메모를 남겨요</p>
@@ -322,7 +326,9 @@ export default function CalendarPage() {
                   onClick={() => router.push(`/ideas/new?date=${selectedDate}`)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
-                  <Lightbulb size={20} color="#4A90D9" strokeWidth={1.8} />
+                  <div className="w-10 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Lightbulb size={18} color="#16A34A" strokeWidth={2} />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800 dark:text-gray-100">아이디어 쓰기</p>
                     <p className="text-xs text-gray-400">번뜩이는 생각을 기록해요</p>
@@ -332,7 +338,9 @@ export default function CalendarPage() {
                   onClick={() => router.push(`/calendar/${selectedDate}`)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left"
                 >
-                  <CalendarDays size={20} color="#9CA3AF" strokeWidth={1.8} />
+                  <div className="w-10 h-10 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <CalendarDays size={18} color="#2563EB" strokeWidth={2} />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">날짜 기록 보기</p>
                     <p className="text-xs text-gray-400">이 날의 기록을 확인해요</p>

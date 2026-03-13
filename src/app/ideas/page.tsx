@@ -50,7 +50,7 @@ function IdeaCard({
   isSelected: boolean;
   onToggle: (id: string) => void;
 }) {
-  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-800 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-green-500' : ''}`;
+  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-green-500' : ''}`;
 
   const body = (
     <>
@@ -63,7 +63,7 @@ function IdeaCard({
           )}
         </div>
       ) : (
-        <div className="w-11 h-11 bg-[#86EFAC] dark:bg-green-900/60 rounded-xl flex items-center justify-center flex-shrink-0">
+        <div className="w-11 h-11 bg-white dark:bg-gray-800 border border-green-300 dark:border-green-700 rounded-xl flex items-center justify-center flex-shrink-0">
           <Lightbulb size={20} color="#16A34A" strokeWidth={2} />
         </div>
       )}
@@ -191,7 +191,7 @@ export default function IdeasPage() {
             </button>
           )}
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: "'Dancing Script', cursive" }}>Ideas</h1>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Ideas</h1>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">떠오르는 생각들</p>
           </div>
           {ideas.length > 0 && (

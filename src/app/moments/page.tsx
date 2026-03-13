@@ -50,7 +50,7 @@ function MomentCard({
   isSelected: boolean;
   onToggle: (id: string) => void;
 }) {
-  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-800 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-orange-400' : ''}`;
+  const cardClass = `flex items-center gap-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 transition-all active:scale-[0.98] ${isSelected ? 'ring-2 ring-orange-400' : ''}`;
 
   const body = (
     <>
@@ -63,7 +63,7 @@ function MomentCard({
           )}
         </div>
       ) : (
-        <div className="w-11 h-11 bg-[#FDC9A0] dark:bg-orange-900/60 rounded-xl flex items-center justify-center flex-shrink-0">
+        <div className="w-11 h-11 bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-700 rounded-xl flex items-center justify-center flex-shrink-0">
           <Zap size={20} color="#EA580C" strokeWidth={2} />
         </div>
       )}
@@ -187,7 +187,7 @@ export default function MomentsPage() {
             </button>
           )}
           <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: "'Dancing Script', cursive" }}>Memo</h1>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Memo</h1>
             <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">짧은 순간의 기억</p>
           </div>
           {moments.length > 0 && (

@@ -79,13 +79,13 @@ export default function Home() {
 
         {/* Title section */}
         <div className="text-center mb-7">
-<h1 className="text-5xl font-bold text-gray-900 dark:text-gray-100" style={{ fontFamily: "'Dancing Script', cursive" }}>My Story</h1>
+<h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">My Story</h1>
         </div>
 
         {/* AI Chat banner */}
         <Link
           href="/chat"
-          className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-indigo-300 dark:border-indigo-600 rounded-2xl px-5 py-4 mb-5 active:scale-95 transition-all"
+          className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-4 mb-5 active:scale-95 transition-all"
         >
           <div className="w-11 h-11 bg-violet-500 rounded-xl flex items-center justify-center flex-shrink-0">
             <Bot size={22} color="white" strokeWidth={1.8} />
@@ -102,7 +102,7 @@ export default function Home() {
           <RecordCard
             icon={<BookOpen size={22} color="#7C3AED" strokeWidth={2} />}
             iconBg="bg-[#C4B5FD] dark:bg-purple-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-violet-300 dark:border-violet-800"
+            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
             label="일기"
             description="하루 하나씩"
             count={entries.length}
@@ -111,7 +111,7 @@ export default function Home() {
           <RecordCard
             icon={<Zap size={22} color="#EA580C" strokeWidth={2} />}
             iconBg="bg-[#FDC9A0] dark:bg-orange-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-orange-300 dark:border-orange-800"
+            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
             label="메모"
             description="짧은 메모 기록"
             count={moments.length}
@@ -120,7 +120,7 @@ export default function Home() {
           <RecordCard
             icon={<Lightbulb size={22} color="#16A34A" strokeWidth={2} />}
             iconBg="bg-[#86EFAC] dark:bg-green-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-green-300 dark:border-green-800"
+            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
             label="아이디어"
             description="떠오르는 생각들"
             count={ideas.length}
@@ -129,7 +129,7 @@ export default function Home() {
           <RecordCard
             icon={<Calendar size={22} color="#2563EB" strokeWidth={2} />}
             iconBg="bg-[#93C5FD] dark:bg-blue-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-blue-300 dark:border-blue-800"
+            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
             label="캘린더"
             description="날짜별로 돌아보기"
             count={0}
