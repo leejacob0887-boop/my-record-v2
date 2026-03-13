@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import { useTheme } from 'next-themes';
 import { BookOpen, Zap, Lightbulb, Calendar, ChevronRight, ChevronDown, Bot } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
@@ -41,6 +42,7 @@ function RecordCard({ icon, iconBg, cardBg, label, description, count, href }: R
 type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: string; href: string };
 
 export default function Home() {
+  const { resolvedTheme } = useTheme();
   const { entries } = useDiary();
   const { moments } = useMoments();
   const { ideas } = useIdeas();
@@ -143,7 +145,7 @@ export default function Home() {
               <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5">기록은 남습니다.</p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/chatbot.gif" alt="챗봇 일러스트" className="w-36 h-36 object-contain flex-shrink-0" />
+            <img src={resolvedTheme === 'dark' ? '/chatbot-dark.gif' : '/chatbot.gif'} alt="챗봇 일러스트" className="w-36 h-36 object-contain flex-shrink-0" />
           </div>
           <button
             onClick={() => setRecentOpen(true)}
