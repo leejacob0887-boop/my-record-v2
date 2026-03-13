@@ -1,10 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useMemo, useState } from 'react';
-import { useTheme } from 'next-themes';
-import { BookOpen, Zap, Lightbulb, Calendar, Sparkles } from 'lucide-react';
+import { BookOpen, Zap, Lightbulb, Calendar, ChevronRight, ChevronDown, Bot } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
@@ -12,28 +10,30 @@ import { useIdeas } from '@/lib/useIdeas';
 
 interface RecordCardProps {
   icon: React.ReactNode;
+  iconBg: string;
+  cardBg: string;
   label: string;
   description: string;
   count: number;
   href: string;
 }
 
-function RecordCard({ icon, label, description, count, href }: RecordCardProps) {
+function RecordCard({ icon, iconBg, cardBg, label, description, count, href }: RecordCardProps) {
   return (
     <Link
       href={href}
-      className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md hover:border-gray-200 dark:hover:border-gray-600 transition-all active:scale-95 flex flex-col gap-2"
+      className={`${cardBg} rounded-2xl p-5 active:scale-95 transition-all flex flex-col gap-3 min-h-[130px]`}
     >
-      <div className="flex items-start justify-between">
-        {icon}
-        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700 rounded-full px-2 py-0.5 border border-gray-100 dark:border-gray-600">
-          {count}개
-        </span>
+      <div className="flex items-center gap-3">
+        <div className={`${iconBg} w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0`}>
+          {icon}
+        </div>
+        <div>
+          <p className="text-2xl font-bold text-gray-800 dark:text-gray-100 leading-none">{count}</p>
+          <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mt-0.5">{label}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mt-1">{label}</p>
-        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{description}</p>
-      </div>
+      <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{description}</p>
     </Link>
   );
 }
@@ -41,20 +41,11 @@ function RecordCard({ icon, label, description, count, href }: RecordCardProps) 
 type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: string; href: string };
 
 export default function Home() {
-  const { resolvedTheme } = useTheme();
   const { entries } = useDiary();
   const { moments } = useMoments();
   const { ideas } = useIdeas();
 
   const [recentOpen, setRecentOpen] = useState(false);
-  const today = new Date().toISOString().slice(0, 10);
-
-  const todayCount = useMemo(() => {
-    const d = entries.filter(e => e.date === today).length;
-    const m = moments.filter(m => m.date === today).length;
-    const i = ideas.filter(i => i.createdAt.slice(0, 10) === today).length;
-    return d + m + i;
-  }, [entries, moments, ideas, today]);
 
   const recentItems = useMemo<RecentItem[]>(() => {
     const all: RecentItem[] = [
@@ -66,11 +57,11 @@ export default function Home() {
   }, [entries, moments, ideas]);
 
   return (
-    <main className="min-h-screen bg-[#FAF8F4] dark:bg-gray-900">
-      <div className="max-w-[430px] mx-auto px-4">
+    <main className="min-h-screen bg-[#F4F2EE] dark:bg-gray-900">
+      <div className="max-w-[430px] mx-auto px-4 pb-8">
 
         {/* Top bar */}
-        <div className="flex items-center justify-between pt-12 pb-4">
+        <div className="flex items-center justify-between pt-12 pb-6">
           <DarkModeToggle />
           <Link
             href="/settings"
@@ -84,48 +75,59 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 text-center mb-4">나의 기록</h1>
-
-        {/* Today badge */}
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-base font-medium text-gray-500 dark:text-gray-400">
-            ✍️ AI와 대화하며 기록해보세요
-          </span>
-          <Link
-            href="/chat"
-            className="flex items-center justify-center w-7 h-7 rounded-full bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
-            aria-label="AI와 대화하기"
-          >
-            <Sparkles size={14} color="#6366F1" />
-          </Link>
+        {/* Title section */}
+        <div className="text-center mb-7">
+<h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-blue-500 bg-clip-text text-transparent">My Story</h1>
         </div>
 
+        {/* AI Chat banner */}
+        <Link
+          href="/chat"
+          className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-indigo-300 dark:border-indigo-600 rounded-2xl px-5 py-4 mb-5 active:scale-95 transition-all"
+        >
+          <div className="w-11 h-11 bg-white dark:bg-indigo-800 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+            <Bot size={22} color="#6366F1" strokeWidth={1.8} />
+          </div>
+          <div className="flex-1">
+            <p className="text-base font-bold text-indigo-700 dark:text-indigo-300">AI와 대화하며 기록해보세요</p>
+            <p className="text-sm text-indigo-500 dark:text-indigo-400">무슨 생각이든 알아서 정리해드려요</p>
+          </div>
+          <ChevronRight size={18} color="#6366F1" />
+        </Link>
+
         {/* Record cards grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-5">
           <RecordCard
-            icon={<BookOpen size={28} color="#4A90D9" strokeWidth={1.8} />}
+            icon={<BookOpen size={22} color="#7C3AED" strokeWidth={2} />}
+            iconBg="bg-[#C4B5FD] dark:bg-purple-900/60"
+            cardBg="bg-[#EDE9FF] dark:bg-purple-950/40"
             label="일기"
-            description="하루 하나씩 깊은 기록"
+            description="하루 하나씩"
             count={entries.length}
             href="/diary"
           />
           <RecordCard
-            icon={<Zap size={28} color="#4A90D9" strokeWidth={1.8} />}
+            icon={<Zap size={22} color="#EA580C" strokeWidth={2} />}
+            iconBg="bg-[#FDC9A0] dark:bg-orange-900/60"
+            cardBg="bg-[#FFF0E0] dark:bg-orange-950/40"
             label="메모"
             description="짧은 메모 기록"
             count={moments.length}
             href="/moments"
           />
           <RecordCard
-            icon={<Lightbulb size={28} color="#4A90D9" strokeWidth={1.8} />}
+            icon={<Lightbulb size={22} color="#16A34A" strokeWidth={2} />}
+            iconBg="bg-[#86EFAC] dark:bg-green-900/60"
+            cardBg="bg-[#E8F8EE] dark:bg-green-950/40"
             label="아이디어"
             description="떠오르는 생각들"
             count={ideas.length}
             href="/ideas"
           />
           <RecordCard
-            icon={<Calendar size={28} color="#4A90D9" strokeWidth={1.8} />}
+            icon={<Calendar size={22} color="#2563EB" strokeWidth={2} />}
+            iconBg="bg-[#93C5FD] dark:bg-blue-900/60"
+            cardBg="bg-[#E5F0FF] dark:bg-blue-950/40"
             label="캘린더"
             description="날짜별로 돌아보기"
             count={0}
@@ -133,67 +135,87 @@ export default function Home() {
           />
         </div>
 
-        {/* Recent records — collapsible */}
-        {recentItems.length > 0 && (
-          <div className="mb-4">
-            <button
-              onClick={() => setRecentOpen(o => !o)}
-              className="flex items-center gap-1.5 w-full text-left px-1 mb-2 group"
-            >
-              <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-500 transition-colors">최근 기록</span>
-              <svg
-                width="12" height="12" viewBox="0 0 24 24" fill="none"
-                stroke="#9CA3AF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                className={`transition-transform duration-300 ${recentOpen ? 'rotate-180' : ''}`}
-              >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
+        {/* Recent records — illustration placeholder + 전체보기 버튼 */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-violet-300 dark:border-violet-700">
+          <div className="flex flex-row items-center px-6 py-5 gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold text-gray-400 dark:text-gray-500">생각은 사라지지만,</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5">기록은 남습니다.</p>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/chatbot.gif" alt="챗봇 일러스트" className="w-36 h-36 object-contain flex-shrink-0" />
+          </div>
+          <button
+            onClick={() => setRecentOpen(true)}
+            className="w-full border-t border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+          >
+            <span className="text-base font-bold text-gray-800 dark:text-gray-100">최근 기록</span>
+            <ChevronDown size={18} color="#9CA3AF" className="rotate-180" />
+          </button>
+        </div>
+
+        {/* Bottom sheet */}
+        {recentOpen && (
+          <>
+            {/* Backdrop */}
             <div
-              className="overflow-hidden transition-all duration-300 ease-in-out"
-              style={{ maxHeight: recentOpen ? `${recentItems.length * 56}px` : '0px', opacity: recentOpen ? 1 : 0 }}
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm overflow-hidden">
-                {recentItems.map((item, idx) => (
-                  <Link
-                    key={idx}
-                    href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 border-b border-gray-50 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <div className="flex-shrink-0">
-                      {item.type === 'diary' && <BookOpen size={18} color="#4A90D9" strokeWidth={1.8} />}
-                      {item.type === 'moment' && <Zap size={18} color="#4A90D9" strokeWidth={1.8} />}
-                      {item.type === 'idea' && <Lightbulb size={18} color="#4A90D9" strokeWidth={1.8} />}
-                    </div>
-                    <p className="flex-1 text-sm text-gray-700 dark:text-gray-200 truncate">{item.label}</p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">{item.date}</p>
-                  </Link>
-                ))}
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setRecentOpen(false)}
+            />
+            {/* Sheet */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl">
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-1">
+                <div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-600" />
+              </div>
+              {/* Header */}
+              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                <span className="text-base font-bold text-gray-800 dark:text-gray-100">최근 기록</span>
+                <button
+                  onClick={() => setRecentOpen(false)}
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
+                  aria-label="닫기"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-gray-500 dark:text-gray-400">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              {/* List */}
+              <div className="overflow-y-auto max-h-[60vh] pb-8">
+                {recentItems.length === 0 ? (
+                  <p className="text-center text-sm text-gray-400 py-12">아직 기록이 없어요</p>
+                ) : (
+                  recentItems.map((item, idx) => (
+                    <Link
+                      key={idx}
+                      href={item.href}
+                      onClick={() => setRecentOpen(false)}
+                      className="flex items-center gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        item.type === 'diary' ? 'bg-[#EDE9FF]' :
+                        item.type === 'moment' ? 'bg-[#FFF0E0]' : 'bg-[#E8F8EE]'
+                      }`}>
+                        {item.type === 'diary' && <BookOpen size={17} color="#7C3AED" strokeWidth={1.8} />}
+                        {item.type === 'moment' && <Zap size={17} color="#EA580C" strokeWidth={1.8} />}
+                        {item.type === 'idea' && <Lightbulb size={17} color="#16A34A" strokeWidth={1.8} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{item.label}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                          {item.type === 'diary' ? '일기' : item.type === 'moment' ? '메모' : '아이디어'} · {item.date}
+                        </p>
+                      </div>
+                      <ChevronRight size={16} color="#D1D5DB" />
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
-          </div>
+          </>
         )}
-
-        {/* Illustration section */}
-        <div className="flex flex-row items-end pt-2">
-          <div className="flex-1 pb-8">
-            <p className="text-lg font-medium text-gray-600 dark:text-gray-400 leading-snug">
-              생각은 사라지지만,<br />
-              <span className="font-bold text-gray-800 dark:text-gray-100">기록은 남습니다.</span>
-            </p>
-          </div>
-          <div className="w-[52%] flex-shrink-0 -mr-5">
-            <Image
-              src={resolvedTheme === 'dark' ? '/illustration-dark.png' : '/illustration.png'}
-              alt="기록하는 일러스트"
-              width={220}
-              height={220}
-              className="object-contain w-full h-auto"
-              style={{ mixBlendMode: resolvedTheme === 'dark' ? 'normal' : 'multiply' }}
-              priority
-            />
-          </div>
-        </div>
 
       </div>
     </main>

@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-12T10:30:00.000Z",
+  "lastUpdated": "2026-03-13T12:49:31.179Z",
   "edit-mode": {
     "phase": "archived",
     "matchRate": 92,
@@ -57,11 +57,11 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:56:18.479Z",
-        "lastUpdated": "2026-03-12T08:26:23.996Z",
+        "lastUpdated": "2026-03-13T12:49:31.179Z",
         "archivedAt": "2026-03-10T00:00:00.000Z"
       },
       "archivedTo": "docs/archive/2026-03/my-record-v2/",
-      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\lib\\shareCard.ts"
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\page.tsx"
     },
     "diary": {
       "phase": "do",
@@ -72,7 +72,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:57:39.640Z",
-        "lastUpdated": "2026-03-12T09:19:23.185Z"
+        "lastUpdated": "2026-03-12T09:46:42.942Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\diary\\page.tsx"
     },
@@ -124,7 +124,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:58:00.357Z",
-        "lastUpdated": "2026-03-12T09:19:31.091Z"
+        "lastUpdated": "2026-03-12T09:46:44.223Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\moments\\page.tsx"
     },
@@ -137,7 +137,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:58:19.718Z",
-        "lastUpdated": "2026-03-12T09:19:39.028Z"
+        "lastUpdated": "2026-03-12T09:46:45.378Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\ideas\\page.tsx"
     },
@@ -293,7 +293,7 @@
   "session": {
     "startedAt": "2026-03-09T07:45:59.575Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-12T09:19:39.028Z"
+    "lastActivity": "2026-03-13T12:49:31.179Z"
   },
   "history": [
     {
@@ -3653,6 +3653,204 @@
     {
       "timestamp": "2026-03-12T09:19:39.028Z",
       "feature": "ideas",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:43:23.858Z",
+      "feature": "diary",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:43:25.689Z",
+      "feature": "moments",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:43:27.068Z",
+      "feature": "ideas",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:45:54.312Z",
+      "feature": "diary",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:45:58.456Z",
+      "feature": "moments",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:02.297Z",
+      "feature": "ideas",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:10.615Z",
+      "feature": "diary",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:14.512Z",
+      "feature": "moments",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:18.323Z",
+      "feature": "ideas",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:42.942Z",
+      "feature": "diary",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:44.223Z",
+      "feature": "moments",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-12T09:46:45.378Z",
+      "feature": "ideas",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:47:47.921Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:53:30.783Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:53:44.072Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:53:46.900Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:54:09.183Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T11:54:14.289Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:00:11.814Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:00:18.007Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:05:03.831Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:09:46.424Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:10:47.453Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:11:53.756Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:14:15.329Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:18:39.050Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:27:17.084Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:39:36.591Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:41:19.825Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:42:06.093Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:47:01.594Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:48:58.617Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-13T12:49:31.179Z",
+      "feature": "my-record-v2",
       "phase": "do",
       "action": "updated"
     }
