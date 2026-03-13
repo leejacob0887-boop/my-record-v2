@@ -87,12 +87,12 @@ export default function Home() {
           href="/chat"
           className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-indigo-300 dark:border-indigo-600 rounded-2xl px-5 py-4 mb-5 active:scale-95 transition-all"
         >
-          <div className="w-11 h-11 bg-white dark:bg-indigo-800 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
-            <Bot size={22} color="#6366F1" strokeWidth={1.8} />
+          <div className="w-11 h-11 bg-violet-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Bot size={22} color="white" strokeWidth={1.8} />
           </div>
           <div className="flex-1">
-            <p className="text-base font-bold text-indigo-700 dark:text-indigo-300">AI와 대화하며 기록해보세요</p>
-            <p className="text-sm text-indigo-500 dark:text-indigo-400">무슨 생각이든 알아서 정리해드려요</p>
+            <p className="text-base font-bold text-gray-900 dark:text-gray-100">AI와 대화하며 기록해보세요</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">무슨 생각이든 알아서 정리해드려요</p>
           </div>
           <ChevronRight size={18} color="#6366F1" />
         </Link>
