@@ -43,11 +43,66 @@ type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: stri
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
-  const { entries } = useDiary();
-  const { moments } = useMoments();
-  const { ideas } = useIdeas();
+  const { entries, save: saveDiary } = useDiary();
+  const { moments, add: addMoment } = useMoments();
+  const { ideas, add: addIdea } = useIdeas();
 
   const [recentOpen, setRecentOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string, autoClear = false) => {
+    setToast(msg);
+    if (autoClear) setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleMicClick = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) return;
+
+    const recognition = new SR();
+    recognition.lang = 'ko-KR';
+    recognition.interimResults = false;
+
+    showToast('듣고 있어요...');
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = async (e: any) => {
+      const transcript = e.results[0][0].transcript;
+      showToast('자동 저장 중...');
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: 'save',
+            messages: [{ role: 'user', content: transcript }],
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error ?? '저장 실패');
+
+        const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        const date = data.date ?? today;
+
+        if (data.type === 'diary') {
+          await saveDiary({ date, title: data.title ?? '음성 기록', content: data.content ?? '' });
+        } else if (data.type === 'moment') {
+          await addMoment({ text: data.text ?? data.content ?? '', date });
+        } else if (data.type === 'idea') {
+          await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
+        }
+        showToast('저장됐어요! 🎉', true);
+      } catch {
+        showToast('저장 중 오류가 발생했어요', true);
+      }
+    };
+
+    recognition.onerror = () => showToast('마이크 권한이 필요해요', true);
+
+    recognition.start();
+  };
 
   const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const todayDiaryCount = useMemo(() => entries.filter(e => e.date === today).length, [entries, today]);
@@ -182,7 +237,7 @@ export default function Home() {
               <button className="active:opacity-70" aria-label="카메라">
                 <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
               </button>
-              <button className="active:opacity-70" aria-label="마이크">
+              <button onClick={handleMicClick} className="active:opacity-70" aria-label="마이크">
                 <Mic size={22} color="#0F6E56" strokeWidth={1.8} />
               </button>
             </div>
@@ -253,6 +308,13 @@ export default function Home() {
         )}
 
       </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-[#111] text-white text-sm rounded-full shadow-lg whitespace-nowrap">
+          {toast}
+        </div>
+      )}
     </main>
   );
 }
