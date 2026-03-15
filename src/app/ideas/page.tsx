@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Lightbulb, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
@@ -8,11 +8,6 @@ import { useIdeas } from '@/lib/useIdeas';
 import { Idea } from '@/lib/types';
 import { formatDateTime } from '@/lib/dateUtils';
 
-const SAMPLES = [
-  { title: '앱 개선 아이디어 💡', content: '사용자가 더 편하게 쓸 수 있는 기능들을 생각해보자.' },
-  { title: '오늘 떠오른 생각 ✨', content: '작은 아이디어도 기록해두면 나중에 큰 가치가 된다.' },
-  { title: '버킷리스트 🎯',       content: '언젠가 꼭 해보고 싶은 것들을 적어보자.' },
-];
 
 function SkeletonList() {
   return (
@@ -117,14 +112,6 @@ export default function IdeasPage() {
     if (tagFilter) result = result.filter(i => extractTags(i.content).includes(tagFilter));
     return result;
   }, [ideas, q, tagFilter]);
-
-  useEffect(() => {
-    if (localStorage.getItem('ideas_samples_initialized')) return;
-    if (ideas.length > 0) return;
-    SAMPLES.forEach(({ title, content }) => add({ title, content }));
-    localStorage.setItem('ideas_samples_initialized', '1');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const allSelected = filtered.length > 0 && filtered.every(i => i.id && selected.has(i.id));
 

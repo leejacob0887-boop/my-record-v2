@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
@@ -8,23 +8,6 @@ import { useDiary } from '@/lib/useDiary';
 import { DiaryEntry } from '@/lib/types';
 import { formatDateTime } from '@/lib/dateUtils';
 
-const SAMPLES = [
-  {
-    daysAgo: 2,
-    title: '나의 기록을 시작합니다',
-    content: '오늘부터 하루하루를 기록해보려 한다. 작은 것도 기록하다 보면 소중한 추억이 된다.',
-  },
-  {
-    daysAgo: 1,
-    title: '오늘 배운 것',
-    content: '새로운 것을 배우면 여기에 기록해보자. 배움은 쌓일수록 빛난다.',
-  },
-  {
-    daysAgo: 0,
-    title: '감사한 일 3가지',
-    content: '오늘 감사했던 순간들을 적어보자. 감사함을 찾다 보면 하루가 더 풍요로워진다.',
-  },
-];
 
 function SkeletonList() {
   return (
@@ -139,18 +122,6 @@ export default function DiaryPage() {
     }
     return result;
   }, [validEntries, q, tagFilter]);
-
-  useEffect(() => {
-    if (localStorage.getItem('diary_samples_initialized')) return;
-    if (entries.length > 0) return;
-    const today = new Date();
-    SAMPLES.forEach(({ daysAgo, title, content }) => {
-      const d = new Date(today.getTime() - daysAgo * 86400000);
-      save({ date: d.toISOString().slice(0, 10), title, content });
-    });
-    localStorage.setItem('diary_samples_initialized', '1');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const allSelected = filtered.length > 0 && filtered.every(e => e.id && selected.has(e.id));
 

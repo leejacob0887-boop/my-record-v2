@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Zap, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
@@ -8,11 +8,6 @@ import { useMoments } from '@/lib/useMoments';
 import { Moment } from '@/lib/types';
 import { formatDateTime } from '@/lib/dateUtils';
 
-const SAMPLES = [
-  { daysAgo: 2, text: '오늘 하늘이 너무 예뻤다 ☁️' },
-  { daysAgo: 1, text: '커피 한 잔의 여유 ☕' },
-  { daysAgo: 0, text: '오늘 배운 것 하나 😊' },
-];
 
 function SkeletonList() {
   return (
@@ -109,18 +104,6 @@ export default function MomentsPage() {
     if (tagFilter) result = result.filter(m => extractTags(m.text).includes(tagFilter));
     return result;
   }, [moments, q, tagFilter]);
-
-  useEffect(() => {
-    if (localStorage.getItem('moments_samples_initialized')) return;
-    if (moments.length > 0) return;
-    const today = new Date();
-    SAMPLES.forEach(({ daysAgo, text }) => {
-      const d = new Date(today.getTime() - daysAgo * 86400000);
-      add({ text, date: d.toISOString().slice(0, 10) });
-    });
-    localStorage.setItem('moments_samples_initialized', '1');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const allSelected = filtered.length > 0 && filtered.every(m => m.id && selected.has(m.id));
 
