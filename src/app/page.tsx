@@ -166,28 +166,28 @@ export default function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/poetry.gif" alt="일러스트" className="w-44 h-44 object-contain flex-shrink-0 -translate-x-4" />
           </div>
-          {/* 최근 기록 토글 — 박스 좌측 하단 */}
-          <button
-            onClick={() => setRecentOpen(v => !v)}
-            className="flex items-center gap-1 px-6 pb-5 active:opacity-70"
-          >
-            <span className="text-sm font-semibold" style={{ color: '#0F6E56' }}>최근 기록</span>
-            <ChevronDown
-              size={16}
-              color="#0F6E56"
-              className={`transition-transform ${recentOpen ? 'rotate-180' : ''}`}
-            />
-          </button>
-        </div>
-
-        {/* Camera / Mic icons — 박스 밖 우측 */}
-        <div className="flex items-center justify-end gap-4 pr-4 pb-4">
-          <button className="active:opacity-70" aria-label="카메라">
-            <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
-          </button>
-          <button className="active:opacity-70" aria-label="마이크">
-            <Mic size={22} color="#0F6E56" strokeWidth={1.8} />
-          </button>
+          {/* 최근 기록 + 카메라/마이크 한 줄 */}
+          <div className="flex items-center justify-between px-6 pb-5">
+            <button
+              onClick={() => setRecentOpen(v => !v)}
+              className="flex items-center gap-1 active:opacity-70"
+            >
+              <span className="text-sm font-semibold" style={{ color: '#0F6E56' }}>최근 기록</span>
+              <ChevronDown
+                size={16}
+                color="#0F6E56"
+                className={`transition-transform ${recentOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <div className="flex items-center gap-4">
+              <button className="active:opacity-70" aria-label="카메라">
+                <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
+              </button>
+              <button className="active:opacity-70" aria-label="마이크">
+                <Mic size={22} color="#0F6E56" strokeWidth={1.8} />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Bottom sheet */}
