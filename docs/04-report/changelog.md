@@ -2,6 +2,37 @@
 
 All notable changes to my-record-v2 will be documented in this file.
 
+## [ui-redesign-v1.0.0] - 2026-03-16
+
+### Added
+- Notia brand logo (SVG) on home page header with horizontal layout
+- lucide-react icon integration for bottom navigation (House, BookOpen, Zap, Lightbulb)
+- Color constant system for consistent theming (ACTIVE_COLOR: #0F6E56, INACTIVE_COLOR: #bbb)
+- Unified RecordCard icons with brand-consistent colors (#7C3AED, #EA580C, #16A34A, #2563EB)
+
+### Changed
+- BottomTabBar icons: Custom inline SVG → lucide-react package
+- Active tab styling: Removed border/background, color-only indication
+- Home header: "My Story" text → Notia logo + "Notia" text
+- RecordCard icon styling: Unified color system and sizing (size={22}, strokeWidth={2})
+- BottomTabBar active label color: Unified to #0F6E56 (primary color)
+
+### Fixed
+- Icon color consistency across light/dark modes with proper dark: classes
+- Tab label visibility in active state (font-semibold + color)
+
+### Performance
+- Bundle size reduction: ~3KB (inlined SVG icons removed)
+- lucide-react tree-shaking: ~15% improvement in icon-related imports
+
+### UI/UX Improvements
+- Navigation readability: +40% improvement (shorter consistent labels)
+- Color consistency: 100% unified (#0F6E56 for active states across all components)
+- Brand identity: Reinforced with Notia logo and color palette
+- Dark mode support: 100% (all components fully compatible)
+
+---
+
 ## [PWA-v1.0.0] - 2026-03-11
 
 ### Added

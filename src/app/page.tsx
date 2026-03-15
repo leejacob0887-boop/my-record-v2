@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { BookOpen, Zap, Lightbulb, Calendar, ChevronRight, ChevronDown, Bot } from 'lucide-react';
+import { BookOpen, Zap, Lightbulb, CalendarDays, ChevronRight, ChevronDown, Bot, Camera, Mic } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
@@ -60,7 +60,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#F4F2EE] dark:bg-gray-900">
-      <div className="max-w-[430px] mx-auto px-4 pb-8">
+      <div className="max-w-[430px] mx-auto px-4">
 
         {/* Top bar */}
         <div className="flex items-center justify-between pt-12 pb-6">
@@ -100,7 +100,7 @@ export default function Home() {
           href="/chat"
           className="flex items-center gap-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-5 py-4 mb-5 active:scale-95 transition-all"
         >
-          <div className="w-11 h-11 bg-violet-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: '#0F6E56' }}>
             <Bot size={22} color="white" strokeWidth={1.8} />
           </div>
           <div className="flex-1">
@@ -111,61 +111,82 @@ export default function Home() {
         </Link>
 
         {/* Record cards grid */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
-          <RecordCard
-            icon={<BookOpen size={22} color="#7C3AED" strokeWidth={2} />}
-            iconBg="bg-[#C4B5FD] dark:bg-purple-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-            label="일기"
-            description="하루 하나씩"
-            count={entries.length}
-            href="/diary"
-          />
-          <RecordCard
-            icon={<Zap size={22} color="#EA580C" strokeWidth={2} />}
-            iconBg="bg-[#FDC9A0] dark:bg-orange-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-            label="메모"
-            description="짧은 메모 기록"
-            count={moments.length}
-            href="/moments"
-          />
-          <RecordCard
-            icon={<Lightbulb size={22} color="#16A34A" strokeWidth={2} />}
-            iconBg="bg-[#86EFAC] dark:bg-green-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-            label="아이디어"
-            description="떠오르는 생각들"
-            count={ideas.length}
-            href="/ideas"
-          />
-          <RecordCard
-            icon={<Calendar size={22} color="#2563EB" strokeWidth={2} />}
-            iconBg="bg-[#93C5FD] dark:bg-blue-900/60"
-            cardBg="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
-            label="캘린더"
-            description="날짜별로 돌아보기"
-            count={0}
-            href="/calendar"
-          />
+        <div className="bg-white dark:bg-gray-800 rounded-2xl py-2 px-4 mb-5">
+        <div className="grid grid-cols-2">
+          {/* 일기 */}
+          <Link href="/diary" className="flex items-center gap-3 px-4 py-4 border-b border-[#e6e2db] active:opacity-70">
+            <div className="w-10 h-10 rounded-full bg-[#0F6E56] flex items-center justify-center flex-shrink-0">
+              <BookOpen size={18} color="white" strokeWidth={2} />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{entries.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">일기</p>
+            </div>
+          </Link>
+          {/* 메모 */}
+          <Link href="/moments" className="flex items-center gap-3 px-4 py-4 border-b border-[#e6e2db] active:opacity-70">
+            <div className="w-10 h-10 rounded-xl bg-[#1D9E75] flex items-center justify-center flex-shrink-0">
+              <Zap size={18} color="white" strokeWidth={2} />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{moments.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">메모</p>
+            </div>
+          </Link>
+          {/* 아이디어 */}
+          <Link href="/ideas" className="flex items-center gap-3 px-4 py-4 active:opacity-70">
+            <div className="w-10 h-10 rounded-xl bg-[#E1F5EE] border border-[#5DCAA5] flex items-center justify-center flex-shrink-0">
+              <Lightbulb size={18} color="#0F6E56" strokeWidth={2} />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{ideas.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">아이디어</p>
+            </div>
+          </Link>
+          {/* 캘린더 */}
+          <Link href="/calendar" className="flex items-center gap-3 px-4 py-4 active:opacity-70">
+            <div className="w-10 h-10 rounded-full bg-[#9FE1CB] flex items-center justify-center flex-shrink-0">
+              <CalendarDays size={18} color="#085041" strokeWidth={2} />
+            </div>
+            <div>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">—</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">캘린더</p>
+            </div>
+          </Link>
+        </div>
         </div>
 
-        {/* Recent records — illustration placeholder + 전체보기 버튼 */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-violet-300 dark:border-violet-700">
-          <div className="flex flex-row items-center px-6 py-5 gap-4">
-            <div className="flex-1 min-w-0">
+        {/* Bottom section — illustration card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-3">
+          <div className="flex flex-row items-center px-4 py-1 gap-4">
+            <div className="flex-1 min-w-0 pl-4 pr-6">
               <p className="text-base font-bold text-gray-400 dark:text-gray-500">생각은 사라지지만,</p>
               <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5">기록은 남습니다.</p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={resolvedTheme === 'dark' ? '/chatbot-dark.gif' : '/chatbot.gif'} alt="챗봇 일러스트" className="w-36 h-36 object-contain flex-shrink-0" />
+            <img src="/poetry.gif" alt="일러스트" className="w-44 h-44 object-contain flex-shrink-0 -translate-x-4" />
           </div>
+          {/* 최근 기록 토글 — 박스 좌측 하단 */}
           <button
-            onClick={() => setRecentOpen(true)}
-            className="w-full border-t border-gray-100 dark:border-gray-700 px-5 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+            onClick={() => setRecentOpen(v => !v)}
+            className="flex items-center gap-1 px-6 pb-5 active:opacity-70"
           >
-            <span className="text-base font-bold text-gray-800 dark:text-gray-100">최근 기록</span>
-            <ChevronDown size={18} color="#9CA3AF" className="rotate-180" />
+            <span className="text-sm font-semibold" style={{ color: '#0F6E56' }}>최근 기록</span>
+            <ChevronDown
+              size={16}
+              color="#0F6E56"
+              className={`transition-transform ${recentOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+        </div>
+
+        {/* Camera / Mic icons — 박스 밖 우측 */}
+        <div className="flex items-center justify-end gap-4 pr-4 pb-4">
+          <button className="active:opacity-70" aria-label="카메라">
+            <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
+          </button>
+          <button className="active:opacity-70" aria-label="마이크">
+            <Mic size={22} color="#0F6E56" strokeWidth={1.8} />
           </button>
         </div>
 
