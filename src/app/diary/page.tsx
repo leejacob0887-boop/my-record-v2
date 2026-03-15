@@ -6,6 +6,7 @@ import { BookOpen, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { DiaryEntry } from '@/lib/types';
+import { formatDateTime } from '@/lib/dateUtils';
 
 const SAMPLES = [
   {
@@ -24,8 +25,6 @@ const SAMPLES = [
     content: '오늘 감사했던 순간들을 적어보자. 감사함을 찾다 보면 하루가 더 풍요로워진다.',
   },
 ];
-
-import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (

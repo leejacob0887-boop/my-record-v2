@@ -6,14 +6,13 @@ import { Zap, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useMoments } from '@/lib/useMoments';
 import { Moment } from '@/lib/types';
+import { formatDateTime } from '@/lib/dateUtils';
 
 const SAMPLES = [
   { daysAgo: 2, text: '오늘 하늘이 너무 예뻤다 ☁️' },
   { daysAgo: 1, text: '커피 한 잔의 여유 ☕' },
   { daysAgo: 0, text: '오늘 배운 것 하나 😊' },
 ];
-
-import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (

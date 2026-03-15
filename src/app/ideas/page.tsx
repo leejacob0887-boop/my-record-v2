@@ -6,14 +6,13 @@ import { Lightbulb, ChevronRight } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useIdeas } from '@/lib/useIdeas';
 import { Idea } from '@/lib/types';
+import { formatDateTime } from '@/lib/dateUtils';
 
 const SAMPLES = [
   { title: '앱 개선 아이디어 💡', content: '사용자가 더 편하게 쓸 수 있는 기능들을 생각해보자.' },
   { title: '오늘 떠오른 생각 ✨', content: '작은 아이디어도 기록해두면 나중에 큰 가치가 된다.' },
   { title: '버킷리스트 🎯',       content: '언젠가 꼭 해보고 싶은 것들을 적어보자.' },
 ];
-
-import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (
