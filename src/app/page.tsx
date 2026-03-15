@@ -268,7 +268,8 @@ export default function Home() {
                 className={`transition-transform ${recentOpen ? 'rotate-180' : ''}`}
               />
             </button>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-400">빠른메모</span>
               <button className="active:opacity-70" aria-label="카메라">
                 <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
               </button>
