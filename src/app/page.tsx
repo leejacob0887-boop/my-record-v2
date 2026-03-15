@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { BookOpen, Zap, Lightbulb, CalendarDays, ChevronRight, ChevronDown, Bot, Camera, Mic } from 'lucide-react';
+import { BookOpen, Zap, Lightbulb, CalendarDays, ChevronRight, Bot, Camera, Mic } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
@@ -47,7 +47,6 @@ export default function Home() {
   const { moments, add: addMoment } = useMoments();
   const { ideas, add: addIdea } = useIdeas();
 
-  const [recentOpen, setRecentOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -244,6 +243,7 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-3">
           <div className="flex flex-row items-center px-4 py-1 gap-4">
             <div className="flex-1 min-w-0 pl-4 pr-2 flex flex-col justify-center gap-2 py-3">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-0.5">최근 기록</p>
               {recentItems.slice(0, 3).length === 0 ? (
                 <p className="text-sm text-gray-300 dark:text-gray-600">아직 기록이 없어요</p>
               ) : (
@@ -263,19 +263,8 @@ export default function Home() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/poetry.gif" alt="일러스트" className="w-44 h-44 object-contain flex-shrink-0 -translate-x-4" />
           </div>
-          {/* 최근 기록 + 카메라/마이크 한 줄 */}
-          <div className="flex items-center justify-between px-6 pb-5">
-            <button
-              onClick={() => setRecentOpen(v => !v)}
-              className="flex items-center gap-1 active:opacity-70"
-            >
-              <span className="text-sm font-semibold" style={{ color: '#0F6E56' }}>최근 기록</span>
-              <ChevronDown
-                size={16}
-                color="#0F6E56"
-                className={`transition-transform ${recentOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
+          {/* 카메라/마이크 한 줄 */}
+          <div className="flex items-center justify-end px-6 pb-5">
             <div className="flex items-center gap-4">
               <button className="active:opacity-70" aria-label="카메라">
                 <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
@@ -287,68 +276,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom sheet */}
-        {recentOpen && (
-          <>
-            {/* Backdrop */}
-            <div
-              className="fixed inset-0 bg-black/40 z-40"
-              onClick={() => setRecentOpen(false)}
-            />
-            {/* Sheet */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl">
-              {/* Handle */}
-              <div className="flex justify-center pt-3 pb-1">
-                <div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-600" />
-              </div>
-              {/* Header */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
-                <span className="text-base font-bold text-gray-800 dark:text-gray-100">최근 기록</span>
-                <button
-                  onClick={() => setRecentOpen(false)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700"
-                  aria-label="닫기"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" className="text-gray-500 dark:text-gray-400">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </div>
-              {/* List */}
-              <div className="overflow-y-auto max-h-[60vh] pb-8">
-                {recentItems.length === 0 ? (
-                  <p className="text-center text-sm text-gray-400 py-12">아직 기록이 없어요</p>
-                ) : (
-                  recentItems.map((item, idx) => (
-                    <Link
-                      key={idx}
-                      href={item.href}
-                      onClick={() => setRecentOpen(false)}
-                      className="flex items-center gap-3 px-5 py-4 border-b border-gray-50 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                        item.type === 'diary' ? 'bg-[#EDE9FF]' :
-                        item.type === 'moment' ? 'bg-[#FFF0E0]' : 'bg-[#E8F8EE]'
-                      }`}>
-                        {item.type === 'diary' && <BookOpen size={17} color="#7C3AED" strokeWidth={1.8} />}
-                        {item.type === 'moment' && <Zap size={17} color="#EA580C" strokeWidth={1.8} />}
-                        {item.type === 'idea' && <Lightbulb size={17} color="#16A34A" strokeWidth={1.8} />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate">{item.label}</p>
-                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                          {item.type === 'diary' ? '일기' : item.type === 'moment' ? '메모' : '아이디어'} · {item.date}
-                        </p>
-                      </div>
-                      <ChevronRight size={16} color="#D1D5DB" />
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-          </>
-        )}
 
       </div>
 
