@@ -189,7 +189,7 @@ export default function Home() {
       ...moments.map(m => ({ type: 'moment' as const, label: m.text, date: m.date ?? '', createdAt: m.createdAt ?? '', href: `/moments/${m.id}` })),
       ...ideas.map(i => ({ type: 'idea' as const, label: i.title, date: i.date ?? '', createdAt: i.createdAt ?? '', href: `/ideas/${i.id}` })),
     ];
-    return all.sort((a, b) => (b.createdAt || b.date || '').localeCompare(a.createdAt || a.date || '')).slice(0, 3);
+    return all.sort((a, b) => (b.createdAt || b.date || '').localeCompare(a.createdAt || a.date || '')).slice(0, 5);
   }, [entries, moments, ideas]);
 
   return (
@@ -330,7 +330,7 @@ export default function Home() {
               onClick={() => setRecentOpen(false)}
             />
             {/* Sheet */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl">
+            <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl flex flex-col" style={{ maxHeight: '85vh' }}>
               {/* Handle */}
               <div className="flex justify-center pt-3 pb-1">
                 <div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-600" />
@@ -350,7 +350,7 @@ export default function Home() {
                 </button>
               </div>
               {/* List */}
-              <div className="overflow-y-auto max-h-[60vh] pb-8">
+              <div className="flex-1 overflow-y-auto pb-8">
                 {recentItems.length === 0 ? (
                   <p className="text-center text-sm text-gray-400 py-12">아직 기록이 없어요</p>
                 ) : (
