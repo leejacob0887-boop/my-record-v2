@@ -25,12 +25,7 @@ const SAMPLES = [
   },
 ];
 
-function formatDateTime(date: string, createdAt: string): string {
-  const d = new Date(createdAt);
-  const hh = d.getHours().toString().padStart(2, '0');
-  const mm = d.getMinutes().toString().padStart(2, '0');
-  return `${date} ${hh}:${mm}`;
-}
+import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (

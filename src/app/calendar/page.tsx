@@ -9,6 +9,7 @@ import SavePreviewCard from '@/components/SavePreviewCard';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
+import { getTodayKST, toKSTDateString } from '@/lib/dateUtils';
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -44,7 +45,7 @@ export default function CalendarPage() {
           date: today,
           diary: diaryEntries.filter(e => e.date === today).map(e => ({ title: e.title, content: e.content })),
           moments: moments.filter(m => m.date === today).map(m => ({ text: m.text })),
-          ideas: ideas.filter(i => i.createdAt.slice(0, 10) === today).map(i => ({ title: i.title, content: i.content })),
+          ideas: ideas.filter(i => toKSTDateString(i.createdAt) === today).map(i => ({ title: i.title, content: i.content })),
         }),
       });
       const data = await res.json();
@@ -73,14 +74,14 @@ export default function CalendarPage() {
     const set = new Set<string>();
     diaryEntries.forEach((e) => set.add(e.date));
     moments.forEach((m) => set.add(m.date));
-    ideas.forEach((i) => set.add(i.createdAt.slice(0, 10)));
+    ideas.forEach((i) => set.add(toKSTDateString(i.createdAt)));
     return set;
   }, [diaryEntries, moments, ideas]);
 
   // Calendar grid calculation
   const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = now.toISOString().slice(0, 10);
+  const today = getTodayKST();
 
   const prevMonth = () => {
     if (month === 0) { setYear(y => y - 1); setMonth(11); }
@@ -211,7 +212,7 @@ export default function CalendarPage() {
         {(() => {
           const diaryCount = diaryEntries.filter(e => e.date === today).length;
           const momentCount = moments.filter(m => m.date === today).length;
-          const ideaCount = ideas.filter(i => i.createdAt.slice(0, 10) === today).length;
+          const ideaCount = ideas.filter(i => toKSTDateString(i.createdAt) === today).length;
           const total = diaryCount + momentCount + ideaCount;
 
           return (

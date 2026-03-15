@@ -6,6 +6,7 @@ import { BookOpen, Zap, Lightbulb } from 'lucide-react';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
+import { toKST, toKSTDateString } from '@/lib/dateUtils';
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -23,7 +24,7 @@ export default function CalendarDayPage() {
 
   const diary = getDiary(date);
   const moments = getMoments(date);
-  const dayIdeas = ideas.filter((i) => i.createdAt.slice(0, 10) === date);
+  const dayIdeas = ideas.filter((i) => toKSTDateString(i.createdAt) === date);
 
   const displayDate = new Date(date + 'T00:00:00').toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -117,7 +118,7 @@ export default function CalendarDayPage() {
                     )}
                     <p className="text-sm text-gray-700 dark:text-gray-200 line-clamp-2">{m.text}</p>
                     <p className="text-xs text-gray-400 mt-1">
-                      {new Date(m.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+                      {toKST(m.createdAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
                     </p>
                   </Link>
                 ))}

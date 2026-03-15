@@ -7,12 +7,7 @@ import { useTheme } from 'next-themes';
 import { useDiary } from '@/lib/useDiary';
 import { shareCard } from '@/lib/shareCard';
 
-function formatDateTime(date: string, createdAt: string): string {
-  const d = new Date(createdAt);
-  const hh = d.getHours().toString().padStart(2, '0');
-  const mm = d.getMinutes().toString().padStart(2, '0');
-  return `${date} ${hh}:${mm}`;
-}
+import { formatDateTime } from '@/lib/dateUtils';
 
 export default function DiaryDetailPage() {
   const { id } = useParams<{ id: string }>();

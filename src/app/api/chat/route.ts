@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'user',
-          content: `오늘 날짜: ${new Date().toISOString().slice(0, 10)}\n\n${conversationText}`,
+          content: `오늘 날짜: ${new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10)}\n\n${conversationText}`,
         },
       ],
     });

@@ -13,12 +13,7 @@ const SAMPLES = [
   { daysAgo: 0, text: '오늘 배운 것 하나 😊' },
 ];
 
-function formatDateTime(date: string, createdAt: string): string {
-  const d = new Date(createdAt);
-  const hh = d.getHours().toString().padStart(2, '0');
-  const mm = d.getMinutes().toString().padStart(2, '0');
-  return `${date} ${hh}:${mm}`;
-}
+import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (

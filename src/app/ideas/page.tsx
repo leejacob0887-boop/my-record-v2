@@ -13,12 +13,7 @@ const SAMPLES = [
   { title: '버킷리스트 🎯',       content: '언젠가 꼭 해보고 싶은 것들을 적어보자.' },
 ];
 
-function formatDateTime(date: string, createdAt: string): string {
-  const d = new Date(createdAt);
-  const hh = d.getHours().toString().padStart(2, '0');
-  const mm = d.getMinutes().toString().padStart(2, '0');
-  return `${date} ${hh}:${mm}`;
-}
+import { formatDateTime } from '@/lib/dateUtils';
 
 function SkeletonList() {
   return (

@@ -49,6 +49,17 @@ export default function Home() {
 
   const [recentOpen, setRecentOpen] = useState(false);
 
+  const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const todayDiaryCount = useMemo(() => entries.filter(e => e.date === today).length, [entries, today]);
+  const todayMomentCount = useMemo(() => moments.filter(m => {
+    const kstDate = new Date(new Date(m.createdAt).getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    return kstDate === today;
+  }).length, [moments, today]);
+  const todayIdeaCount = useMemo(() => ideas.filter(i => {
+    const kstDate = new Date(new Date(i.createdAt).getTime() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    return kstDate === today;
+  }).length, [ideas, today]);
+
   const recentItems = useMemo<RecentItem[]>(() => {
     const all: RecentItem[] = [
       ...entries.map(e => ({ type: 'diary' as const, label: e.title, date: e.date ?? '', href: `/diary/${e.id}` })),
@@ -119,7 +130,7 @@ export default function Home() {
               <BookOpen size={18} color="white" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{entries.length}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayDiaryCount}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">일기</p>
             </div>
           </Link>
@@ -129,7 +140,7 @@ export default function Home() {
               <Zap size={18} color="white" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{moments.length}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayMomentCount}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">메모</p>
             </div>
           </Link>
@@ -139,7 +150,7 @@ export default function Home() {
               <Lightbulb size={18} color="#0F6E56" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{ideas.length}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayIdeaCount}</p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">아이디어</p>
             </div>
           </Link>
@@ -149,7 +160,8 @@ export default function Home() {
               <CalendarDays size={18} color="#085041" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">날짜별 보기</p>
+              <p className="text-xl font-bold text-gray-500 dark:text-gray-400 leading-none">...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">돌아보기</p>
             </div>
           </Link>
         </div>
