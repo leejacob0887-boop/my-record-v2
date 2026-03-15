@@ -5,7 +5,8 @@ import { CHAT_SYSTEM_PROMPT, SAVE_ANALYSIS_PROMPT } from '@/lib/ai-persona';
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 type RequestBody = {
   messages: ChatMessage[];
-  mode: 'chat' | 'save';
+  mode: 'chat' | 'save' | 'vision';
+  imageBase64?: string;
 };
 
 const client = new Anthropic();
@@ -15,7 +16,25 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'ANTHROPIC_API_KEY가 설정되지 않았습니다.' }, { status: 500 });
   }
 
-  const { messages, mode }: RequestBody = await req.json();
+  const { messages, mode, imageBase64 }: RequestBody = await req.json();
+
+  // ── 비전 모드: 이미지 분석 후 텍스트 반환 ──────────────
+  if (mode === 'vision') {
+    const base64 = (imageBase64 ?? '').split(',')[1] ?? '';
+    const response = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
+          { type: 'text', text: '이 사진을 한국어로 간결하게 설명해줘. 2~3문장으로.' },
+        ],
+      }],
+    });
+    const text = response.content[0].type === 'text' ? response.content[0].text : '';
+    return Response.json({ text });
+  }
 
   // ── 저장 모드: 대화 분석 후 JSON 반환 ──────────────────
   if (mode === 'save') {

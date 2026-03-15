@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
+import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { BookOpen, Zap, Lightbulb, CalendarDays, ChevronRight, ChevronDown, Bot, Camera, Mic } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
@@ -139,6 +139,35 @@ export default function Home() {
     recognition.start();
   };
 
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCameraChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    showToast('자동 저장 중...');
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'vision', imageBase64: reader.result, messages: [] }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.text) throw new Error('분석 실패');
+        const kstToday = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+        await addMoment({ text: data.text, date: kstToday });
+        localStorage.setItem('new_badge_moment', '1');
+        window.dispatchEvent(new CustomEvent('badge-update'));
+        showToast('메모로 저장됐어요! ⚡', true);
+      } catch {
+        showToast('저장 중 오류가 발생했어요', true);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
   const todayDiaryCount = useMemo(() => entries.filter(e => e.date === today).length, [entries, today]);
   const todayMomentCount = useMemo(() => moments.filter(m => {
@@ -270,9 +299,17 @@ export default function Home() {
             </button>
             <div className="flex items-center gap-3">
               <span className="text-xs text-gray-400">빠른메모</span>
-              <button className="active:opacity-70" aria-label="카메라">
+              <button onClick={() => cameraInputRef.current?.click()} className="active:opacity-70" aria-label="카메라">
                 <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
               </button>
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleCameraChange}
+              />
               <button onClick={handleMicClick} className="active:opacity-70" aria-label="마이크">
                 <Mic size={22} color={isRecording ? '#ef4444' : '#0F6E56'} strokeWidth={1.8} />
               </button>
