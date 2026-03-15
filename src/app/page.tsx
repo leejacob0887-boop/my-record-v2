@@ -75,9 +75,7 @@ export default function Home() {
 
     const recognition = new SR();
     recognition.lang = 'ko-KR';
-    recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
 
     recognitionRef.current = recognition;
     setIsRecording(true);
@@ -127,8 +125,10 @@ export default function Home() {
     };
 
     recognition.onend = () => {
-      setIsRecording(false);
-      recognitionRef.current = null;
+      if (recognitionRef.current) {
+        setIsRecording(false);
+        recognitionRef.current = null;
+      }
     };
 
     recognition.start();
