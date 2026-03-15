@@ -15,10 +15,11 @@ export function getTodayKST(): string {
   return new Date(Date.now() + KST_OFFSET).toISOString().slice(0, 10);
 }
 
-/** 날짜 + createdAt으로 'YYYY-MM-DD HH:MM' (KST) 포맷 반환 */
-export function formatDateTime(date: string, createdAt: string): string {
+/** createdAt 기준 KST 'YYYY-MM-DD HH:MM' 포맷 반환 (date 파라미터 무시) */
+export function formatDateTime(_date: string, createdAt: string): string {
   const kst = toKST(createdAt);
+  const kstDate = kst.toISOString().slice(0, 10);
   const hh = kst.getUTCHours().toString().padStart(2, '0');
   const mm = kst.getUTCMinutes().toString().padStart(2, '0');
-  return `${date} ${hh}:${mm}`;
+  return `${kstDate} ${hh}:${mm}`;
 }
