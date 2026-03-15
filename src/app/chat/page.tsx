@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Camera } from 'lucide-react';
 import ChatMessage from '@/components/ChatMessage';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
@@ -10,7 +10,7 @@ import { useIdeas } from '@/lib/useIdeas';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 
 type MessageRole = 'user' | 'assistant' | 'info';
-type Message = { id: string; role: MessageRole; content: string };
+type Message = { id: string; role: MessageRole; content: string; imageUrl?: string };
 
 const CHAT_STORAGE_KEY = 'chat:history';
 const INITIAL_MESSAGE: Message = {
@@ -59,6 +59,7 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const handleSendRef = useRef<() => void>(() => {});
+  const chatCameraRef = useRef<HTMLInputElement>(null);
 
   const isTTSSupported = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
@@ -228,6 +229,20 @@ export default function ChatPage() {
   const { isRecording, isSupported: isSpeechSupported, toggle: toggleMic } =
     useSpeechInput(handleVoiceResult);
 
+  const handleChatCameraChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageUrl = reader.result as string;
+      const userMsg: Message = { id: newId(), role: 'user', content: '', imageUrl };
+      const aiMsg: Message = { id: newId(), role: 'assistant', content: '이 사진으로 무엇을 도와드릴까요? 😊' };
+      setMessages((prev) => [...prev, userMsg, aiMsg]);
+    };
+    reader.readAsDataURL(file);
+  };
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -299,7 +314,7 @@ export default function ChatPage() {
       {/* 메시지 목록 */}
       <div className="flex-1 overflow-y-auto py-4 space-y-3">
         {messages.map((msg) => (
-          <ChatMessage key={msg.id} role={msg.role} content={msg.content} />
+          <ChatMessage key={msg.id} role={msg.role} content={msg.content} imageUrl={msg.imageUrl} />
         ))}
         {streamingContent && (
           <ChatMessage role="assistant" content={streamingContent} isStreaming />
@@ -320,6 +335,23 @@ export default function ChatPage() {
             className="flex-1 bg-transparent resize-none outline-none text-sm text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 max-h-32"
             style={{ lineHeight: '1.5' }}
             disabled={isLoading}
+          />
+          <button
+            type="button"
+            onClick={() => chatCameraRef.current?.click()}
+            disabled={isLoading}
+            className="flex items-center justify-center w-8 h-8 flex-shrink-0 disabled:opacity-40"
+            aria-label="사진 첨부"
+          >
+            <Camera size={18} color="#0F6E56" />
+          </button>
+          <input
+            ref={chatCameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleChatCameraChange}
           />
           {isSpeechSupported && (
             <button

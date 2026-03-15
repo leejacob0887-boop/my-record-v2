@@ -3,10 +3,11 @@
 interface ChatMessageProps {
   role: 'user' | 'assistant' | 'info';
   content: string;
+  imageUrl?: string;
   isStreaming?: boolean;
 }
 
-export default function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
+export default function ChatMessage({ role, content, imageUrl, isStreaming }: ChatMessageProps) {
   if (role === 'info') {
     return (
       <div className="flex justify-center px-4 my-1">
@@ -22,15 +23,22 @@ export default function ChatMessage({ role, content, isStreaming }: ChatMessageP
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} px-4`}>
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap
+        className={`max-w-[80%] rounded-2xl overflow-hidden text-sm leading-relaxed
           ${isUser
             ? 'bg-[#4A90D9] text-white rounded-br-sm'
             : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-sm border border-gray-100 dark:border-gray-700'
           }`}
       >
-        {content}
-        {isStreaming && (
-          <span className="inline-block w-1 h-3.5 ml-0.5 bg-current opacity-70 animate-pulse rounded-sm align-middle" />
+        {imageUrl && (
+          <img src={imageUrl} alt="" className="w-full max-h-60 object-cover" />
+        )}
+        {(content || isStreaming) && (
+          <div className="px-4 py-3 whitespace-pre-wrap">
+            {content}
+            {isStreaming && (
+              <span className="inline-block w-1 h-3.5 ml-0.5 bg-current opacity-70 animate-pulse rounded-sm align-middle" />
+            )}
+          </div>
         )}
       </div>
     </div>
