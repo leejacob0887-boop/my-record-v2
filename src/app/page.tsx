@@ -41,7 +41,7 @@ function RecordCard({ icon, iconBg, cardBg, label, description, count, href }: R
   );
 }
 
-type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: string; href: string };
+type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: string; createdAt: string; href: string };
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
@@ -185,11 +185,11 @@ export default function Home() {
 
   const recentItems = useMemo<RecentItem[]>(() => {
     const all: RecentItem[] = [
-      ...entries.map(e => ({ type: 'diary' as const, label: e.title, date: e.date ?? '', href: `/diary/${e.id}` })),
-      ...moments.map(m => ({ type: 'moment' as const, label: m.text, date: m.date ?? m.createdAt?.slice(0, 10) ?? '', href: `/moments/${m.id}` })),
-      ...ideas.map(i => ({ type: 'idea' as const, label: i.title, date: i.createdAt?.slice(0, 10) ?? '', href: `/ideas/${i.id}` })),
+      ...entries.map(e => ({ type: 'diary' as const, label: e.title, date: e.date ?? '', createdAt: e.createdAt ?? '', href: `/diary/${e.id}` })),
+      ...moments.map(m => ({ type: 'moment' as const, label: m.text, date: m.date ?? '', createdAt: m.createdAt ?? '', href: `/moments/${m.id}` })),
+      ...ideas.map(i => ({ type: 'idea' as const, label: i.title, date: i.date ?? '', createdAt: i.createdAt ?? '', href: `/ideas/${i.id}` })),
     ];
-    return all.sort((a, b) => (b.date || '').localeCompare(a.date || '')).slice(0, 5);
+    return all.sort((a, b) => (b.createdAt || b.date || '').localeCompare(a.createdAt || a.date || '')).slice(0, 3);
   }, [entries, moments, ideas]);
 
   return (
