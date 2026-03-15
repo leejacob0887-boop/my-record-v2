@@ -330,7 +330,7 @@ export default function Home() {
               onClick={() => setRecentOpen(false)}
             />
             {/* Sheet */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl flex flex-col" style={{ maxHeight: '85vh' }}>
+            <div className="fixed bottom-16 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl flex flex-col" style={{ maxHeight: 'calc(85vh - 64px)' }}>
               {/* Handle */}
               <div className="flex justify-center pt-3 pb-1">
                 <div className="w-10 h-1 rounded-full bg-gray-200 dark:bg-gray-600" />
