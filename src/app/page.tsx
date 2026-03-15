@@ -129,40 +129,28 @@ export default function Home() {
             <div className="w-10 h-10 rounded-full bg-[#0F6E56] flex items-center justify-center flex-shrink-0">
               <BookOpen size={18} color="white" strokeWidth={2} />
             </div>
-            <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayDiaryCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">일기</p>
-            </div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">일기</p>
           </Link>
           {/* 메모 */}
           <Link href="/moments" className="flex items-center gap-3 px-4 py-4 border-b border-[#e6e2db] active:opacity-70">
             <div className="w-10 h-10 rounded-xl bg-[#1D9E75] flex items-center justify-center flex-shrink-0">
               <Zap size={18} color="white" strokeWidth={2} />
             </div>
-            <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayMomentCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">메모</p>
-            </div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">메모</p>
           </Link>
           {/* 아이디어 */}
           <Link href="/ideas" className="flex items-center gap-3 px-4 py-4 active:opacity-70">
             <div className="w-10 h-10 rounded-xl bg-[#E1F5EE] border border-[#5DCAA5] flex items-center justify-center flex-shrink-0">
               <Lightbulb size={18} color="#0F6E56" strokeWidth={2} />
             </div>
-            <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">{todayIdeaCount}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">아이디어</p>
-            </div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">아이디어</p>
           </Link>
           {/* 캘린더 */}
           <Link href="/calendar" className="flex items-center gap-3 px-4 py-4 active:opacity-70">
             <div className="w-10 h-10 rounded-full bg-[#9FE1CB] flex items-center justify-center flex-shrink-0">
               <CalendarDays size={18} color="#085041" strokeWidth={2} />
             </div>
-            <div>
-              <p className="text-xl font-bold text-gray-500 dark:text-gray-400 leading-none">...</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">돌아보기</p>
-            </div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">돌아보기</p>
           </Link>
         </div>
         </div>
