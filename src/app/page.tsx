@@ -113,6 +113,11 @@ export default function Home() {
           : data.type === 'moment' ? '메모로 저장됐어요! ⚡'
           : '아이디어로 저장됐어요! 💡';
         showToast(label, true);
+        // 탭바 NEW 뱃지
+        const badgeKey = data.type === 'diary' ? 'new_badge_diary'
+          : data.type === 'moment' ? 'new_badge_moment' : 'new_badge_idea';
+        localStorage.setItem(badgeKey, '1');
+        window.dispatchEvent(new CustomEvent('badge-update'));
       } catch {
         showToast('저장 중 오류가 발생했어요', true);
       }
