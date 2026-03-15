@@ -249,8 +249,8 @@ export default function Home() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-3">
           <div className="flex flex-row items-center px-4 py-1 gap-4">
             <div className="flex-1 min-w-0 pl-4 pr-6">
-              <p className="text-base font-bold text-gray-400 dark:text-gray-500">생각은 사라지지만,</p>
-              <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5">기록은 남습니다.</p>
+              <p className="text-base font-bold text-gray-400 dark:text-gray-500 whitespace-pre-line">{"생각은\n사라지지만,"}</p>
+              <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5 whitespace-pre-line">{"기록은\n남습니다."}</p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/poetry.gif" alt="일러스트" className="w-44 h-44 object-contain flex-shrink-0 -translate-x-4" />
