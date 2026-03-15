@@ -149,8 +149,7 @@ export default function Home() {
               <CalendarDays size={18} color="#085041" strokeWidth={2} />
             </div>
             <div>
-              <p className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-none">—</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">캘린더</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">날짜별 보기</p>
             </div>
           </Link>
         </div>
