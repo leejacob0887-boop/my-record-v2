@@ -199,6 +199,22 @@ export default function Home() {
         {/* Top bar */}
         <div className="flex items-center justify-between pt-12 pb-6">
           <DarkModeToggle />
+          <div className="flex items-center gap-2">
+            <svg width="30" height="30" viewBox="0 0 80 80">
+              <rect width="80" height="80" rx="18" fill="#0F6E56"/>
+              <path d="M40 62 Q30 48 32 30 Q36 14 50 10 Q62 7 64 20 Q66 33 54 42 Q46 48 40 62Z" fill="#E1F5EE" opacity="0.95"/>
+              <path d="M40 62 Q43 48 50 30" fill="none" stroke="#5DCAA5" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M40 62 L37 69 L40 67 L43 69 Z" fill="#E1F5EE"/>
+              <ellipse cx="40" cy="72" rx="3.5" ry="4.5" fill="#FAC775"/>
+              <g transform="translate(60,18)">
+                <path d="M0,-7 L1.7,-1.7 L7,0 L1.7,1.7 L0,7 L-1.7,1.7 L-7,0 L-1.7,-1.7 Z" fill="#FAC775"/>
+              </g>
+              <g transform="translate(52,30)">
+                <path d="M0,-4 L1,-1 L4,0 L1,1 L0,4 L-1,1 L-4,0 L-1,-1 Z" fill="#FAC775" opacity="0.7"/>
+              </g>
+            </svg>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notia</h1>
+          </div>
           <Link
             href="/settings"
             className="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-black/5 transition-colors"
@@ -209,24 +225,6 @@ export default function Home() {
               <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
             </svg>
           </Link>
-        </div>
-
-        {/* Title section */}
-        <div className="flex items-center justify-center gap-2 mb-5">
-          <svg width="36" height="36" viewBox="0 0 80 80">
-            <rect width="80" height="80" rx="18" fill="#0F6E56"/>
-            <path d="M40 62 Q30 48 32 30 Q36 14 50 10 Q62 7 64 20 Q66 33 54 42 Q46 48 40 62Z" fill="#E1F5EE" opacity="0.95"/>
-            <path d="M40 62 Q43 48 50 30" fill="none" stroke="#5DCAA5" strokeWidth="2.5" strokeLinecap="round"/>
-            <path d="M40 62 L37 69 L40 67 L43 69 Z" fill="#E1F5EE"/>
-            <ellipse cx="40" cy="72" rx="3.5" ry="4.5" fill="#FAC775"/>
-            <g transform="translate(60,18)">
-              <path d="M0,-7 L1.7,-1.7 L7,0 L1.7,1.7 L0,7 L-1.7,1.7 L-7,0 L-1.7,-1.7 Z" fill="#FAC775"/>
-            </g>
-            <g transform="translate(52,30)">
-              <path d="M0,-4 L1,-1 L4,0 L1,1 L0,4 L-1,1 L-4,0 L-1,-1 Z" fill="#FAC775" opacity="0.7"/>
-            </g>
-          </svg>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Notia</h1>
         </div>
 
         {/* AI Chat banner */}
