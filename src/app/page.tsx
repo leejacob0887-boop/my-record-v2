@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { BookOpen, Zap, Lightbulb, CalendarDays, ChevronRight, ChevronDown, Bot, Camera, Mic } from 'lucide-react';
 import DarkModeToggle from '@/components/DarkModeToggle';
@@ -49,6 +49,9 @@ export default function Home() {
 
   const [recentOpen, setRecentOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   const showToast = (msg: string, autoClear = false) => {
     setToast(msg);
@@ -56,6 +59,15 @@ export default function Home() {
   };
 
   const handleMicClick = () => {
+    // 녹음 중이면 중지
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      recognitionRef.current = null;
+      setIsRecording(false);
+      setToast(null);
+      return;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const w = window as any;
     const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
@@ -65,11 +77,15 @@ export default function Home() {
     recognition.lang = 'ko-KR';
     recognition.interimResults = false;
 
+    recognitionRef.current = recognition;
+    setIsRecording(true);
     showToast('듣고 있어요...');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     recognition.onresult = async (e: any) => {
       const transcript = e.results[0][0].transcript;
+      setIsRecording(false);
+      recognitionRef.current = null;
       showToast('자동 저장 중...');
       try {
         const res = await fetch('/api/chat', {
@@ -99,7 +115,16 @@ export default function Home() {
       }
     };
 
-    recognition.onerror = () => showToast('마이크 권한이 필요해요', true);
+    recognition.onerror = () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+      showToast('마이크 권한이 필요해요', true);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      recognitionRef.current = null;
+    };
 
     recognition.start();
   };
@@ -238,7 +263,7 @@ export default function Home() {
                 <Camera size={22} color="#0F6E56" strokeWidth={1.8} />
               </button>
               <button onClick={handleMicClick} className="active:opacity-70" aria-label="마이크">
-                <Mic size={22} color="#0F6E56" strokeWidth={1.8} />
+                <Mic size={22} color={isRecording ? '#ef4444' : '#0F6E56'} strokeWidth={1.8} />
               </button>
             </div>
           </div>
