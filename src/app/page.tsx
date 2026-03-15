@@ -75,17 +75,17 @@ export default function Home() {
 
     const recognition = new SR();
     recognition.lang = 'ko-KR';
+    recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.continuous = true;
+    recognition.maxAlternatives = 1;
 
     recognitionRef.current = recognition;
     setIsRecording(true);
     showToast('듣고 있어요...');
 
-    let accumulated = '';
-    let saving = false;
-
-    const doSave = async (text: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = async (e: any) => {
+      const transcript = e.results[0][0].transcript;
       setIsRecording(false);
       recognitionRef.current = null;
       showToast('자동 저장 중...');
@@ -95,7 +95,7 @@ export default function Home() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mode: 'save',
-            messages: [{ role: 'user', content: text }],
+            messages: [{ role: 'user', content: transcript }],
           }),
         });
         const data = await res.json();
@@ -120,26 +120,6 @@ export default function Home() {
       }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    recognition.onresult = (e: any) => {
-      // 이미 저장 진행 중이면 무시
-      if (saving) return;
-
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) {
-          accumulated += e.results[i][0].transcript;
-        }
-      }
-
-      if (accumulated.includes('저장해줘')) {
-        saving = true;
-        recognition.stop();
-        const clean = accumulated.replace(/저장해줘/g, '').trim();
-        doSave(clean);
-      }
-      // "저장해줘" 없으면 계속 듣기만
-    };
-
     recognition.onerror = () => {
       setIsRecording(false);
       recognitionRef.current = null;
@@ -147,8 +127,6 @@ export default function Home() {
     };
 
     recognition.onend = () => {
-      // 저장 진행 중이면 onend에서 상태 변경 안 함 (doSave가 처리)
-      if (saving) return;
       setIsRecording(false);
       recognitionRef.current = null;
     };
