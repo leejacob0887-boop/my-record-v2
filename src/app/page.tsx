@@ -110,7 +110,10 @@ export default function Home() {
         } else if (data.type === 'idea') {
           await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
         }
-        showToast('저장됐어요! 🎉', true);
+        const label = data.type === 'diary' ? '일기로 저장됐어요! 📔'
+          : data.type === 'moment' ? '메모로 저장됐어요! ⚡'
+          : '아이디어로 저장됐어요! 💡';
+        showToast(label, true);
       } catch {
         showToast('저장 중 오류가 발생했어요', true);
       }
