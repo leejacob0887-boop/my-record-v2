@@ -243,9 +243,22 @@ export default function Home() {
         {/* Bottom section — illustration card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden mb-3">
           <div className="flex flex-row items-center px-4 py-1 gap-4">
-            <div className="flex-1 min-w-0 pl-4 pr-6">
-              <p className="text-base font-bold text-gray-400 dark:text-gray-500">생각은 사라지지만,</p>
-              <p className="text-base font-bold text-gray-800 dark:text-gray-100 mt-0.5">기록은 남습니다.</p>
+            <div className="flex-1 min-w-0 pl-4 pr-2 flex flex-col justify-center gap-2 py-3">
+              {recentItems.slice(0, 3).length === 0 ? (
+                <p className="text-sm text-gray-300 dark:text-gray-600">아직 기록이 없어요</p>
+              ) : (
+                recentItems.slice(0, 3).map((item, idx) => {
+                  const dotColor = item.type === 'diary' ? '#0F6E56' : item.type === 'moment' ? '#1D9E75' : '#5DCAA5';
+                  const catLabel = item.type === 'diary' ? '일기' : item.type === 'moment' ? '메모' : '아이디어';
+                  return (
+                    <Link key={idx} href={item.href} className="flex items-center gap-2 min-w-0 active:opacity-70">
+                      <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200 truncate flex-1">{item.label}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">{catLabel}</span>
+                    </Link>
+                  );
+                })
+              )}
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/poetry.gif" alt="일러스트" className="w-44 h-44 object-contain flex-shrink-0 -translate-x-4" />
