@@ -8,6 +8,8 @@ import DarkModeToggle from '@/components/DarkModeToggle';
 import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
+import { useAuth } from '@/context/AuthContext';
+import { uploadImage } from '@/lib/storageUpload';
 
 interface RecordCardProps {
   icon: React.ReactNode;
@@ -43,6 +45,7 @@ type RecentItem = { type: 'diary' | 'moment' | 'idea'; label: string; date: stri
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
+  const { user } = useAuth();
   const { entries, save: saveDiary } = useDiary();
   const { moments, add: addMoment } = useMoments();
   const { ideas, add: addIdea } = useIdeas();
@@ -145,27 +148,28 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (!file) return;
     e.target.value = '';
-    showToast('자동 저장 중...');
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode: 'vision', imageBase64: reader.result, messages: [] }),
+    showToast('저장 중...');
+    try {
+      const kstToday = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      let imageUrl: string;
+      if (user) {
+        imageUrl = await uploadImage(file, user.id);
+      } else {
+        // 비로그인: base64로 로컬 저장
+        imageUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
         });
-        const data = await res.json();
-        if (!res.ok || !data.text) throw new Error('분석 실패');
-        const kstToday = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
-        await addMoment({ text: data.text, date: kstToday });
-        localStorage.setItem('new_badge_moment', '1');
-        window.dispatchEvent(new CustomEvent('badge-update'));
-        showToast('메모로 저장됐어요! ⚡', true);
-      } catch {
-        showToast('저장 중 오류가 발생했어요', true);
       }
-    };
-    reader.readAsDataURL(file);
+      await addMoment({ text: '', date: kstToday, imageBase64: imageUrl });
+      localStorage.setItem('new_badge_moment', '1');
+      window.dispatchEvent(new CustomEvent('badge-update'));
+      showToast('사진이 저장됐어요! 📷', true);
+    } catch {
+      showToast('저장 중 오류가 발생했어요', true);
+    }
   };
 
   const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
