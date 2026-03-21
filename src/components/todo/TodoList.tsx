@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -15,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import type { Todo } from '@/lib/todos'
 import TodoItem from './TodoItem'
 
@@ -30,6 +32,8 @@ interface Props {
 }
 
 export default function TodoList({ todos, filter, onFilterChange, onToggle, onDelete, onReorder }: Props) {
+  const [doneExpanded, setDoneExpanded] = useState(false)
+
   const tabs: { key: Filter; label: string }[] = [
     { key: 'all', label: '전체' },
     { key: 'today', label: '오늘' },
@@ -40,12 +44,18 @@ export default function TodoList({ todos, filter, onFilterChange, onToggle, onDe
     useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
   )
 
+  const activeTodos = todos.filter((t) => !t.is_done)
+  const doneTodos = todos.filter((t) => t.is_done)
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     if (!over || active.id === over.id) return
-    const oldIndex = todos.findIndex((t) => t.id === active.id)
-    const newIndex = todos.findIndex((t) => t.id === over.id)
-    onReorder(arrayMove(todos, oldIndex, newIndex))
+    // Drag only within active todos
+    const oldIndex = activeTodos.findIndex((t) => t.id === active.id)
+    const newIndex = activeTodos.findIndex((t) => t.id === over.id)
+    if (oldIndex === -1 || newIndex === -1) return
+    const reordered = arrayMove(activeTodos, oldIndex, newIndex)
+    onReorder([...reordered, ...doneTodos])
   }
 
   return (
@@ -71,25 +81,57 @@ export default function TodoList({ todos, filter, onFilterChange, onToggle, onDe
           {filter === 'today' ? '오늘 할 일이 없어요 🎉' : '할 일이 없어요'}
         </p>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis]}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={todos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-            <div className="flex flex-col gap-2">
-              {todos.map((todo) => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  onToggle={onToggle}
-                  onDelete={onDelete}
-                />
-              ))}
+        <div className="flex flex-col gap-2">
+          {/* 미완료 목록 (드래그 가능) */}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            modifiers={[restrictToVerticalAxis]}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={activeTodos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+              <div className="flex flex-col gap-2">
+                {activeTodos.map((todo) => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={onToggle}
+                    onDelete={onDelete}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+
+          {/* 완료 목록 접기/펼치기 */}
+          {doneTodos.length > 0 && (
+            <div className="flex flex-col gap-2 mt-1">
+              <button
+                onClick={() => setDoneExpanded((v) => !v)}
+                className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium px-1 py-1 w-fit"
+              >
+                {doneExpanded
+                  ? <ChevronDown size={14} />
+                  : <ChevronRight size={14} />
+                }
+                완료 {doneTodos.length}개
+              </button>
+
+              {doneExpanded && (
+                <div className="flex flex-col gap-2">
+                  {doneTodos.map((todo) => (
+                    <TodoItem
+                      key={todo.id}
+                      todo={todo}
+                      onToggle={onToggle}
+                      onDelete={onDelete}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-          </SortableContext>
-        </DndContext>
+          )}
+        </div>
       )}
     </div>
   )
