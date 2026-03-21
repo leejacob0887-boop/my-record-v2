@@ -10,6 +10,8 @@ import { useIdeas } from '@/lib/useIdeas';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { addTodo } from '@/lib/todos';
 import { parseTodoIntent } from '@/lib/parseTodoIntent';
+import { addEvent } from '@/lib/events';
+import { parseEventIntent } from '@/lib/parseEventIntent';
 
 type MessageRole = 'user' | 'assistant' | 'info';
 type Message = { id: string; role: MessageRole; content: string; imageUrl?: string };
@@ -170,7 +172,15 @@ export default function ChatPage() {
       const today = new Date().toISOString().slice(0, 10);
       const date = data.date ?? today;
 
-      if (data.type === 'diary') {
+      if (data.type === 'calendar_event') {
+        await addEvent({
+          title: data.title ?? '일정',
+          date: data.date ?? date,
+          start_time: data.start_time ?? null,
+          end_time: data.end_time ?? null,
+          description: data.description ?? null,
+        });
+      } else if (data.type === 'diary') {
         await saveDiary({ date, title: data.title ?? '대화 기록', content: data.content ?? '' });
       } else if (data.type === 'moment') {
         await addMoment({ text: data.text ?? data.content ?? '', date });
@@ -212,8 +222,33 @@ export default function ChatPage() {
     ];
     setMessages(newMessages);
 
+    const eventIntent = parseEventIntent(userText);
     const todoIntent = parseTodoIntent(userText);
-    if (todoIntent.isTodoIntent) {
+
+    if (eventIntent.isEventIntent) {
+      try {
+        await addEvent({
+          title: eventIntent.title,
+          date: eventIntent.date!,
+          start_time: eventIntent.start_time ?? null,
+          end_time: null,
+          description: null,
+        });
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: newId(),
+            role: 'assistant',
+            content: `✅ **[일정]** "${eventIntent.title}" 일정을 추가했어요! (${eventIntent.date} ${eventIntent.start_time ?? ''}) 캘린더 탭에서 확인할 수 있어요. 📅`,
+          },
+        ]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { id: newId(), role: 'info', content: '❌ 일정 추가에 실패했어요.' },
+        ]);
+      }
+    } else if (todoIntent.isTodoIntent) {
       try {
         await addTodo(todoIntent.content, todoIntent.due_date);
         const duePart = todoIntent.due_date ? ` (마감: ${todoIntent.due_date})` : '';

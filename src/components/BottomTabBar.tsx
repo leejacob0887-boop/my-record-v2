@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { House, BookOpen, Zap, Lightbulb, CheckSquare } from 'lucide-react';
+import { House, BookOpen, Zap, Lightbulb, CheckSquare, CalendarDays } from 'lucide-react';
 
 const ACTIVE_COLOR = '#0F6E56';
 const INACTIVE_COLOR = '#bbb';
@@ -39,6 +39,11 @@ const tabs = [
     href: '/todos',
     label: '할 일',
     icon: (active: boolean) => <CheckSquare size={20} color={active ? ACTIVE_COLOR : INACTIVE_COLOR} strokeWidth={2} />,
+  },
+  {
+    href: '/calendar',
+    label: '캘린더',
+    icon: (active: boolean) => <CalendarDays size={20} color={active ? ACTIVE_COLOR : INACTIVE_COLOR} strokeWidth={2} />,
   },
 ];
 

@@ -11,9 +11,13 @@ export const SAVE_ANALYSIS_PROMPT = `
 다음 대화를 분석해서 저장할 기록 정보를 JSON으로 반환하세요.
 
 분류 기준:
+- calendar_event: 구체적인 시간이 포함된 일정 (오전/오후/시/분 표현 포함)
 - diary: 하루 경험, 감정, 성찰 등 긴 이야기
 - moment: 짧은 메모, 한 줄 생각, 순간적 느낌
 - idea: 아이디어, 계획, 제안, 프로젝트 구상
+
+시간 표현이 있으면 반드시 calendar_event로 분류하세요.
+마감일만 있고 시간이 없으면 moment나 diary로 분류하세요.
 
 반드시 아래 JSON 형식만 반환하세요 (다른 텍스트 없이):
 {
@@ -25,6 +29,17 @@ export const SAVE_ANALYSIS_PROMPT = `
   "confirmMessage": "✅ [일기]로 저장했어요! 제목: 제목명"
 }
 
-type은 반드시 diary, moment, idea 중 하나여야 합니다.
-confirmMessage의 타입 표기: diary→[일기], moment→[메모], idea→[아이디어]
+calendar_event 형식:
+{
+  "type": "calendar_event",
+  "title": "일정 제목",
+  "date": "YYYY-MM-DD",
+  "start_time": "HH:MM",
+  "end_time": null,
+  "description": null,
+  "confirmMessage": "✅ [일정] 내일 오후 3시 병원을 추가했어요!"
+}
+
+type은 반드시 diary, moment, idea, calendar_event 중 하나여야 합니다.
+confirmMessage의 타입 표기: diary→[일기], moment→[메모], idea→[아이디어], calendar_event→[일정]
 `.trim();
