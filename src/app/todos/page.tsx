@@ -12,8 +12,10 @@ import {
   toggleTodo,
   deleteTodo,
   updateTodoOrder,
+  getNextDueDate,
   type Todo,
   type Priority,
+  type Recurrence,
 } from '@/lib/todos'
 
 type Filter = 'today' | 'all'
@@ -38,9 +40,9 @@ export default function TodosPage() {
     fetchTodos(filter)
   }, [filter, fetchTodos])
 
-  const handleAdd = async (content: string, due_date?: string, priority?: Priority) => {
+  const handleAdd = async (content: string, due_date?: string, priority?: Priority, recurrence?: Recurrence) => {
     try {
-      const newTodo = await addTodo(content, due_date, priority)
+      const newTodo = await addTodo(content, due_date, priority, recurrence)
       setTodos((prev) => {
         const next = [newTodo, ...prev]
         const ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 }
@@ -52,9 +54,16 @@ export default function TodosPage() {
   }
 
   const handleToggle = async (id: string, is_done: boolean) => {
+    const todo = todos.find((t) => t.id === id)
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, is_done } : t)))
     try {
       await toggleTodo(id, is_done)
+      // 반복 할일 완료 시 다음 항목 자동 생성
+      if (is_done && todo?.recurrence) {
+        const nextDue = getNextDueDate(todo.due_date, todo.recurrence)
+        const newTodo = await addTodo(todo.content, nextDue, todo.priority, todo.recurrence)
+        setTodos((prev) => [newTodo, ...prev])
+      }
     } catch {
       fetchTodos(filter)
     }

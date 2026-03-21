@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { CheckCircle, Circle, Trash2, GripVertical } from 'lucide-react'
+import { CheckCircle, Circle, Trash2, GripVertical, RefreshCw } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import type { Todo } from '@/lib/todos'
@@ -160,7 +160,15 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
           )}
         </button>
         <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-          <span className={`text-sm ${contentClass}`}>{todo.content}</span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className={`text-sm truncate ${contentClass}`}>{todo.content}</span>
+            {todo.recurrence && (
+              <span className="flex items-center gap-0.5 flex-shrink-0 text-[10px] font-medium text-[#0F6E56] bg-[#0F6E56]/10 px-1.5 py-0.5 rounded">
+                <RefreshCw size={9} />
+                {{ daily: '매일', weekly: '매주', monthly: '매월' }[todo.recurrence]}
+              </span>
+            )}
+          </div>
           {!todo.is_done && (
             <div className="flex gap-1 flex-wrap">
               {(() => {

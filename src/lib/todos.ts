@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { getTodayKST } from '@/lib/dateUtils'
 
 export type Priority = 'high' | 'medium' | 'low'
+export type Recurrence = 'daily' | 'weekly' | 'monthly'
 
 export interface Todo {
   id: string
@@ -12,6 +13,21 @@ export interface Todo {
   priority: Priority
   created_at: string
   sort_order: number | null
+  recurrence: Recurrence | null
+}
+
+export function getNextDueDate(due_date: string | null, recurrence: Recurrence): string {
+  const base = due_date ?? getTodayKST()
+  const [y, m, d] = base.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  if (recurrence === 'daily') date.setDate(date.getDate() + 1)
+  else if (recurrence === 'weekly') date.setDate(date.getDate() + 7)
+  else date.setMonth(date.getMonth() + 1)
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-')
 }
 
 const PRIORITY_ORDER: Record<Priority, number> = { high: 0, medium: 1, low: 2 }
@@ -57,14 +73,21 @@ export async function getTodayTodos(): Promise<Todo[]> {
 export async function addTodo(
   content: string,
   due_date?: string,
-  priority: Priority = 'medium'
+  priority: Priority = 'medium',
+  recurrence?: Recurrence,
 ): Promise<Todo> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('로그인이 필요합니다')
 
   const { data, error } = await supabase
     .from('todos')
-    .insert({ content, due_date: due_date ?? getTodayKST(), user_id: user.id, priority })
+    .insert({
+      content,
+      due_date: due_date ?? getTodayKST(),
+      user_id: user.id,
+      priority,
+      ...(recurrence ? { recurrence } : {}),
+    })
     .select()
     .single()
   if (error) throw error

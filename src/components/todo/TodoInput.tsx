@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { Plus, Mic, Calendar } from 'lucide-react'
+import { Plus, Mic, Calendar, RefreshCw } from 'lucide-react'
 import { useSpeechInput } from '@/lib/useSpeechInput'
 import { parseTodoIntent, extractDueDate } from '@/lib/parseTodoIntent'
-import type { Priority } from '@/lib/todos'
+import type { Priority, Recurrence } from '@/lib/todos'
 
 const PRIORITY_OPTIONS: { value: Priority; label: string; active: string }[] = [
   { value: 'high',   label: '높음', active: 'bg-red-50 border-red-300 text-red-600 dark:bg-red-900/30 dark:border-red-700' },
@@ -12,8 +12,15 @@ const PRIORITY_OPTIONS: { value: Priority; label: string; active: string }[] = [
   { value: 'low',    label: '낮음', active: 'bg-gray-100 border-gray-300 text-gray-600 dark:bg-gray-700 dark:border-gray-500' },
 ]
 
+const RECURRENCE_OPTIONS: { value: Recurrence | null; label: string }[] = [
+  { value: null,      label: '반복 없음' },
+  { value: 'daily',   label: '매일' },
+  { value: 'weekly',  label: '매주' },
+  { value: 'monthly', label: '매월' },
+]
+
 interface Props {
-  onAdd: (content: string, due_date?: string, priority?: Priority) => void
+  onAdd: (content: string, due_date?: string, priority?: Priority, recurrence?: Recurrence) => void
 }
 
 export default function TodoInput({ onAdd }: Props) {
@@ -21,9 +28,10 @@ export default function TodoInput({ onAdd }: Props) {
   const [dueDate, setDueDate] = useState('')
   const [showPicker, setShowPicker] = useState(false)
   const [priority, setPriority] = useState<Priority>('medium')
+  const [recurrence, setRecurrence] = useState<Recurrence | null>(null)
 
-  // ref로 관리해 useCallback deps에서 제외 → useSpeechInput 재초기화 방지
   const priorityRef = useRef<Priority>('medium')
+  const recurrenceRef = useRef<Recurrence | null>(null)
   const onAddRef = useRef(onAdd)
   onAddRef.current = onAdd
 
@@ -32,32 +40,38 @@ export default function TodoInput({ onAdd }: Props) {
     setPriority(p)
   }
 
+  const handleRecurrenceChange = (r: Recurrence | null) => {
+    recurrenceRef.current = r
+    setRecurrence(r)
+  }
+
   const handleAdd = (text: string) => {
     const trimmed = text.trim()
     if (!trimmed) return
     const { content, due_date: parsedDate } = extractDueDate(trimmed)
-    onAdd(content, parsedDate || dueDate || undefined, priority)
+    onAdd(content, parsedDate || dueDate || undefined, priority, recurrence ?? undefined)
     setValue('')
     setDueDate('')
     setShowPicker(false)
     priorityRef.current = 'medium'
     setPriority('medium')
+    recurrenceRef.current = null
+    setRecurrence(null)
   }
 
-  // priority를 ref로 읽어서 deps에서 제거 → 우선순위 변경 시 SpeechRecognition 재초기화 방지
   const handleVoiceResult = useCallback((text: string) => {
     const { isTodoIntent, content, due_date } = parseTodoIntent(text)
     if (isTodoIntent) {
-      onAddRef.current(content, due_date, priorityRef.current)
+      onAddRef.current(content, due_date, priorityRef.current, recurrenceRef.current ?? undefined)
       return
     }
     const { content: parsedContent, due_date: parsedDate } = extractDueDate(text)
     if (parsedDate) {
-      onAddRef.current(parsedContent, parsedDate, priorityRef.current)
+      onAddRef.current(parsedContent, parsedDate, priorityRef.current, recurrenceRef.current ?? undefined)
     } else {
       setValue(text)
     }
-  }, []) // deps 없음 — ref로 최신값 참조
+  }, [])
 
   const { isRecording, isSupported, toggle } = useSpeechInput(handleVoiceResult)
 
@@ -108,7 +122,7 @@ export default function TodoInput({ onAdd }: Props) {
       </div>
 
       {/* 우선순위 선택 행 */}
-      <div className="flex gap-2 px-4 pb-3">
+      <div className="flex gap-2 px-4 pb-2">
         {PRIORITY_OPTIONS.map((opt) => (
           <button
             key={opt.value}
@@ -120,6 +134,25 @@ export default function TodoInput({ onAdd }: Props) {
                 : 'border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500'
             }`}
           >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 반복 선택 행 */}
+      <div className="flex gap-1.5 px-4 pb-3">
+        {RECURRENCE_OPTIONS.map((opt) => (
+          <button
+            key={String(opt.value)}
+            type="button"
+            onClick={() => handleRecurrenceChange(opt.value)}
+            className={`flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg border transition-colors ${
+              recurrence === opt.value
+                ? 'bg-[#0F6E56]/10 border-[#0F6E56]/40 text-[#0F6E56]'
+                : 'border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+            }`}
+          >
+            {opt.value && <RefreshCw size={10} />}
             {opt.label}
           </button>
         ))}
