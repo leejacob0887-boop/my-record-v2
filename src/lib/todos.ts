@@ -11,6 +11,7 @@ export interface Todo {
   due_date: string | null
   priority: Priority
   created_at: string
+  sort_order: number | null
 }
 
 const PRIORITY_ORDER: Record<Priority, number> = { high: 0, medium: 1, low: 2 }
@@ -23,13 +24,23 @@ function sortByPriority(todos: Todo[]): Todo[] {
   })
 }
 
+function sortByOrder(todos: Todo[]): Todo[] {
+  const hasOrder = todos.some((t) => t.sort_order != null)
+  if (!hasOrder) return sortByPriority(todos)
+  return [...todos].sort((a, b) => {
+    const oa = a.sort_order ?? 9999
+    const ob = b.sort_order ?? 9999
+    return oa - ob
+  })
+}
+
 export async function getTodos(): Promise<Todo[]> {
   const { data, error } = await supabase
     .from('todos')
     .select('*')
     .order('created_at', { ascending: false })
   if (error) throw error
-  return sortByPriority(data ?? [])
+  return sortByOrder(data ?? [])
 }
 
 export async function getTodayTodos(): Promise<Todo[]> {
@@ -40,7 +51,7 @@ export async function getTodayTodos(): Promise<Todo[]> {
     .eq('due_date', today)
     .order('created_at', { ascending: false })
   if (error) throw error
-  return sortByPriority(data ?? [])
+  return sortByOrder(data ?? [])
 }
 
 export async function addTodo(
@@ -64,6 +75,14 @@ export async function toggleTodo(id: string, is_done: boolean): Promise<void> {
   const { error } = await supabase
     .from('todos')
     .update({ is_done })
+    .eq('id', id)
+  if (error) throw error
+}
+
+export async function updateTodoOrder(id: string, sort_order: number): Promise<void> {
+  const { error } = await supabase
+    .from('todos')
+    .update({ sort_order })
     .eq('id', id)
   if (error) throw error
 }

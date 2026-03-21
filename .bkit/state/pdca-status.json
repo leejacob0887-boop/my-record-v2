@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-21T02:21:33.638Z",
+  "lastUpdated": "2026-03-21T02:38:32.633Z",
   "edit-mode": {
     "phase": "archived",
     "matchRate": 92,
@@ -59,7 +59,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:56:18.479Z",
-        "lastUpdated": "2026-03-21T02:07:35.261Z",
+        "lastUpdated": "2026-03-21T02:27:36.123Z",
         "archivedAt": "2026-03-10T00:00:00.000Z"
       },
       "archivedTo": "docs/archive/2026-03/my-record-v2/",
@@ -295,9 +295,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-21T01:42:22.872Z",
-        "lastUpdated": "2026-03-21T02:21:33.638Z"
+        "lastUpdated": "2026-03-21T02:32:22.871Z"
       },
-      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\todo\\TodoItem.tsx"
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\todo\\TodoList.tsx"
     },
     "todos": {
       "phase": "do",
@@ -308,7 +308,7 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-21T01:42:56.576Z",
-        "lastUpdated": "2026-03-21T02:08:25.793Z"
+        "lastUpdated": "2026-03-21T02:38:32.633Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\todos\\page.tsx"
     }
@@ -321,7 +321,7 @@
   "session": {
     "startedAt": "2026-03-09T07:45:59.575Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-21T02:21:33.638Z"
+    "lastActivity": "2026-03-21T02:38:32.633Z"
   },
   "history": [
     {
@@ -5157,6 +5157,84 @@
     {
       "timestamp": "2026-03-21T02:21:33.638Z",
       "feature": "todo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:19.583Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:23.058Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:29.060Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:33.280Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:36.123Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:27:55.084Z",
+      "feature": "todo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:28:06.662Z",
+      "feature": "todo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:28:11.109Z",
+      "feature": "todos",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:28:14.936Z",
+      "feature": "todos",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:28:18.234Z",
+      "feature": "todos",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:32:22.871Z",
+      "feature": "todo",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:32:25.780Z",
+      "feature": "todos",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:38:32.633Z",
+      "feature": "todos",
       "phase": "do",
       "action": "updated"
     }

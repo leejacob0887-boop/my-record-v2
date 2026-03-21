@@ -1,5 +1,20 @@
 'use client'
 
+import {
+  DndContext,
+  closestCenter,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import type { Todo } from '@/lib/todos'
 import TodoItem from './TodoItem'
 
@@ -11,13 +26,27 @@ interface Props {
   onFilterChange: (f: Filter) => void
   onToggle: (id: string, is_done: boolean) => void
   onDelete: (id: string) => void
+  onReorder: (todos: Todo[]) => void
 }
 
-export default function TodoList({ todos, filter, onFilterChange, onToggle, onDelete }: Props) {
+export default function TodoList({ todos, filter, onFilterChange, onToggle, onDelete, onReorder }: Props) {
   const tabs: { key: Filter; label: string }[] = [
-    { key: 'today', label: '오늘' },
     { key: 'all', label: '전체' },
+    { key: 'today', label: '오늘' },
   ]
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+  )
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    const oldIndex = todos.findIndex((t) => t.id === active.id)
+    const newIndex = todos.findIndex((t) => t.id === over.id)
+    onReorder(arrayMove(todos, oldIndex, newIndex))
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -42,16 +71,25 @@ export default function TodoList({ todos, filter, onFilterChange, onToggle, onDe
           {filter === 'today' ? '오늘 할 일이 없어요 🎉' : '할 일이 없어요'}
         </p>
       ) : (
-        <div className="flex flex-col gap-2">
-          {todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={onToggle}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={todos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="flex flex-col gap-2">
+              {todos.map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={onToggle}
+                  onDelete={onDelete}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       )}
     </div>
   )

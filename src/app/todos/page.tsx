@@ -11,6 +11,7 @@ import {
   addTodo,
   toggleTodo,
   deleteTodo,
+  updateTodoOrder,
   type Todo,
   type Priority,
 } from '@/lib/todos'
@@ -20,7 +21,7 @@ type Filter = 'today' | 'all'
 export default function TodosPage() {
   const router = useRouter()
   const [todos, setTodos] = useState<Todo[]>([])
-  const [filter, setFilter] = useState<Filter>('today')
+  const [filter, setFilter] = useState<Filter>('all')
   const [loading, setLoading] = useState(true)
 
   const fetchTodos = useCallback(async (f: Filter) => {
@@ -59,6 +60,15 @@ export default function TodosPage() {
     }
   }
 
+  const handleReorder = async (reordered: Todo[]) => {
+    setTodos(reordered)
+    try {
+      await Promise.all(reordered.map((todo, index) => updateTodoOrder(todo.id, index)))
+    } catch {
+      fetchTodos(filter)
+    }
+  }
+
   const handleDelete = async (id: string) => {
     setTodos((prev) => prev.filter((t) => t.id !== id))
     try {
@@ -92,6 +102,7 @@ export default function TodosPage() {
             onFilterChange={setFilter}
             onToggle={handleToggle}
             onDelete={handleDelete}
+            onReorder={handleReorder}
           />
         )}
       </div>

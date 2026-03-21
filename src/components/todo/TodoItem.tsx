@@ -1,6 +1,8 @@
 'use client'
 
-import { CheckCircle, Circle, Trash2 } from 'lucide-react'
+import { CheckCircle, Circle, Trash2, GripVertical } from 'lucide-react'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import type { Todo } from '@/lib/todos'
 import { getDueDateStatus } from '@/lib/dateUtils'
 
@@ -34,6 +36,16 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
   const status = getDueDateStatus(todo.due_date)
   const priorityBorder = !todo.is_done ? (PRIORITY_BORDER[todo.priority] ?? PRIORITY_BORDER.medium) : ''
 
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: todo.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  }
+
   const checkColor =
     status === 'overdue' ? '#ef4444'
     : status === 'today' ? '#f97316'
@@ -51,7 +63,19 @@ export default function TodoItem({ todo, onToggle, onDelete }: Props) {
     : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
 
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 ${priorityBorder}`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 ${priorityBorder}`}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="flex-shrink-0 text-gray-300 dark:text-gray-600 cursor-grab active:cursor-grabbing touch-none"
+        aria-label="순서 변경"
+      >
+        <GripVertical size={16} />
+      </button>
       <button
         onClick={() => onToggle(todo.id, !todo.is_done)}
         className="flex-shrink-0"
