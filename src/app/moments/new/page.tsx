@@ -4,10 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
 import { useTags } from '@/lib/useTags';
+import { useLinkPreview } from '@/lib/useLinkPreview';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
 import SavePreviewCard from '@/components/SavePreviewCard';
+import LinkPreviewCard from '@/components/LinkPreviewCard';
 
 type MomentDraft = { text: string; tags: string[] };
 type PreviewData = { content: string; savedAt: string };
@@ -27,6 +29,7 @@ export default function MomentNewPage() {
 
   const [saving, setSaving] = useState(false);
   const [text, setText] = useState('');
+  const { preview: linkPreview, loading: linkLoading } = useLinkPreview(text);
   const [imageBase64, setImageBase64] = useState<string | undefined>();
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -86,11 +89,15 @@ export default function MomentNewPage() {
   const handleSubmit = async () => {
     if (!text.trim() || saving) return;
     setSaving(true);
-    let finalTags = tags;
+    let finalTags = [...tags];
+    // 링크 프리뷰가 있으면 자동 태그 추가
+    if (linkPreview && !finalTags.includes(linkPreview.type === 'youtube' ? '유튜브' : '링크')) {
+      finalTags = [linkPreview.type === 'youtube' ? '유튜브' : '링크', ...finalTags];
+    }
     if (finalTags.length === 0) {
       finalTags = await generateTags(text, 'moment') ?? [];
     }
-    await add({ text: text.trim(), date: dateStr, imageBase64, tags: finalTags });
+    await add({ text: text.trim(), date: dateStr, imageBase64, tags: finalTags, linkPreview: linkPreview ?? undefined });
     clear();
     const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     setPreview({ content: text.trim(), savedAt });
@@ -176,6 +183,16 @@ export default function MomentNewPage() {
             className="flex-1 w-full px-4 py-4 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none min-h-[200px]"
           />
           <p className="px-4 pb-2 text-right text-xs text-gray-400">{text.length}/500</p>
+
+          {/* Link preview */}
+          {(linkLoading || linkPreview) && (
+            <div className="px-4 pb-3">
+              {linkLoading
+                ? <LinkPreviewCard preview={{ url: '', title: '', type: 'link' }} loading />
+                : linkPreview && <LinkPreviewCard preview={linkPreview} />
+              }
+            </div>
+          )}
 
         </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Moment } from './types';
+import { Moment, LinkPreview } from './types';
 import { storageGet, storageSet } from './storage';
 import { supabase } from './supabase';
 import { deleteImage } from './storageUpload';
@@ -22,6 +22,7 @@ function mapFromDB(row: Record<string, unknown>): Moment {
     text: row.text as string,
     imageBase64: (row.image_base64 as string) ?? undefined,
     tags: (row.tags as string[]) ?? [],
+    linkPreview: (row.link_preview as LinkPreview) ?? undefined,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -66,7 +67,7 @@ export function useMoments() {
   );
 
   const add = useCallback(
-    async (data: { text: string; date: string; imageBase64?: string; tags?: string[] }) => {
+    async (data: { text: string; date: string; imageBase64?: string; tags?: string[]; linkPreview?: LinkPreview }) => {
       const now = new Date().toISOString();
       const newMoment: Moment = {
         id: crypto.randomUUID(),
@@ -90,6 +91,7 @@ export function useMoments() {
           text: newMoment.text,
           image_base64: newMoment.imageBase64 ?? null,
           tags: newMoment.tags ?? [],
+          link_preview: newMoment.linkPreview ?? null,
           created_at: now,
           updated_at: now,
         });

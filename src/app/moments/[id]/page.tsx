@@ -15,6 +15,7 @@ const SettingsIcon = () => (
 );
 
 import { formatDateTime } from '@/lib/dateUtils';
+import LinkPreviewCard from '@/components/LinkPreviewCard';
 
 export default function MomentDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -117,6 +118,11 @@ export default function MomentDetailPage() {
             />
           )}
           <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-7">{moment.text}</p>
+          {moment.linkPreview && (
+            <div className="mt-3">
+              <LinkPreviewCard preview={moment.linkPreview} />
+            </div>
+          )}
           <div className="mt-4 pt-4 border-t border-gray-100">
             <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1">
               📅 {formatDateTime(moment.date, moment.createdAt)}

@@ -13,11 +13,19 @@ export interface DiaryEntry extends BaseRecord {
   tags?: string[];
 }
 
+export interface LinkPreview {
+  url: string;
+  title: string;
+  thumbnail?: string;
+  type: 'youtube' | 'link';
+}
+
 export interface Moment extends BaseRecord {
   type: 'moment';
   date: string; // 'YYYY-MM-DD'
   text: string;
   tags?: string[];
+  linkPreview?: LinkPreview;
 }
 
 export interface Idea extends BaseRecord {
