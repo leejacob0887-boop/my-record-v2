@@ -76,6 +76,9 @@ export default function BottomTabBar() {
     router.push(href);
   };
 
+  // 홈 화면에서는 탭바 숨김 (카테고리 가로 스크롤로 대체)
+  if (pathname === '/') return null;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
       <div className="max-w-[430px] mx-auto flex">

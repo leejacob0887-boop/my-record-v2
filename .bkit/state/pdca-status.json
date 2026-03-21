@@ -1,12 +1,13 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-21T09:33:47.302Z",
+  "lastUpdated": "2026-03-21T16:12:48.203Z",
   "URL링크": {
-    "phase": "check",
+    "phase": "archived",
     "matchRate": 97,
     "iterationCount": 0,
     "startedAt": "2026-03-21T16:00:00.000Z",
-    "checkedAt": "2026-03-21T17:30:00.000Z"
+    "archivedAt": "2026-03-21T18:00:00.000Z",
+    "archivedTo": "docs/archive/2026-03/URL링크/"
   },
   "AI태그": {
     "phase": "archived",
@@ -78,7 +79,9 @@
     "public",
     "send-reminders",
     "generate",
-    "preview"
+    "preview",
+    "home",
+    "sheets"
   ],
   "primaryFeature": "my-record-v2",
   "matchRate": 94,
@@ -93,11 +96,11 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-09T07:56:18.479Z",
-        "lastUpdated": "2026-03-21T09:27:47.312Z",
+        "lastUpdated": "2026-03-21T15:45:08.280Z",
         "archivedAt": "2026-03-10T00:00:00.000Z"
       },
       "archivedTo": "docs/archive/2026-03/my-record-v2/",
-      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\lib\\useLinkPreview.ts"
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\page.tsx"
     },
     "diary": {
       "phase": "do",
@@ -397,6 +400,40 @@
         "lastUpdated": "2026-03-21T09:27:59.226Z"
       },
       "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\app\\api\\url\\preview\\route.ts"
+    },
+    "home": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-21T15:31:22.458Z",
+        "lastUpdated": "2026-03-21T16:12:48.203Z"
+      },
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\home\\CategoryScroll.tsx"
+    },
+    "sheets": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-03-21T15:32:45.122Z",
+        "lastUpdated": "2026-03-21T15:33:32.257Z"
+      },
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\home\\sheets\\WeatherSheet.tsx"
+    },
+    "홈화면-전면개편": {
+      "phase": "archived",
+      "matchRate": 88,
+      "iterationCount": 0,
+      "startedAt": "2026-03-22T00:00:00Z",
+      "archivedAt": "2026-03-22T00:00:00Z",
+      "archivedTo": "docs/archive/2026-03/홈화면-전면개편/"
     }
   },
   "pipeline": {
@@ -407,7 +444,7 @@
   "session": {
     "startedAt": "2026-03-09T07:45:59.575Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-21T09:33:47.302Z"
+    "lastActivity": "2026-03-21T16:12:48.203Z"
   },
   "history": [
     {
@@ -5975,6 +6012,198 @@
     {
       "timestamp": "2026-03-21T09:33:47.302Z",
       "feature": "[id]",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:10.142Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:22.458Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:33.850Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:42.656Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:47.439Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:31:53.572Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:32:09.949Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:32:17.284Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:32:31.088Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:32:45.122Z",
+      "feature": "sheets",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:33:00.048Z",
+      "feature": "sheets",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:33:18.345Z",
+      "feature": "sheets",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:33:32.257Z",
+      "feature": "sheets",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:34:08.669Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:34:23.323Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:34:28.048Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:34:56.605Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:35:00.525Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:44:39.006Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:45:02.071Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:45:08.280Z",
+      "feature": "my-record-v2",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:54:18.309Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:56:14.692Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T15:58:30.265Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:01:54.947Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:03:53.756Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:05:31.651Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:09:34.581Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:09:40.615Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:11:36.437Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:11:41.020Z",
+      "feature": "home",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T16:12:48.203Z",
+      "feature": "home",
       "phase": "do",
       "action": "updated"
     }
