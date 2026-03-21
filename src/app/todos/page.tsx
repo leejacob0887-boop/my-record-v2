@@ -12,6 +12,7 @@ import {
   toggleTodo,
   deleteTodo,
   type Todo,
+  type Priority,
 } from '@/lib/todos'
 
 type Filter = 'today' | 'all'
@@ -36,10 +37,14 @@ export default function TodosPage() {
     fetchTodos(filter)
   }, [filter, fetchTodos])
 
-  const handleAdd = async (content: string, due_date?: string) => {
+  const handleAdd = async (content: string, due_date?: string, priority?: Priority) => {
     try {
-      const newTodo = await addTodo(content, due_date)
-      setTodos((prev) => [newTodo, ...prev])
+      const newTodo = await addTodo(content, due_date, priority)
+      setTodos((prev) => {
+        const next = [newTodo, ...prev]
+        const ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 }
+        return [...next].sort((a, b) => (ORDER[a.priority] ?? 1) - (ORDER[b.priority] ?? 1))
+      })
     } catch (e) {
       console.error('[addTodo error]', e)
     }
