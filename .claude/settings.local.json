@@ -28,7 +28,8 @@
       "Bash(mv \"docs/04-report/투두리스트-종합.report.md\" \"docs/archive/2026-03/투두리스트-종합/\")",
       "Bash(cp \"docs/01-plan/features/투두리스트.plan.md\" \"docs/archive/2026-03/투두리스트-종합/\")",
       "Bash(cp \"docs/01-plan/features/투두리스트-마감일.plan.md\" \"docs/archive/2026-03/투두리스트-종합/\")",
-      "Bash(\"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\\\\docs\\\\archive\\\\2026-03\\\\_INDEX.md\":*)"
+      "Bash(\"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\\\\docs\\\\archive\\\\2026-03\\\\_INDEX.md\":*)",
+      "Bash(ls:*)"
     ]
   }
 }
