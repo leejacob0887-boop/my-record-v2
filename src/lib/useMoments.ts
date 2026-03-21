@@ -21,6 +21,7 @@ function mapFromDB(row: Record<string, unknown>): Moment {
     date: row.date as string,
     text: row.text as string,
     imageBase64: (row.image_base64 as string) ?? undefined,
+    tags: (row.tags as string[]) ?? [],
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -65,7 +66,7 @@ export function useMoments() {
   );
 
   const add = useCallback(
-    async (data: { text: string; date: string; imageBase64?: string }) => {
+    async (data: { text: string; date: string; imageBase64?: string; tags?: string[] }) => {
       const now = new Date().toISOString();
       const newMoment: Moment = {
         id: crypto.randomUUID(),
@@ -88,6 +89,7 @@ export function useMoments() {
           date: newMoment.date,
           text: newMoment.text,
           image_base64: newMoment.imageBase64 ?? null,
+          tags: newMoment.tags ?? [],
           created_at: now,
           updated_at: now,
         });

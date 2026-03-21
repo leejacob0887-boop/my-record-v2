@@ -17,6 +17,7 @@ export interface Moment extends BaseRecord {
   type: 'moment';
   date: string; // 'YYYY-MM-DD'
   text: string;
+  tags?: string[];
 }
 
 export interface Idea extends BaseRecord {
@@ -24,4 +25,5 @@ export interface Idea extends BaseRecord {
   date: string; // 'YYYY-MM-DD'
   title: string;
   content: string;
+  tags?: string[];
 }

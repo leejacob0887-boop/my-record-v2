@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useIdeas } from '@/lib/useIdeas';
+import { useTags } from '@/lib/useTags';
 import ImagePicker from '@/components/ImagePicker';
 import MicButton from '@/components/MicButton';
 import { useSpeechInput } from '@/lib/useSpeechInput';
@@ -25,6 +26,7 @@ export default function IdeaNewPage() {
   const searchParams = useSearchParams();
   const { add } = useIdeas();
   const { load, save, clear } = useDraft<IdeaDraft>('draft:idea');
+  const { loading: tagsLoading, generateTags } = useTags([]);
 
   const todayStr = new Date().toISOString().slice(0, 10);
   const [saving, setSaving] = useState(false);
@@ -79,8 +81,11 @@ export default function IdeaNewPage() {
     e.preventDefault();
     if (!title.trim() || !content.trim() || saving) return;
     setSaving(true);
-    const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
-    await add({ title: title.trim(), content: content.trim() + tagStr, date, imageBase64 });
+    let finalTags = tags;
+    if (finalTags.length === 0) {
+      finalTags = await generateTags(`${title} ${content}`, 'idea') ?? [];
+    }
+    await add({ title: title.trim(), content: content.trim(), date, imageBase64, tags: finalTags });
     clear();
     const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     setPreview({ title: title.trim(), content: content.trim(), savedAt });
@@ -154,6 +159,12 @@ export default function IdeaNewPage() {
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onBlur={async () => {
+                if (content.trim() && tags.length === 0) {
+                  const generated = await generateTags(`${title} ${content}`, 'idea');
+                  if (generated?.length) setTags(generated);
+                }
+              }}
               placeholder="아이디어를 자유롭게 적어보세요"
               rows={6}
               maxLength={500}
@@ -195,6 +206,7 @@ export default function IdeaNewPage() {
               type="button"
               onClick={() => setTagOpen(o => !o)}
               className={`mt-2 flex items-center gap-1 text-xs transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+              disabled={tagsLoading}
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" />

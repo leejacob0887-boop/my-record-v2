@@ -5,6 +5,7 @@ import { DiaryEntry } from '@/lib/types';
 import ImagePicker from './ImagePicker';
 import MicButton from './MicButton';
 import { useSpeechInput } from '@/lib/useSpeechInput';
+import { useTags } from '@/lib/useTags';
 
 interface DiaryFormProps {
   initial?: Partial<DiaryEntry>;
@@ -22,6 +23,7 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(initialTags ?? initial?.tags ?? []);
+  const { loading: tagsLoading, generateTags } = useTags([]);
 
   const handleVoiceResult = useCallback((text: string) => {
     setContent(prev => prev ? prev + ' ' + text : text);
@@ -71,6 +73,12 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          onBlur={async () => {
+            if (content.trim() && tags.length === 0) {
+              const generated = await generateTags(`${title} ${content}`, 'diary');
+              if (generated && generated.length > 0) setTags(generated);
+            }
+          }}
           placeholder="오늘 어떤 하루였나요?"
           rows={8}
           className="w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2 text-sm text-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-600 bg-transparent resize-none focus:outline-none focus:ring-2 focus:ring-blue-200"
@@ -90,7 +98,7 @@ export default function DiaryForm({ initial, initialTags, onSubmit }: DiaryFormP
             onClick={() => setTagOpen(o => !o)}
             className={`text-xs font-medium transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            + 태그 추가
+            {tagsLoading ? <span className="animate-pulse">생성 중…</span> : '+ 태그 추가'}
           </button>
         </div>
         {tagOpen && (

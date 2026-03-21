@@ -9,6 +9,7 @@ import { uploadImage } from '@/lib/storageUpload';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
 import SavePreviewCard from '@/components/SavePreviewCard';
+import { useTags } from '@/lib/useTags';
 
 type DiaryDraft = {
   title: string;
@@ -55,6 +56,7 @@ export default function DiaryNewPage() {
   const [tagOpen, setTagOpen] = useState(false);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const { loading: tagsLoading, generateTags } = useTags([]);
   const [showDraft, setShowDraft] = useState(false);
   const [preview, setPreview] = useState<PreviewData | null>(null);
 
@@ -131,7 +133,11 @@ export default function DiaryNewPage() {
       if (!ok) return;
     }
     setSaving(true);
-    await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64, tags });
+    let finalTags = tags;
+    if (finalTags.length === 0) {
+      finalTags = await generateTags(`${title} ${content}`, 'diary') ?? [];
+    }
+    await save({ date: dateStr, title: title.trim() || '제목 없음', content: content.trim(), imageBase64, tags: finalTags });
     clear();
     const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     setPreview({ title: title.trim() || '제목 없음', content: content.trim(), savedAt });
@@ -246,6 +252,12 @@ export default function DiaryNewPage() {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            onBlur={async () => {
+              if (content.trim() && tags.length === 0) {
+                const generated = await generateTags(`${title} ${content}`, 'diary');
+                if (generated?.length) setTags(generated);
+              }
+            }}
             placeholder="오늘 하루는 어땠나요?"
             className="flex-1 w-full px-4 py-4 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none min-h-[200px]"
           />
@@ -348,7 +360,8 @@ export default function DiaryNewPage() {
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                 <button
                   onClick={() => setTagOpen(o => !o)}
-                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+                  disabled={tagsLoading}
+                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : tagsLoading ? 'text-gray-300 animate-pulse' : 'text-gray-400 hover:text-gray-600'}`}
                   aria-label="태그"
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

@@ -22,6 +22,7 @@ function mapFromDB(row: Record<string, unknown>): Idea {
     title: row.title as string,
     content: row.content as string,
     imageBase64: (row.image_base64 as string) ?? undefined,
+    tags: (row.tags as string[]) ?? [],
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -61,7 +62,7 @@ export function useIdeas() {
   );
 
   const add = useCallback(
-    async (data: { title: string; content: string; date?: string; imageBase64?: string }) => {
+    async (data: { title: string; content: string; date?: string; imageBase64?: string; tags?: string[] }) => {
       const now = new Date().toISOString();
       const newIdea: Idea = {
         id: crypto.randomUUID(),
@@ -86,6 +87,7 @@ export function useIdeas() {
           title: newIdea.title,
           content: newIdea.content,
           image_base64: newIdea.imageBase64 ?? null,
+          tags: newIdea.tags ?? [],
           created_at: now,
           updated_at: now,
         });

@@ -43,3 +43,17 @@ calendar_event 형식:
 type은 반드시 diary, moment, idea, calendar_event 중 하나여야 합니다.
 confirmMessage의 타입 표기: diary→[일기], moment→[메모], idea→[아이디어], calendar_event→[일정]
 `.trim();
+
+export const TAG_GENERATION_PROMPT = `
+다음 내용을 읽고 어울리는 한국어 태그 2~3개를 생성하세요.
+
+규칙:
+- 2~4글자 한국어 태그만 사용
+- 명사 또는 짧은 형용사
+- 감정/활동/주제 중심
+- 예: "운동", "기분좋음", "업무", "가족", "독서", "회의", "건강", "여행"
+- 기존 태그 목록이 제공되면 동일한 태그를 최대한 재사용
+- 반드시 아래 JSON 형식만 반환 (다른 텍스트 없이):
+
+{"tags": ["태그1", "태그2", "태그3"]}
+`.trim();

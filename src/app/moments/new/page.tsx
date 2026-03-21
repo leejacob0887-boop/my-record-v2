@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMoments } from '@/lib/useMoments';
+import { useTags } from '@/lib/useTags';
 import { useSpeechInput } from '@/lib/useSpeechInput';
 import { useDraft } from '@/hooks/useDraft';
 import DraftToast from '@/components/DraftToast';
@@ -17,6 +18,7 @@ export default function MomentNewPage() {
   const { add } = useMoments();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { load, save, clear } = useDraft<MomentDraft>('draft:moment');
+  const { loading: tagsLoading, generateTags } = useTags([]);
 
   const today = new Date();
   const todayStr = today.toISOString().slice(0, 10);
@@ -84,8 +86,11 @@ export default function MomentNewPage() {
   const handleSubmit = async () => {
     if (!text.trim() || saving) return;
     setSaving(true);
-    const tagStr = tags.length > 0 ? '\n\n' + tags.map(t => `#${t}`).join(' ') : '';
-    await add({ text: text.trim() + tagStr, date: dateStr, imageBase64 });
+    let finalTags = tags;
+    if (finalTags.length === 0) {
+      finalTags = await generateTags(text, 'moment') ?? [];
+    }
+    await add({ text: text.trim(), date: dateStr, imageBase64, tags: finalTags });
     clear();
     const savedAt = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     setPreview({ content: text.trim(), savedAt });
@@ -160,6 +165,12 @@ export default function MomentNewPage() {
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onBlur={async () => {
+              if (text.trim() && tags.length === 0) {
+                const generated = await generateTags(text, 'moment');
+                if (generated?.length) setTags(generated);
+              }
+            }}
             placeholder="지금 무슨 생각을 하고 있나요?"
             maxLength={500}
             className="flex-1 w-full px-4 py-4 text-sm text-gray-700 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-500 bg-transparent outline-none resize-none min-h-[200px]"
@@ -251,7 +262,8 @@ export default function MomentNewPage() {
                 )}
                 <button
                   onClick={() => setTagOpen(o => !o)}
-                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : 'text-gray-400 hover:text-gray-600'}`}
+                  disabled={tagsLoading}
+                  className={`transition-colors ${tagOpen ? 'text-[#4A90D9]' : tagsLoading ? 'text-gray-300 animate-pulse' : 'text-gray-400 hover:text-gray-600'}`}
                   aria-label="태그"
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
