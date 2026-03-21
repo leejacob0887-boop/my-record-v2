@@ -10,12 +10,13 @@ interface ChatAreaProps {
   messages: ChatMessage[];
   chatEndRef: RefObject<HTMLDivElement | null>;
   isSending: boolean;
+  streamingText?: string;
 }
 
-export default function ChatArea({ messages, chatEndRef, isSending }: ChatAreaProps) {
+export default function ChatArea({ messages, chatEndRef, isSending, streamingText }: ChatAreaProps) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isSending, chatEndRef]);
+  }, [messages, isSending, streamingText, chatEndRef]);
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
@@ -34,7 +35,11 @@ export default function ChatArea({ messages, chatEndRef, isSending }: ChatAreaPr
             </svg>
           </div>
           <div className="bg-white dark:bg-gray-700 rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm">
-            <Loader2 size={16} className="animate-spin text-gray-400" />
+            {streamingText ? (
+              <p className="text-sm text-gray-800 dark:text-gray-100 whitespace-pre-wrap leading-relaxed">{streamingText}</p>
+            ) : (
+              <Loader2 size={16} className="animate-spin text-gray-400" />
+            )}
           </div>
         </div>
       )}

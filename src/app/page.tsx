@@ -20,9 +20,12 @@ import WeatherSheet from '@/components/home/sheets/WeatherSheet';
 const INIT_MESSAGE: ChatMessage = {
   id: 'init',
   role: 'ai',
-  content: '안녕하세요! 😊 오늘 어떤 걸 기록할까요?',
+  content: '안녕하세요! 😊 오늘 어떤 걸 기록할까요?\n"저장해줘"라고 하면 기록으로 남겨드릴게요.',
   timestamp: new Date(),
 };
+
+const SAVE_TRIGGERS = ['저장해줘', '저장해', '저장할게', '기록해줘', '기록해'];
+const isSaveRequest = (text: string) => SAVE_TRIGGERS.some((t) => text.includes(t));
 
 function getDefaultReply(type: string): string {
   if (type === 'diary') return '일기로 저장됐어요! 📔';
@@ -32,6 +35,8 @@ function getDefaultReply(type: string): string {
   return '기록됐어요!';
 }
 
+type ApiMessage = { role: 'user' | 'assistant'; content: string };
+
 export default function Home() {
   const { user } = useAuth();
   const { save: saveDiary } = useDiary();
@@ -39,8 +44,10 @@ export default function Home() {
   const { add: addIdea } = useIdeas();
 
   const [messages, setMessages] = useState<ChatMessage[]>([INIT_MESSAGE]);
+  const [apiHistory, setApiHistory] = useState<ApiMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [streamingText, setStreamingText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [sheet, setSheet] = useState<BottomSheetState>({ open: false, type: null });
 
@@ -70,44 +77,76 @@ export default function Home() {
     setInputText('');
     setIsSending(true);
 
+    const newHistory: ApiMessage[] = [...apiHistory, { role: 'user', content: text }];
+    setApiHistory(newHistory);
+
     try {
       const today = new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10);
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'save', messages: [{ role: 'user', content: text }] }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error ?? '저장 실패');
 
-      const date = data.date ?? today;
-      if (data.type === 'diary') {
-        await saveDiary({ date, title: data.title ?? '기록', content: data.content ?? '' });
-        localStorage.setItem('new_badge_diary', '1');
-      } else if (data.type === 'moment') {
-        await addMoment({ text: data.text ?? data.content ?? '', date });
-        localStorage.setItem('new_badge_moment', '1');
-      } else if (data.type === 'idea') {
-        await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
-        localStorage.setItem('new_badge_idea', '1');
-      } else if (data.type === 'calendar_event') {
-        await addEvent({
-          title: data.title ?? '일정',
-          date,
-          start_time: data.start_time ?? null,
-          end_time: data.end_time ?? null,
-          description: data.description ?? null,
+      if (isSaveRequest(text)) {
+        // ── 저장 모드 ──────────────────────────────────────
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'save', messages: newHistory }),
         });
-      }
-      window.dispatchEvent(new CustomEvent('badge-update'));
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error ?? '저장 실패');
 
-      addAIMessage(data.confirmMessage ?? data.reply ?? getDefaultReply(data.type));
+        const date = data.date ?? today;
+        if (data.type === 'diary') {
+          await saveDiary({ date, title: data.title ?? '기록', content: data.content ?? '' });
+          localStorage.setItem('new_badge_diary', '1');
+        } else if (data.type === 'moment') {
+          await addMoment({ text: data.text ?? data.content ?? '', date });
+          localStorage.setItem('new_badge_moment', '1');
+        } else if (data.type === 'idea') {
+          await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
+          localStorage.setItem('new_badge_idea', '1');
+        } else if (data.type === 'calendar_event') {
+          await addEvent({
+            title: data.title ?? '일정',
+            date,
+            start_time: data.start_time ?? null,
+            end_time: data.end_time ?? null,
+            description: data.description ?? null,
+          });
+        }
+        window.dispatchEvent(new CustomEvent('badge-update'));
+
+        const reply = data.confirmMessage ?? data.reply ?? getDefaultReply(data.type);
+        addAIMessage(reply);
+        setApiHistory((prev) => [...prev, { role: 'assistant', content: reply }]);
+      } else {
+        // ── 채팅 모드 — 스트리밍 ───────────────────────────
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'chat', messages: newHistory }),
+        });
+        if (!res.ok || !res.body) throw new Error('응답 오류');
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulated = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          accumulated += decoder.decode(value, { stream: true });
+          setStreamingText(accumulated);
+        }
+
+        setStreamingText('');
+        addAIMessage(accumulated);
+        setApiHistory((prev) => [...prev, { role: 'assistant', content: accumulated }]);
+      }
     } catch {
-      addAIMessage('저장 중 오류가 발생했어요 😢 다시 시도해주세요.');
+      addAIMessage('오류가 발생했어요 😢 다시 시도해주세요.');
     } finally {
       setIsSending(false);
     }
-  }, [inputText, isSending, saveDiary, addMoment, addIdea, addAIMessage]);
+  }, [inputText, isSending, apiHistory, saveDiary, addMoment, addIdea, addAIMessage]);
 
   const handleMic = useCallback(() => {
     if (isRecording) {
@@ -203,7 +242,7 @@ export default function Home() {
       <HomeTopBar />
       <CategoryScroll />
       <hr className="border-gray-200 dark:border-gray-700 mx-4" />
-      <ChatArea messages={messages} chatEndRef={chatEndRef} isSending={isSending} />
+      <ChatArea messages={messages} chatEndRef={chatEndRef} isSending={isSending} streamingText={streamingText} />
       {/* 하단 입력창(빠른버튼+입력창) 높이 확보 */}
       <div className="h-[140px] flex-shrink-0" />
       <BottomInputArea
