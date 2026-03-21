@@ -184,21 +184,21 @@ export default function MomentNewPage() {
           />
           <p className="px-4 pb-2 text-right text-xs text-gray-400">{text.length}/500</p>
 
-          {/* Link preview */}
-          {(linkLoading || linkPreview) && (
-            <div className="px-4 pb-3">
-              {linkLoading
-                ? <LinkPreviewCard preview={{ url: '', title: '', type: 'link' }} loading />
-                : linkPreview && <LinkPreviewCard preview={linkPreview} />
-              }
-            </div>
-          )}
-
         </div>
 
         {/* Fixed bottom panel */}
         <div className="fixed bottom-16 left-0 right-0 bg-[#FAF8F4] dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 z-10">
           <div className="max-w-[430px] mx-auto px-4">
+
+            {/* Link preview */}
+            {(linkLoading || linkPreview) && (
+              <div className="pt-2.5 pb-1 border-b border-gray-100">
+                {linkLoading
+                  ? <LinkPreviewCard preview={{ url: '', title: '', type: 'link' }} loading />
+                  : linkPreview && <LinkPreviewCard preview={linkPreview} />
+                }
+              </div>
+            )}
 
             {/* Tag input row */}
             {tagOpen && (

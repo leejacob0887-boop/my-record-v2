@@ -23,9 +23,10 @@ export function useLinkPreview(text: string) {
 
     // 같은 URL 재요청 방지
     if (url === lastUrlRef.current) return
-    lastUrlRef.current = url
 
     const timer = setTimeout(async () => {
+      // 타이머가 실제로 실행될 때만 lastUrl 업데이트 (타이머 취소 시 재시도 가능)
+      lastUrlRef.current = url
       setLoading(true)
       try {
         const res = await fetch('/api/url/preview', {
