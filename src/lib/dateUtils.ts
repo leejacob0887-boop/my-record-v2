@@ -15,6 +15,17 @@ export function getTodayKST(): string {
   return new Date(Date.now() + KST_OFFSET).toISOString().slice(0, 10);
 }
 
+/** 마감일 상태 반환 (KST 기준) */
+export type DueDateStatus = 'overdue' | 'today' | 'upcoming' | 'none'
+
+export function getDueDateStatus(due_date: string | null): DueDateStatus {
+  if (!due_date) return 'none'
+  const today = getTodayKST()
+  if (due_date < today) return 'overdue'
+  if (due_date === today) return 'today'
+  return 'upcoming'
+}
+
 /** createdAt 기준 KST 'YYYY-MM-DD HH:MM' 포맷 반환 (date 파라미터 무시) */
 export function formatDateTime(_date: string, createdAt: string): string {
   const kst = toKST(createdAt);

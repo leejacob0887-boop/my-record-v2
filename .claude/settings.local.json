@@ -19,7 +19,8 @@
       "Bash(start http://localhost:3001/moments)",
       "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && npm install @supabase/supabase-js 2>&1 | tail -5)",
       "Bash(vercel --version 2>&1)",
-      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && del /f \".next\\\\dev\\\\lock\" 2>&1 && npm run dev 2>&1)"
+      "Bash(cd \"C:\\\\Users\\\\jacob\\\\OneDrive\\\\Desktop\\\\프로젝트모음\\\\my-record-v2\" && del /f \".next\\\\dev\\\\lock\" 2>&1 && npm run dev 2>&1)",
+      "Bash(npx skills:*)"
     ]
   }
 }

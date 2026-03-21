@@ -8,6 +8,8 @@ import { useDiary } from '@/lib/useDiary';
 import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
 import { useSpeechInput } from '@/lib/useSpeechInput';
+import { addTodo } from '@/lib/todos';
+import { parseTodoIntent } from '@/lib/parseTodoIntent';
 
 type MessageRole = 'user' | 'assistant' | 'info';
 type Message = { id: string; role: MessageRole; content: string; imageUrl?: string };
@@ -210,7 +212,21 @@ export default function ChatPage() {
     ];
     setMessages(newMessages);
 
-    if (isSaveRequest(userText)) {
+    const todoIntent = parseTodoIntent(userText);
+    if (todoIntent.isTodoIntent) {
+      try {
+        await addTodo(todoIntent.content, todoIntent.due_date);
+        setMessages((prev) => [
+          ...prev,
+          { id: newId(), role: 'info', content: `✅ "${todoIntent.content}" 할일이 추가됐어요!` },
+        ]);
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          { id: newId(), role: 'info', content: '❌ 할일 추가에 실패했어요.' },
+        ]);
+      }
+    } else if (isSaveRequest(userText)) {
       await handleSave(newMessages);
     } else {
       await handleChat(newMessages);

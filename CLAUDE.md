@@ -1,43 +1,25 @@
-# my-record-v2
+# Notia 프로젝트
 
-## Project Level
-**Level: Starter** - Static web app (Next.js + Tailwind CSS)
+## 미션
+당신의 기록을 가장 잘 아는 AI 비서
 
-## Project Overview
-개인 기록/일기 앱. 날짜별 기록을 작성하고 관리하는 정적 웹사이트.
+## 핵심 철학
+1. 편하게 기록 — 말하거나 찍으면 끝
+2. 깔끔하게 정리 — AI가 알아서
+3. 예쁘고 감성적으로 보여주기
 
-## Tech Stack
-- Next.js 15+ (App Router)
-- Tailwind CSS
-- TypeScript
-- LocalStorage (데이터 저장)
+## 기술 스택
+Next.js + TypeScript + Tailwind + Supabase + Vercel
+브랜드 컬러: #0F6E56 (Teal)
+아이콘: lucide-react
 
-## Project Structure
-```
-src/
-├── app/
-│   ├── layout.tsx       # Common layout
-│   ├── page.tsx         # Home / record list
-│   ├── globals.css
-│   └── records/
-│       └── [id]/
-│           └── page.tsx # Record detail
-└── components/
-    ├── RecordCard.tsx   # Record list item
-    ├── RecordForm.tsx   # Create/edit form
-    └── Header.tsx       # Site header
-docs/
-├── 01-plan/
-└── 02-design/
-```
+## 개발 원칙
+- 하나씩 구현 → 확인 → 커밋
+- 기존 기능 건드리지 않고 추가
+- 모바일 최우선 (100dvh)
+- AI가 일하기 좋은 구조 유지
 
-## Coding Conventions
-- TypeScript strict mode
-- Tailwind CSS for all styling
-- No external UI libraries (keep it simple)
-- LocalStorage for data persistence (no backend)
-- Korean language UI
-
-## bkit Settings
-- Output Style: bkit-learning
-- PDCA Level: Starter
+## 기능 판단 기준
+1. 더 편하게 기록하게 해주나?
+2. 더 깔끔하게 정리해주나?
+3. 더 예쁘고 감성적으로 보여주나?

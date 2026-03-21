@@ -1,8 +1,10 @@
 {
-  "sessionCount": 25,
+  "sessionCount": 26,
   "lastSession": {
-    "startedAt": "2026-03-15T20:11:11.904Z",
+    "startedAt": "2026-03-21T01:24:06.889Z",
     "platform": "claude",
     "level": "Dynamic"
-  }
+  },
+  "currentFeature": "투두리스트-마감일",
+  "phase": "plan"
 }
