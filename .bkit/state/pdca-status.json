@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "lastUpdated": "2026-03-21T02:38:32.633Z",
+  "lastUpdated": "2026-03-21T02:42:06.354Z",
   "edit-mode": {
     "phase": "archived",
     "matchRate": 92,
@@ -295,9 +295,9 @@
       "documents": {},
       "timestamps": {
         "started": "2026-03-21T01:42:22.872Z",
-        "lastUpdated": "2026-03-21T02:32:22.871Z"
+        "lastUpdated": "2026-03-21T02:42:06.354Z"
       },
-      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\todo\\TodoList.tsx"
+      "lastFile": "C:\\Users\\jacob\\OneDrive\\Desktop\\프로젝트모음\\my-record-v2\\src\\components\\todo\\TodoItem.tsx"
     },
     "todos": {
       "phase": "do",
@@ -321,7 +321,7 @@
   "session": {
     "startedAt": "2026-03-09T07:45:59.575Z",
     "onboardingCompleted": false,
-    "lastActivity": "2026-03-21T02:38:32.633Z"
+    "lastActivity": "2026-03-21T02:42:06.354Z"
   },
   "history": [
     {
@@ -5235,6 +5235,12 @@
     {
       "timestamp": "2026-03-21T02:38:32.633Z",
       "feature": "todos",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-03-21T02:42:06.354Z",
+      "feature": "todo",
       "phase": "do",
       "action": "updated"
     }
