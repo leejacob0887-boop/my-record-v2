@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import TodoInput from '@/components/todo/TodoInput'
 import TodoList from '@/components/todo/TodoList'
+import TodoToast from '@/components/todo/TodoToast'
 import {
   getTodos,
   getTodayTodos,
@@ -25,6 +26,17 @@ export default function TodosPage() {
   const [todos, setTodos] = useState<Todo[]>([])
   const [filter, setFilter] = useState<Filter>('all')
   const [loading, setLoading] = useState(true)
+  const [toast, setToast] = useState({ message: '', key: 0 })
+
+  const TOAST_MESSAGES = [
+    '잘 하셨어요! 🎉', '하나 완료! 💪', '멋져요! ✨',
+    '대단해요! 🌟', '훌륭해요! 👏', '완벽해요! 🔥',
+    '굿! 👍', '해냈어요! 🙌', '최고예요! 😄',
+  ]
+  const showToast = () => {
+    const msg = TOAST_MESSAGES[Math.floor(Math.random() * TOAST_MESSAGES.length)]
+    setToast((prev) => ({ message: msg, key: prev.key + 1 }))
+  }
 
   const fetchTodos = useCallback(async (f: Filter) => {
     setLoading(true)
@@ -58,12 +70,23 @@ export default function TodosPage() {
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, is_done } : t)))
     try {
       await toggleTodo(id, is_done)
+      if (is_done) showToast()
       // 반복 할일 완료 시 다음 항목 자동 생성
       if (is_done && todo?.recurrence) {
         const nextDue = getNextDueDate(todo.due_date, todo.recurrence)
         const newTodo = await addTodo(todo.content, nextDue, todo.priority, todo.recurrence)
         setTodos((prev) => [newTodo, ...prev])
       }
+    } catch {
+      fetchTodos(filter)
+    }
+  }
+
+  const handleDeleteAllDone = async () => {
+    const doneIds = todos.filter((t) => t.is_done).map((t) => t.id)
+    setTodos((prev) => prev.filter((t) => !t.is_done))
+    try {
+      await Promise.all(doneIds.map((id) => deleteTodo(id)))
     } catch {
       fetchTodos(filter)
     }
@@ -100,6 +123,7 @@ export default function TodosPage() {
         <h1 className="text-base font-bold text-gray-800 dark:text-gray-100">할 일</h1>
       </div>
 
+      <TodoToast message={toast.message} key={toast.key} />
       <div className="flex-1 px-4 py-4 pb-24 max-w-[430px] w-full mx-auto flex flex-col gap-4">
         <TodoInput onAdd={handleAdd} />
         {loading ? (
@@ -112,6 +136,7 @@ export default function TodosPage() {
             onToggle={handleToggle}
             onDelete={handleDelete}
             onReorder={handleReorder}
+            onDeleteAllDone={handleDeleteAllDone}
           />
         )}
       </div>

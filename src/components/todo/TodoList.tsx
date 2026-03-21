@@ -29,10 +29,12 @@ interface Props {
   onToggle: (id: string, is_done: boolean) => void
   onDelete: (id: string) => void
   onReorder: (todos: Todo[]) => void
+  onDeleteAllDone: () => void
 }
 
-export default function TodoList({ todos, filter, onFilterChange, onToggle, onDelete, onReorder }: Props) {
+export default function TodoList({ todos, filter, onFilterChange, onToggle, onDelete, onReorder, onDeleteAllDone }: Props) {
   const [doneExpanded, setDoneExpanded] = useState(false)
+  const [confirming, setConfirming] = useState(false)
 
   const tabs: { key: Filter; label: string }[] = [
     { key: 'all', label: '전체' },
@@ -106,16 +108,36 @@ export default function TodoList({ todos, filter, onFilterChange, onToggle, onDe
           {/* 완료 목록 접기/펼치기 */}
           {doneTodos.length > 0 && (
             <div className="flex flex-col gap-2 mt-1">
-              <button
-                onClick={() => setDoneExpanded((v) => !v)}
-                className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium px-1 py-1 w-fit"
-              >
-                {doneExpanded
-                  ? <ChevronDown size={14} />
-                  : <ChevronRight size={14} />
-                }
-                완료 {doneTodos.length}개
-              </button>
+              <div className="flex items-center justify-between px-1">
+                <button
+                  onClick={() => setDoneExpanded((v) => !v)}
+                  className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium py-1"
+                >
+                  {doneExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                  완료 {doneTodos.length}개
+                </button>
+
+                {confirming ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400 dark:text-gray-500">삭제할까요?</span>
+                    <button
+                      onClick={() => { onDeleteAllDone(); setConfirming(false) }}
+                      className="text-xs font-medium text-red-500 hover:text-red-600"
+                    >확인</button>
+                    <button
+                      onClick={() => setConfirming(false)}
+                      className="text-xs text-gray-400 hover:text-gray-600"
+                    >취소</button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirming(true)}
+                    className="text-xs text-gray-400 dark:text-gray-500 hover:text-red-400 transition-colors py-1"
+                  >
+                    전체 삭제
+                  </button>
+                )}
+              </div>
 
               {doneExpanded && (
                 <div className="flex flex-col gap-2">
