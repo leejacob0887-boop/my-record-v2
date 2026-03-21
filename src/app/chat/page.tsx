@@ -216,9 +216,10 @@ export default function ChatPage() {
     if (todoIntent.isTodoIntent) {
       try {
         await addTodo(todoIntent.content, todoIntent.due_date);
+        const duePart = todoIntent.due_date ? ` (마감: ${todoIntent.due_date})` : '';
         setMessages((prev) => [
           ...prev,
-          { id: newId(), role: 'info', content: `✅ "${todoIntent.content}" 할일이 추가됐어요!` },
+          { id: newId(), role: 'assistant', content: `✅ **"${todoIntent.content}"** 할일을 추가했어요!${duePart} 할일 탭에서 확인할 수 있어요. 😊` },
         ]);
       } catch {
         setMessages((prev) => [

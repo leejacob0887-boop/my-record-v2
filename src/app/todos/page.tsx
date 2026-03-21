@@ -75,7 +75,11 @@ export default function TodosPage() {
       if (is_done && todo?.recurrence) {
         const nextDue = getNextDueDate(todo.due_date, todo.recurrence)
         const newTodo = await addTodo(todo.content, nextDue, todo.priority, todo.recurrence)
-        setTodos((prev) => [newTodo, ...prev])
+        setTodos((prev) => {
+          const next = [newTodo, ...prev]
+          const ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 }
+          return [...next].sort((a, b) => (ORDER[a.priority] ?? 1) - (ORDER[b.priority] ?? 1))
+        })
       }
     } catch {
       fetchTodos(filter)

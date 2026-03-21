@@ -83,7 +83,7 @@ export async function addTodo(
     .from('todos')
     .insert({
       content,
-      due_date: due_date ?? getTodayKST(),
+      due_date: due_date ?? null,
       user_id: user.id,
       priority,
       ...(recurrence ? { recurrence } : {}),
