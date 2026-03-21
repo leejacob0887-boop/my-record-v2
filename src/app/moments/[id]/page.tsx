@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useMoments } from '@/lib/useMoments';
 import { shareCard } from '@/lib/shareCard';
+import { useLinkPreview } from '@/lib/useLinkPreview';
 
 const SettingsIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -17,6 +18,30 @@ const SettingsIcon = () => (
 import { formatDateTime } from '@/lib/dateUtils';
 import LinkPreviewCard from '@/components/LinkPreviewCard';
 
+const URL_REGEX = /https?:\/\/[^\s"'<>]+/gi;
+
+function renderTextWithLinks(text: string) {
+  const parts = text.split(URL_REGEX);
+  const urls = text.match(URL_REGEX) ?? [];
+  return parts.flatMap((part, i) => {
+    const nodes: React.ReactNode[] = [part];
+    if (urls[i]) {
+      nodes.push(
+        <a
+          key={i}
+          href={urls[i]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline break-all"
+        >
+          {urls[i]}
+        </a>
+      );
+    }
+    return nodes;
+  });
+}
+
 export default function MomentDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
@@ -24,6 +49,11 @@ export default function MomentDetailPage() {
   const { getById, remove } = useMoments();
   const moment = getById(id);
   const [sharing, setSharing] = useState(false);
+
+  // 저장된 linkPreview가 없는 경우 텍스트에서 URL 감지해 실시간 프리뷰 fetch
+  const textForPreview = moment?.linkPreview ? '' : (moment?.text ?? '');
+  const { preview: fetchedPreview, loading: previewLoading } = useLinkPreview(textForPreview);
+  const displayPreview = moment?.linkPreview ?? fetchedPreview;
 
   if (!moment) {
     return (
@@ -117,12 +147,22 @@ export default function MomentDetailPage() {
               className="w-full max-h-60 object-cover rounded-xl mb-4"
             />
           )}
-          <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-7">{moment.text}</p>
-          {moment.linkPreview && (
+          <p className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-7">
+            {renderTextWithLinks(moment.text)}
+          </p>
+
+          {/* Link preview: 저장된 것 우선, 없으면 실시간 fetch */}
+          {previewLoading && (
             <div className="mt-3">
-              <LinkPreviewCard preview={moment.linkPreview} />
+              <LinkPreviewCard preview={{ url: '', title: '', type: 'link' }} loading />
             </div>
           )}
+          {!previewLoading && displayPreview && (
+            <div className="mt-3">
+              <LinkPreviewCard preview={displayPreview} />
+            </div>
+          )}
+
           <div className="mt-4 pt-4 border-t border-gray-100">
             <span className="inline-block text-xs text-gray-400 bg-gray-50 border border-gray-100 rounded-full px-3 py-1">
               📅 {formatDateTime(moment.date, moment.createdAt)}

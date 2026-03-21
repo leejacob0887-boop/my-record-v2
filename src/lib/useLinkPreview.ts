@@ -10,45 +10,59 @@ export function extractURL(text: string): string | null {
 export function useLinkPreview(text: string) {
   const [preview, setPreview] = useState<LinkPreview | null>(null)
   const [loading, setLoading] = useState(false)
-  const lastUrlRef = useRef<string>('')
+  const fetchedUrlRef = useRef<string>('')
 
   useEffect(() => {
     const url = extractURL(text)
 
     if (!url) {
       setPreview(null)
-      lastUrlRef.current = ''
+      setLoading(false)
+      fetchedUrlRef.current = ''
       return
     }
 
-    // 같은 URL 재요청 방지
-    if (url === lastUrlRef.current) return
+    // 동일 URL 중복 요청 방지
+    if (url === fetchedUrlRef.current) return
 
+    // 즉시 로딩 표시
+    setLoading(true)
+    fetchedUrlRef.current = url
+
+    let cancelled = false
     const timer = setTimeout(async () => {
-      // 타이머가 실제로 실행될 때만 lastUrl 업데이트 (타이머 취소 시 재시도 가능)
-      lastUrlRef.current = url
-      setLoading(true)
+      if (cancelled) return
       try {
         const res = await fetch('/api/url/preview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url }),
         })
+        if (cancelled) return
         const data = await res.json()
-        setPreview({ url, title: data.title, thumbnail: data.thumbnail ?? undefined, type: data.type })
+        if (cancelled) return
+        setPreview({ url, title: data.title ?? '', thumbnail: data.thumbnail ?? undefined, type: data.type ?? 'link' })
       } catch {
-        setPreview({ url, title: '', type: 'link' })
+        if (!cancelled) setPreview({ url, title: '', type: 'link' })
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
-    }, 500)
+    }, 600)
 
-    return () => clearTimeout(timer)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+      // URL이 바뀌면 ref 초기화해서 재시도 가능하게
+      if (fetchedUrlRef.current === url) {
+        fetchedUrlRef.current = ''
+      }
+      setLoading(false)
+    }
   }, [text])
 
   function clearPreview() {
     setPreview(null)
-    lastUrlRef.current = ''
+    fetchedUrlRef.current = ''
   }
 
   return { preview, loading, clearPreview }
