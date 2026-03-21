@@ -6,6 +6,7 @@ import { useMoments } from '@/lib/useMoments';
 import { useIdeas } from '@/lib/useIdeas';
 import { useAuth } from '@/context/AuthContext';
 import { uploadImage } from '@/lib/storageUpload';
+import { addEvent } from '@/lib/events';
 import { ChatMessage, BottomSheetState, QuickButtonType } from '@/components/home/types';
 import HomeTopBar from '@/components/home/HomeTopBar';
 import CategoryScroll from '@/components/home/CategoryScroll';
@@ -27,6 +28,7 @@ function getDefaultReply(type: string): string {
   if (type === 'diary') return '일기로 저장됐어요! 📔';
   if (type === 'moment') return '메모로 저장됐어요! ⚡';
   if (type === 'idea') return '아이디어로 저장됐어요! 💡';
+  if (type === 'calendar_event') return '일정을 추가했어요! 📅';
   return '기록됐어요!';
 }
 
@@ -88,10 +90,18 @@ export default function Home() {
       } else if (data.type === 'idea') {
         await addIdea({ title: data.title ?? '아이디어', content: data.content ?? '', date });
         localStorage.setItem('new_badge_idea', '1');
+      } else if (data.type === 'calendar_event') {
+        await addEvent({
+          title: data.title ?? '일정',
+          date,
+          start_time: data.start_time ?? null,
+          end_time: data.end_time ?? null,
+          description: data.description ?? null,
+        });
       }
       window.dispatchEvent(new CustomEvent('badge-update'));
 
-      addAIMessage(data.reply ?? getDefaultReply(data.type));
+      addAIMessage(data.confirmMessage ?? data.reply ?? getDefaultReply(data.type));
     } catch {
       addAIMessage('저장 중 오류가 발생했어요 😢 다시 시도해주세요.');
     } finally {
