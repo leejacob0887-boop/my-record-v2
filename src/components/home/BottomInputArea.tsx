@@ -59,6 +59,10 @@ export default function BottomInputArea({
           value={inputText}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
         />
         <button
           onClick={() => cameraInputRef.current?.click()}
